@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-const ROOT = path.resolve('/shared-artifacts/ai-workshop-friday');
+const ROOT = process.env.WORKSHOP_ROOT || __dirname;
 const REPO = process.argv[2];
 if(!REPO) {
   console.error('Usage: node contract-test.js <repo-name>');
