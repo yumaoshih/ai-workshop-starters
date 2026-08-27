@@ -1,0 +1,40 @@
+{
+  "product": "group-randomizer",
+  "behaviors": [
+    {
+      "id": "name-input",
+      "selector": "#names-input",
+      "expect": "Textarea for pasting names exists"
+    },
+    {
+      "id": "group-count-input",
+      "selector": "#group-count-input",
+      "expect": "Number input for group count exists"
+    },
+    {
+      "id": "randomize-button",
+      "selector": "#btn-randomize",
+      "expect": "Randomize button exists"
+    },
+    {
+      "id": "output-groups",
+      "selector": "#groups-output",
+      "expect": "Assigns every name exactly once"
+    },
+    {
+      "id": "fair-size-difference",
+      "selector": "#groups-output .group",
+      "expect": "Group size difference ≤1"
+    },
+    {
+      "id": "copy-button",
+      "selector": "#btn-copy",
+      "expect": "Copy output button exists"
+    },
+    {
+      "id": "reset",
+      "selector": "#btn-reset",
+      "expect": "Reset action exists"
+    }
+  ]
+}

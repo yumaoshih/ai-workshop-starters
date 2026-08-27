@@ -1,0 +1,36 @@
+{
+  "product": "fasting-clock",
+  "version": "1.0.0",
+  "behaviors": [
+    {
+      "id": "preset-existence",
+      "description": "三個禁食時長選項預設存在",
+      "selector": ".preset[data-hours]",
+      "expected": "三個按鈕分別標示 16、18、20 小時"
+    },
+    {
+      "id": "start-pause-reset",
+      "description": "啟動、暫停、重置按鈕可點擊",
+      "selector": "button[data-action]",
+      "expected": "至少三個按鈕: start, pause, reset"
+    },
+    {
+      "id": "elapsed-display",
+      "description": "計時中顯示經過時間",
+      "selector": ".elapsed",
+      "expected": "文本顯示 mm:ss 格式"
+    },
+    {
+      "id": "remaining-display",
+      "description": "顯示剩餘時間",
+      "selector": ".remaining",
+      "expected": "文本顯示 mm:ss 格式"
+    },
+    {
+      "id": "reset-clears-state",
+      "description": "重置後恢復初始狀態",
+      "selector": ".elapsed",
+      "expected": "歸零顯示 00:00"
+    }
+  ]
+}

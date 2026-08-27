@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>孩子積分板</title>
+<style>
+  :root{
+    --bg:#fdf6ec; --card:#fff; --positive:#2f8f5b; --negative:#c0392b;
+    --gold:#b8860b; --text:#2a2520; --border:#e6dac8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
+  h1{font-size:18px;margin:0 0 12px}
+  .wrap{max-width:390px;margin:0 auto}
+  .field{display:flex;gap:8px;margin-bottom:12px}
+  .field input{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px}
+  .balance-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .balance-label{font-size:13px;color:#6b5d4f}
+  .balance{font-size:28px;font-weight:700}
+  .spend-row{display:flex;gap:10px}
+  .spend-btn{flex:1;border:none;border-radius:10px;padding:14px;font-size:15px;color:#fff;cursor:pointer;opacity:0.95}
+  .spend-btn:hover{opacity:1}
+  .spend-btn:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  .btn-positive{background:var(--positive)}
+  .btn-negative{background:var(--negative)}
+  .rewards{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .reward-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border)}
+  .reward-item:last-child{border-bottom:none}
+  .reward-info{flex:1;min-width:0}
+  .reward-name{font-size:14px;font-weight:600}
+  .reward-cost{font-size:12px;color:#6b5d4f;margin-top:2px}
+  .reward-bar{height:4px;background:#f0e6d6;border-radius:999px;margin-top:4px;overflow:hidden}
+  .reward-bar i{display:block;height:100%;background:var(--gold);width:0%;transition:width .2s}
+  .redeem-btn{border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .redeem-btn:disabled{opacity:.38;cursor:not-allowed}
+  .redeem-btn:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  .reset-row{margin-top:12px;text-align:center}
+  .reset-row button{background:transparent;color:var(--negative);border:1px solid var(--negative);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .reset-row button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>孩子積分板</h1>
+  <div class="field">
+    <input id="child-name-input" placeholder="孩子名字" value="小安">
+    <button id="btn-save-name" type="button">儲存名字</button>
+  </div>
+  <div class="balance-card">
+    <div>
+      <div class="balance-label">當前積分</div>
+      <div class="balance" id="balance">0</div>
+    </div>
+    <div class="spend-row">
+      <button id="btn-add-points" class="spend-btn btn-positive" type="button">＋1</button>
+      <button id="btn-subtract-points" class="spend-btn btn-negative" type="button">−1</button>
+    </div>
+  </div>
+  <div class="rewards">
+    <div style="font-size:13px;margin-bottom:8px;color:#6b5d4f">獎項清單</div>
+    <div id="reward-list"></div>
+  </div>
+  <div class="reset-row">
+    <button id="btn-reset" type="button">重置所有積分與獎項</button>
+  </div>
+</main>
+<script>
+(function(){
+  const NS = 'rewards-v1';
+  const DEFAULT_REWARDS = [
+    {name:'貼紙一張', cost:2},
+    {name:'額外故事時間 10 分鐘', cost:5},
+    {name:'一起畫圖 15 分鐘', cost:8},
+    {name:'挑選晚餐 dessert', cost:12},
+    {name:'三張貼紙', cost:20}
+  ];
+  function save(data){
+    try{ localStorage.setItem(NS+':data', JSON.stringify(data)); }catch(e){}
+  }
+  function load(){
+    try{
+      const raw = localStorage.getItem(NS+':data');
+      if(raw){
+        const p = JSON.parse(raw);
+        if(p && typeof p.balance==='number' && Array.isArray(p.rewards)){
+          return p;
+        }
+      }
+    }catch(e){}
+    return null;
+  }
+  let state = load() || { balance:0, rewards: DEFAULT_REWARDS.slice(), name:'小安' };
+  function renderRewards(){
+    const host = document.getElementById('reward-list');
+    host.innerHTML = '';
+    state.rewards.forEach(r=>{
+      const most = document.createElement('div');
+      most.className = 'reward-item';
+      const info = document.createElement('div');
+      info.className = 'reward-info';
+      info.innerHTML = `<div class="reward-name">${r.name}</div><div class="reward-cost">Need ${r.cost} pts</div><div class="reward-bar"><i id="bar-${r.name}" style="width:0%"></i></div>`;
+      most.appendChild(info);
+      const btn = document.createElement('button');
+      btn.className = 'redeem-btn';
+      btn.textContent = '兌換';
+      btn.disabled = state.balance < r.cost;
+      btn.setAttribute('aria-disabled', btn.disabled ? 'true':'false');
+      btn.addEventListener('click', ()=>{
+        if(state.balance < r.cost) return;
+        state.balance -= r.cost;
+        save(state);
+        renderAll();
+      });
+      most.appendChild(btn);
+      host.appendChild(most);
+    });
+  }
+  function renderBalance(){
+    document.getElementById('balance').textContent = state.balance;
+  }
+  function renderAll(){
+    document.getElementById('child-name-input').value = state.name || '';
+    renderBalance();
+    renderRewards();
+  }
+  document.getElementById('btn-add-points').addEventListener('click', ()=>{
+    state.balance += 1;
+    save(state);
+    renderAll();
+  });
+  document.getElementById('btn-subtract-points').addEventListener('click', ()=>{
+    if(state.balance <= 0) return;
+    state.balance -= 1;
+    save(state);
+    renderAll();
+  });
+  document.getElementById('btn-save-name').addEventListener('click', ()=>{
+    const inp = document.getElementById('child-name-input');
+    const v = inp.value.trim();
+    if(v){ state.name = v; save(state); }
+  });
+  document.getElementById('btn-reset').addEventListener('click', ()=>{
+    if(!confirm('確定要重置所有積分與獎項嗎？')) return;
+    state = { balance:0, rewards: DEFAULT_REWARDS.slice(), name: state.name };
+    save(state);
+    renderAll();
+  });
+  renderAll();
+})();
+</script>
+</body>
+</html>

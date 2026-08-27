@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>分組隨機器</title>
+<style>
+  :root{
+    --bg:#eef3ef; --card:#fff; --primary:#2f7d5b; --text:#22302a; --border:#d4e0d8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
+  h1{font-size:18px;margin:0 0 10px}
+  .wrap{max-width:390px;margin:0 auto}
+  .field{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  label{font-size:13px;color:#4f5d52}
+  textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px;resize:vertical;min-height:80px}
+  input[type=number]{width:80px;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px}
+  .btn-row{display:flex;gap:8px;margin-bottom:14px}
+  button.primary{flex:1;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer}
+  button.primary:hover{opacity:.92}
+  button.primary:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  .secondary{display:flex;gap:8px;flex:1}
+  .secondary button{flex:1;background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:8px;padding:10px;font-size:13px;cursor:pointer}
+  .secondary button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  .groups{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .group{margin-bottom:10px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:#fafcf8}
+  .group:last-child{margin-bottom:0}
+  .group-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .group-title{font-size:13px;font-weight:600;color:var(--primary)}
+  .group-count{font-size:12px;color:#4f5d52}
+  .group-names{font-size:14px;line-height:1.45}
+  .empty-message{font-size:13px;color:#4f5d52;padding:8px 0}
+  .reset-row{margin-top:10px;text-align:center}
+  .reset-row button{background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .reset-row button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>分組隨機器</h1>
+  <div class="field">
+    <label for="names-input">人員名單（每行一名）</label>
+    <textarea id="names-input" placeholder="小さな太郎&#10;花子&#10;次郎&#10;三郎">小さな太郎
+花子
+次郎
+三郎
+四郎
+五郎
+六郎
+七郎
+八郎
+九郎</textarea>
+  </div>
+  <div class="field">
+    <label for="group-count-input">分組數</label>
+    <input id="group-count-input" type="number" min="1" max="20" value="3">
+  </div>
+  <div class="btn-row">
+    <button id="btn-randomize" class="primary" type="button">隨機分組</button>
+    <div class="secondary">
+      <button id="btn-copy" type="button">複製結果</button>
+      <button id="btn-shuffle" type="button">再抽一次</button>
+    </div>
+  </div>
+  <div id="copy-status" role="status" aria-live="polite" style="min-height:20px;font-size:12px;color:var(--primary)"></div>
+  <div class="groups" id="groups-output"></div>
+  <div class="reset-row">
+    <button id="btn-reset" type="button">重置輸入</button>
+  </div>
+</main>
+<script>
+(function(){
+  const NS = 'group-rand-v1';
+  const DEFAULT_NAMES = [
+    '小さな太郎','花子','次郎','三郎','四郎','五郎','六郎','七郎','八郎','九郎'
+  ].join('\n');
+  function save(data){ try{ localStorage.setItem(NS+':state', JSON.stringify(data)); }catch(e){} }
+  function load(){ try{ const raw=localStorage.getItem(NS+':state'); if(raw){ const p=JSON.parse(raw); if(p && typeof p==='object') return p; } }catch(e){} return null; }
+  let state = load() || { names: DEFAULT_NAMES, groupCount: 3 };
+  const inputNames = document.getElementById('names-input');
+  const inputCount = document.getElementById('group-count-input');
+  const host = document.getElementById('groups-output');
+
+  function renderInputs(){
+    inputNames.value = state.names;
+    inputCount.value = state.groupCount;
+  }
+  function parseNames(text){
+    return text.split('\n')
+      .map(s=>s.trim())
+      .filter(s=>s.length>0)
+      .map(s=>s)
+      .reduce((acc,n)=>{ if(!acc.includes(n)) acc.push(n); return acc; }, []);
+  }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  function assignGroups(names, groups){
+    const out = [];
+    for(let i=0;i<groups;i++) out.push([]);
+    const shuffled = shuffle(names);
+    shuffled.forEach((name,i)=>{
+      out[i % groups].push(name);
+    });
+    // fix: distribute so sizes differ <=1
+    const total = names.length;
+    const base = Math.floor(total / groups);
+    const rem = total % groups;
+    const fixed = [];
+    let idx = 0;
+    for(let g=0; g<groups; g++){
+      const size = base + (g < rem ? 1 : 0);
+      const chunk = shuffled.slice(idx, idx+size);
+      fixed.push(chunk);
+      idx += size;
+    }
+    return fixed;
+  }
+  function renderGroups(groups){
+    host.innerHTML = '';
+    if(groups.length===0 || groups.every(g=>g.length===0)){
+      host.innerHTML = '<div class="empty-message">尚未分組或沒有名字。</div>';
+      return;
+    }
+    groups.forEach((g,gi)=>{
+      const card = document.createElement('div');
+      card.className = 'group';
+      const head = document.createElement('div');
+      head.className = 'group-head';
+      head.innerHTML = `<span class="group-title">第 ${gi+1} 組</span><span class="group-count">${g.length} 人</span>`;
+      const namesDiv = document.createElement('div');
+      namesDiv.className = 'group-names';
+      namesDiv.textContent = g.join('、');
+      card.appendChild(head);
+      card.appendChild(namesDiv);
+      host.appendChild(card);
+    });
+  }
+  function renderAll(){
+    renderInputs();
+    const names = parseNames(state.names);
+    const groups = Math.max(1, Math.min(20, parseInt(state.groupCount,10) || 1));
+    const assignment = assignGroups(names, groups);
+    renderGroups(assignment);
+  }
+  document.getElementById('btn-randomize').addEventListener('click', ()=>{
+    state.names = inputNames.value;
+    const gc = parseInt(inputCount.value,10);
+    state.groupCount = (gc && gc>=1 && gc<=20) ? gc : 3;
+    save(state);
+    renderAll();
+  });
+  document.getElementById('btn-shuffle').addEventListener('click', ()=>{
+    document.getElementById('btn-randomize').click();
+  });
+  document.getElementById('btn-copy').addEventListener('click', ()=>{
+    const groups = [];
+    [...host.querySelectorAll('.group')].forEach(card=>{
+      const namesDiv = card.querySelector('.group-names');
+      if(namesDiv) groups.push(namesDiv.textContent);
+    });
+    if(groups.length===0) return;
+    const text = groups.map((g,i)=>`第 ${i+1} 組：${g}`).join('\n');
+    try{
+      navigator.clipboard && navigator.clipboard.writeText(text);
+    }catch(e){}
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    ta.remove();
+    document.getElementById('copy-status').textContent = '已複製';
+  });
+  document.getElementById('btn-reset').addEventListener('click', ()=>{
+    state = { names: DEFAULT_NAMES, groupCount: 3 };
+    save(state);
+    renderAll();
+  });
+  renderAll();
+})();
+</script>
+</body>
+</html>

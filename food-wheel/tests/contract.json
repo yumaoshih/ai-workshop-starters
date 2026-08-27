@@ -1,0 +1,30 @@
+{
+  "product": "food-wheel",
+  "version": "1.0.0",
+  "behaviors": [
+    {
+      "id": "options-list",
+      "description": "可編輯的選項列表存在",
+      "selector": "ul.options",
+      "expected": "列出可編輯的食物選項"
+    },
+    {
+      "id": "spin-button",
+      "description": "旋轉按鈕存在",
+      "selector": "button[data-action=spin]",
+      "expected": "按鈕可點擊"
+    },
+    {
+      "id": "result-display",
+      "description": "旋轉後顯示選中結果",
+      "selector": ".result",
+      "expected": "顯示所選選項文字"
+    },
+    {
+      "id": "empty-prevention",
+      "description": "無選項時禁止旋轉",
+      "selector": "button[data-action=spin]",
+      "expected": "選項為空時按鈕失效或警告"
+    }
+  ]
+}

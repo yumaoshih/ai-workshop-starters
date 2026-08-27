@@ -1,0 +1,36 @@
+{
+  "product": "water-tracker",
+  "version": "1.0.0",
+  "behaviors": [
+    {
+      "id": "goal-config",
+      "description": "可設定每日目標飲水量",
+      "selector": "#goalInput",
+      "expected": "文字輸入，數值儲存"
+    },
+    {
+      "id": "add-intake",
+      "description": "點擊新增飲水",
+      "selector": "button[data-action=add]",
+      "expected": "點擊後總量遞增"
+    },
+    {
+      "id": "remove-intake",
+      "description": "可減少一單位飲水",
+      "selector": "button[data-action=remove]",
+      "expected": "點擊後總量遞減，最低0"
+    },
+    {
+      "id": "total-display",
+      "description": "顯示當日總飲水量",
+      "selector": ".total",
+      "expected": "顯示數值與單位"
+    },
+    {
+      "id": "reset-action",
+      "description": "明顯的重置按鈕存在",
+      "selector": "button[data-action=reset]",
+      "expected": "按鈕存在"
+    }
+  ]
+}

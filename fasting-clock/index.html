@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>禁食時鐘</title>
+<style>
+  :root{
+    --bg:#0b0d10;
+    --panel:#161a1f;
+    --ink:#e8edf2;
+    --muted:#8a94a3;
+    --accent:#7ee787;
+    --accent-dim:#3c6b44;
+    --ring:#2a3138;
+    --warn:#f2b86b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
+    background: radial-gradient(120% 100% at 50% 0%, #14181c 0%, #07090b 100%);
+    color:var(--ink);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    width:min(390px, 100%);
+    background:linear-gradient(180deg, #101418 0%, #0a0c0e 100%);
+    border:1px solid #22282e;
+    border-radius:32px;
+    padding:24px 20px 28px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .title{
+    font-size:22px;
+    font-weight:600;
+    margin:0 0 18px;
+    letter-spacing:0.02em;
+  }
+  .stage{
+    position:relative;
+    width:220px;
+    height:220px;
+    margin:0 auto 18px;
+  }
+  .ring-bg{
+    fill:none;
+    stroke:var(--ring);
+    stroke-width:8;
+  }
+  .ring-progress{
+    fill:none;
+    stroke:var(--accent);
+    stroke-width:8;
+    stroke-linecap:round;
+    filter:drop-shadow(0 0 8px rgba(126,231,135,0.4));
+    transition:stroke-dashoffset 0.4s ease;
+  }
+  .center{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .time{
+    font-size:44px;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:0.02em;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1;
+  }
+  .state-label{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:6px;
+    text-transform:uppercase;
+    letter-spacing:0.18em;
+  }
+  .presets{
+    display:flex;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .preset{
+    flex:1;
+    appearance:none;
+    background:var(--panel);
+    border:1px solid #2c333b;
+    color:var(--ink);
+    padding:12px 8px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    transition:background 0.2s, border-color 0.2s;
+  }
+  .preset:hover{background:#1d2329}
+  .preset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .preset[aria-pressed="true"]{background:#18301f;border-color:var(--accent-dim)}
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .btn{
+    flex:1;
+    appearance:none;
+    border:1px solid #2c333b;
+    background:#1a2025;
+    color:var(--ink);
+    padding:14px 10px;
+    border-radius:16px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s, transform 0.1s;
+  }
+  .btn:hover{background:#232b32}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.primary{
+    background:linear-gradient(180deg,#2a3a24,#1c2a18);
+    border-color:#34562e;
+    color:var(--accent);
+  }
+  .btn.primary:hover{background:linear-gradient(180deg,#33472c,#22381d)}
+  .info{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--muted);
+    border-top:1px dashed #262d33;
+    padding-top:14px;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:14px;
+    text-align:center;
+    line-height:1.5;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+  @media (max-width:420px){
+    .time{font-size:38px}
+  }
+</style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="禁食時鐘">
+    <p class="eyebrow">便利工具 · 非醫療建議</p>
+    <h1 class="title">禁食時鐘</h1>
+
+    <div class="stage" aria-hidden="true">
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+        <circle class="ring-progress" id="ring" cx="50" cy="50" r="42"
+          stroke-dasharray="263.89" stroke-dashoffset="263.89"
+          transform="rotate(-90 50 50)"/>
+      </svg>
+      <div class="center">
+        <div class="time" id="elapsed" aria-live="polite">00:00</div>
+        <div class="state-label" id="stateLabel">待命</div>
+      </div>
+    </div>
+
+    <fieldset class="presets" aria-label="禁食時長預設">
+      <button class="preset" type="button" data-hours="16" aria-pressed="false">16 小時</button>
+      <button class="preset" type="button" data-hours="18" aria-pressed="false">18 小時</button>
+      <button class="preset" type="button" data-hours="20" aria-pressed="false">20 小時</button>
+    </fieldset>
+
+    <div class="actions">
+      <button class="btn primary" type="button" data-action="start" id="startBtn">開始</button>
+      <button class="btn" type="button" data-action="pause" id="pauseBtn">暫停</button>
+      <button class="btn" type="button" data-action="reset" id="resetBtn">重置</button>
+    </div>
+
+    <div class="info">
+      <span>已經 <span class="elapsed" id="elapsedLabel">00:00</span></span>
+      <span>剩下 <span class="remaining" id="remainingLabel">00:00</span></span>
+    </div>
+
+    <p class="hint">選擇時長 → 點擊「開始」。此工具僅為便利參考，不提供醫療建議。</p>
+    <div class="sr-only" id="announce" aria-live="assertive"></div>
+  </main>
+
+<script>
+(function(){
+  const NS = 'fasting-clock:v1';
+  const STORAGE_KEY = NS;
+
+  const $ = (s) => document.querySelector(s);
+  const ring = $('#ring');
+  const elapsedEl = $('#elapsed');
+  const elapsedLabel = $('#elapsedLabel');
+  const remainingLabel = $('#remainingLabel');
+  const stateLabel = $('#stateLabel');
+  const announce = $('#announce');
+  const startBtn = $('#startBtn');
+  const pauseBtn = $('#pauseBtn');
+  const resetBtn = $('#resetBtn');
+  const presetBtns = document.querySelectorAll('.preset');
+
+  const FULL_CIRCLE = 263.89;
+
+  let presetHours = 16;
+  let state = 'idle'; // idle running paused
+  let startTimestamp = 0;    // performance.now() when running started (or resumed)
+  let accumulatedMs = 0;     // total elapsed ms excluding paused intervals
+  let lastTick = 0;
+  let rafId = 0;
+
+  // 加載儲存狀態
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      if(data && typeof data.presetHours === 'number'){
+        presetHours = data.presetHours;
+      }
+      if(data && data.state){
+        state = data.state;
+        accumulatedMs = data.accumulatedMs || 0;
+        startTimestamp = data.startTimestamp || 0;
+        // 恢復選中預設
+        presetBtns.forEach(b => {
+          const h = Number(b.dataset.hours);
+          b.setAttribute('aria-pressed', h === presetHours ? 'true' : 'false');
+        });
+        if(state === 'running'){
+          startTimestamp = performance.now() - accumulatedMs;
+          ensureRunningUI();
+        } else if(state === 'paused'){
+          updateDisplay(accumulatedMs);
+          setPausedUI();
+        } else {
+          updateDisplay(0);
+          setIdleUI();
+        }
+      }
+    }catch(e){ /* ignore corrupt storage */ }
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        presetHours,
+        state,
+        accumulatedMs,
+        startTimestamp
+      }));
+    }catch(e){ /* ignore quota errors */ }
+  }
+
+  function clearStorage(){
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }
+
+  function setIdleUI(){
+    state = 'idle';
+    stateLabel.textContent = '待命';
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    resetBtn.disabled = false;
+    saveState();
+  }
+
+  function setRunningUI(){
+    state = 'running';
+    stateLabel.textContent = '禁食中';
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    resetBtn.disabled = false;
+    saveState();
+  }
+
+  function setPausedUI(){
+    state = 'paused';
+    stateLabel.textContent = '暫停';
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    resetBtn.disabled = false;
+    saveState();
+  }
+
+  function ensureRunningUI(){
+    // 若正在運行，設置 UI（不重置計時）
+    if(state !== 'running') return;
+    stateLabel.textContent = '禁食中';
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    resetBtn.disabled = false;
+  }
+
+  function formatTime(ms){
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+
+  function updateDisplay(elapsedMs){
+    const elapsed = formatTime(elapsedMs);
+    elapsedEl.textContent = elapsed;
+    elapsedLabel.textContent = elapsed;
+    const remainingMs = Math.max(0, presetHours * 3600 * 1000 - elapsedMs);
+    const remaining = formatTime(remainingMs);
+    remainingLabel.textContent = remaining;
+    const progress = Math.min(1, elapsedMs / (presetHours * 3600 * 1000));
+    ring.setAttribute('stroke-dashoffset', (FULL_CIRCLE * (1 - progress)).toFixed(2));
+    // announce 變化（簡簡單單）
+    if(announce) announce.textContent = '已經 ' + elapsed + '，剩下 ' + remaining;
+  }
+
+  function tick(){
+    if(state !== 'running') return;
+    const now = performance.now();
+    const elapsed = now - startTimestamp;
+    updateDisplay(elapsed);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function start(){
+    if(state === 'running') return;
+    // 若是從暫停恢復，保留 accumulatedMs
+    if(state === 'paused'){
+      // 保持 accumulatedMs 不變，startTimestamp 設為 now - accumulatedMs
+      startTimestamp = performance.now() - accumulatedMs;
+    } else {
+      // 全 new start
+      startTimestamp = performance.now();
+      accumulatedMs = 0;
+    }
+    setRunningUI();
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(tick);
+    announce && (announce.textContent = '開始計時');
+  }
+
+  function pause(){
+    if(state !== 'running') return;
+    accumulatedMs = performance.now() - startTimestamp;
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+    updateDisplay(accumulatedMs);
+    setPausedUI();
+    announce && (announce.textContent = '已暫停');
+  }
+
+  function reset(){
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+    accumulatedMs = 0;
+    startTimestamp = 0;
+    updateDisplay(0);
+    setIdleUI();
+    announce && (announce.textContent = '已重置');
+  }
+
+  // 預設選擇
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(state === 'running') return; // 運行中不能換預設
+      presetBtns.forEach(b => b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      presetHours = Number(btn.dataset.hours);
+      if(state === 'idle' || state === 'paused'){
+        // 重置顯示
+        if(state === 'paused'){
+          accumulatedMs = 0;
+          if(rafId) cancelAnimationFrame(rafId);
+          rafId = 0;
+        } else {
+          accumulatedMs = 0;
+        }
+        updateDisplay(0);
+        if(state === 'idle') setIdleUI();
+        else setPausedUI();
+        saveState();
+      }
+    });
+  });
+
+  startBtn.addEventListener('click', start);
+  pauseBtn.addEventListener('click', pause);
+  resetBtn.addEventListener('click', reset);
+
+  // 鍵盤：Enter/Space 啟動主要按鈕行為已由瀏覽器處理，額外支援 R 重置
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'r' || e.key === 'R'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        reset();
+        e.preventDefault();
+      }
+    }
+  });
+
+  // 初始化
+  loadState();
+  if(state === 'idle'){
+    updateDisplay(0);
+    setIdleUI();
+  } else if(state === 'paused'){
+    updateDisplay(accumulatedMs);
+    setPausedUI();
+  } else if(state === 'running'){
+    startTimestamp = performance.now() - accumulatedMs;
+    updateDisplay(accumulatedMs);
+    setRunningUI();
+    rafId = requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

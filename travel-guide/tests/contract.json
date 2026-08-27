@@ -1,0 +1,40 @@
+{
+  "product": "travel-guide",
+  "behaviors": [
+    {
+      "id": "page-count",
+      "selector": ".page",
+      "expect": "Exactly 7 pages exist"
+    },
+    {
+      "id": "page-visible",
+      "selector": ".page.active",
+      "expect": "Exactly one active page at a time"
+    },
+    {
+      "id": "next-button",
+      "selector": "#btn-next",
+      "expect": "Next button exists and advances page"
+    },
+    {
+      "id": "prev-button",
+      "selector": "#btn-prev",
+      "expect": "Prev button exists and goes back"
+    },
+    {
+      "id": "progress",
+      "selector": "#progress",
+      "expect": "Progress indicator updates with page"
+    },
+    {
+      "id": "checklist-persist",
+      "selector": "#checklist",
+      "expect": "Checklist toggles persist across reload"
+    },
+    {
+      "id": "keyboard-nav",
+      "selector": "body",
+      "expect": "ArrowLeft/ArrowRight navigate pages"
+    }
+  ]
+}

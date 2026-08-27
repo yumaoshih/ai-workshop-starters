@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>賓果產生器</title>
+<style>
+  :root{
+    --bg:#f4ede4; --card:#fff; --accent:#7c5cbf; --free:#e08dc0;
+    --text:#2b2622; --border:#d9cfbf;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
+  h1{font-size:18px;margin:0 0 12px}
+  .layout{display:grid;grid-template-columns:1fr;gap:14px;max-width:390px;margin:0 auto}
+  .field{display:flex;gap:8px;align-items:flex-start}
+  .item-list{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;flex:1;max-height:200px;overflow:auto}
+  .item-list input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px;font-size:13px;margin:3px 0}
+  .board{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px;max-width:390px;margin:0 auto}
+  .board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+  .cell{background:#f6f1ea;border:1px solid var(--border);border-radius:8px;height:48px;display:flex;align-items:center;justify-content:center;font-size:12px;text-align:center;padding:4px;word-break:break-word}
+  .cell.free{background:var(--free);color:#fff;font-weight:700;border-color:var(--free)}
+  .tools{display:flex;gap:10px;margin-top:10px}
+  button{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;cursor:pointer}
+  button:hover{opacity:.92}
+  button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  @media (min-width:560px){
+    .layout{grid-template-columns:240px 1fr}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>賓果卡產生器</h1>
+  <div class="layout">
+    <div class="field">
+      <div class="item-list" id="item-list"></div>
+    </div>
+    <div class="board">
+      <div class="board-grid" id="bingo-board"></div>
+    </div>
+    <div class="tools">
+      <button id="btn-regenerate" type="button">重新產生</button>
+      <button id="btn-print" type="button">列印</button>
+      <button id="btn-reset" type="button">重置</button>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  const NS = 'bingo-v1';
+  const DEFAULTS = [
+    '午餐吃什麼？','多喝水','早睡','讀一章書','散步 15 分鐘',
+    '回覆一封信','整理桌面','做 10 俯伏','寫日記','背 5 單字',
+    '打掃浴室','學一首歌','喝茶','整理郵件','做 20 伏伸',
+    '吃水果','記一個想法','打電話問候','做瑜伽','煮一道簡單菜',
+    '丟垃圾','寫待辦三件事','整理書架','學習 15 分鐘'
+  ];
+  function save(items){ try{ localStorage.setItem(NS+':items', JSON.stringify(items)); }catch(e){} }
+  function load(){
+    try{
+      const raw = localStorage.getItem(NS+':items');
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length===24) return parsed;
+      }
+    }catch(e){}
+    return null;
+  }
+  function renderList(items){
+    const host = document.getElementById('item-list');
+    host.innerHTML = '';
+    items.forEach((v,i)=>{
+      const inp = document.createElement('input');
+      inp.value = v;
+      inp.placeholder = '格子 '+(i+1);
+      inp.addEventListener('input', ()=>{
+        items[i] = inp.value;
+        save(items);
+      });
+      host.appendChild(inp);
+    });
+  }
+  function renderBoard(items){
+    const host = document.getElementById('bingo-board');
+    host.innerHTML = '';
+    const shuffled = items.slice().sort(()=> Math.random()-0.5);
+    const all = shuffled.slice(0,24);
+    for(let i=0;i<25;i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (i===12 ? ' free' : '');
+      cell.textContent = i===12 ? '免費' : (all[i] || '');
+      host.appendChild(cell);
+    }
+  }
+  function init(){
+    let items = load();
+    if(!items){ items = DEFAULTS.slice(); save(items); }
+    renderList(items);
+    renderBoard(items);
+    document.getElementById('btn-regenerate').addEventListener('click', ()=> renderBoard(items));
+    document.getElementById('btn-print').addEventListener('click', ()=> window.print());
+    document.getElementById('btn-reset').addEventListener('click', ()=>{
+      items.splice(0, items.length, ...DEFAULTS);
+      save(items);
+      renderList(items);
+      renderBoard(items);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

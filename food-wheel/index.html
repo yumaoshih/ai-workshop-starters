@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>食物輪盤</title>
+<style>
+  :root{
+    --bg:#100a0c;
+    --panel:#1c1214;
+    --panel2:#26171a;
+    --ink:#f3e7e0;
+    --muted:#b89aa3;
+    --accent:#ffb86b;
+    --accent-dim:#b56a2a;
+    --ring:#4a2c26;
+    --rose:#ff5a7a;
+    --leaf:#7fd4a0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
+    background: radial-gradient(120% 100% at 50% 0%, #1f1214 0%, #0a0506 100%);
+    color:var(--ink);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    width:min(390px,100%);
+    background:linear-gradient(180deg, #1d1113 0%, #100a0b 100%);
+    border:1px solid #3a1f1c;
+    border-radius:32px;
+    padding:20px 18px 24px;
+    box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,220,200,0.04);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .title{
+    font-size:22px;
+    font-weight:600;
+    margin:0 0 14px;
+    text-align:center;
+  }
+  .wheel-wrap{
+    position:relative;
+    width:200px;
+    height:200px;
+    margin:0 auto 16px;
+  }
+  .wheel{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    background:
+      conic-gradient(
+        from 0deg,
+        #3a1f1c 0deg 60deg,
+        #ffb86b 60deg 120deg,
+        #26171a 120deg 180deg,
+        #ff5a7a 180deg 240deg,
+        #7fd4a0 240deg 300deg,
+        #4a2c26 300deg 360deg
+      );
+    box-shadow:0 0 0 4px #2a1613 inset, 0 12px 30px rgba(0,0,0,0.5);
+    transition:transform 0.05s linear;
+    will-change:transform;
+  }
+  .wheel.spinning{
+    animation:spin 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) 1;
+  }
+  @keyframes spin{
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(1440deg)}
+  }
+  .pointer{
+    position:absolute;
+    top:-10px;
+    left:50%;
+    transform:translateX(-50%);
+    width:0;
+    height:0;
+    border-left:12px solid transparent;
+    border-right:12px solid transparent;
+    border-top:18px solid var(--accent);
+    filter:drop-shadow(0 4px 8px rgba(255,184,107,0.6));
+    z-index:2;
+  }
+  .center-dot{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #ffb86b, #b56a2a);
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
+    z-index:1;
+  }
+  .result{
+    text-align:center;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:600;
+    color:var(--ink);
+    margin:8px 0 16px;
+    padding:10px;
+    background:var(--panel2);
+    border:1px solid #3a1f1c;
+    border-radius:14px;
+  }
+  .result.empty{
+    color:var(--muted);
+    font-weight:400;
+  }
+  .options{
+    list-style:none;
+    margin:0 0 14px;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-height:200px;
+    overflow:auto;
+  }
+  .options li{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--panel2);
+    border:1px solid #3a1f1c;
+    border-radius:10px;
+    padding:8px 10px;
+  }
+  .options li span{
+    flex:1;
+    font-size:14px;
+    line-height:1.3;
+    min-width:0;
+  }
+  .options li .del{
+    appearance:none;
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-size:16px;
+    cursor:pointer;
+    padding:2px 6px;
+    border-radius:6px;
+    transition:color 0.2s, background 0.2s;
+  }
+  .options li .del:hover{color:var(--rose);background:#2a1613}
+  .options li .del:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .add-row{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .add-row input{
+    flex:1;
+    background:var(--panel);
+    border:1px solid #3a1f1c;
+    color:var(--ink);
+    padding:10px 12px;
+    border-radius:12px;
+    font-size:14px;
+    outline:none;
+  }
+  .add-row input:focus-visible{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent-dim)}
+  .add-row button{
+    appearance:none;
+    background:linear-gradient(180deg,#2a1613,#1a0d0e);
+    border:1px solid #3a1f1c;
+    color:var(--accent);
+    padding:0 14px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+  .add-row button:hover{background:linear-gradient(180deg,#331d1a,#221312)}
+  .add-row button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .btn{
+    flex:1;
+    appearance:none;
+    border:1px solid #3a1f1c;
+    background:var(--panel);
+    color:var(--ink);
+    padding:12px 10px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s, transform 0.1s;
+  }
+  .btn:hover{background:var(--panel2)}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.primary{
+    background:linear-gradient(180deg,#5a2f1a,#3d2012);
+    border-color:#7a4225;
+    color:var(--accent);
+  }
+  .btn.primary:hover{background:linear-gradient(180deg,#6a3820,#452516)}
+  .btn[disabled]{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    line-height:1.5;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+</style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="食物輪盤">
+    <p class="eyebrow">可編輯 · 本地輪盤</p>
+    <h1 class="title">食物輪盤</h1>
+
+    <div class="wheel-wrap" aria-hidden="true">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="center-dot"></div>
+    </div>
+
+    <div class="result empty" id="result" aria-live="polite">尚未旋轉</div>
+
+    <ul class="options" id="optionsList" aria-label="可編輯的食物選項">
+      <!-- 預設選項，由 JS 填入 -->
+    </ul>
+
+    <div class="add-row">
+      <input id="addInput" type="text" placeholder="輸入食物名稱" maxlength="40" aria-label="新增食物選項">
+      <button type="button" id="addBtn">新增</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="button" data-action="spin" id="spinBtn">旋轉</button>
+      <button class="btn" type="button" data-action="reset" id="resetBtn">重置選項</button>
+    </div>
+
+    <p class="hint">編輯選項後旋轉，至少兩個選項才能旋轉。結果僅供參考。</p>
+    <div class="sr-only" id="announce" aria-live="assertive"></div>
+  </main>
+
+<script>
+(function(){
+  const NS = 'food-wheel:v1';
+  const STORAGE_KEY = NS;
+
+  const $ = (s) => document.querySelector(s);
+  const wheel = $('#wheel');
+  const result = $('#result');
+  const optionsList = $('#optionsList');
+  const addInput = $('#addInput');
+  const addBtn = $('#addBtn');
+  const spinBtn = $('#spinBtn');
+  const resetBtn = $('#resetBtn');
+  const announce = $('#announce');
+
+  // 預設選項
+  const DEFAULT_OPTIONS = [
+    '蒲燒鰻魚飯',
+    '牛肉麵',
+    ' 환입하는 師傅、煎餅、炒麵',
+  ];
+
+  let options = [];
+
+  function loadOptions(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length){
+          options = parsed;
+        }
+      }
+    }catch(e){ options = []; }
+    if(!options.length){
+      options = DEFAULT_OPTIONS.slice();
+    }
+  }
+
+  function saveOptions(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(options)); }catch(e){}
+  }
+
+  function renderOptions(){
+    optionsList.innerHTML = '';
+    if(!options.length){
+      const li = document.createElement('li');
+      li.style.justifyContent = 'center';
+      li.style.color = 'var(--muted)';
+      li.style.fontSize = '13px';
+      li.textContent = '目前沒有選項，請新增';
+      optionsList.appendChild(li);
+    } else {
+      options.forEach((opt, idx) => {
+        const li = document.createElement('li');
+        const textSpan = document.createElement('span');
+        textSpan.textContent = opt;
+        li.appendChild(textSpan);
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'del';
+        delBtn.textContent = '✕';
+        delBtn.setAttribute('aria-label', '刪除 ' + opt);
+        delBtn.addEventListener('click', () => {
+          options.splice(idx,1);
+          saveOptions();
+          renderOptions();
+          updateSpinEnabled();
+          if(announce) announce.textContent = '已刪除 ' + opt;
+        });
+        li.appendChild(delBtn);
+        optionsList.appendChild(li);
+      });
+    }
+    updateSpinEnabled();
+  }
+
+  function updateSpinEnabled(){
+    spinBtn.disabled = options.length < 2;
+    if(options.length < 2 && result.classList.contains('empty') === false){
+      // 若剛好選完且清空
+    }
+  }
+
+  function clearResult(){
+    result.textContent = '尚未旋轉';
+    result.classList.add('empty');
+  }
+
+  function spin(){
+    if(spinBtn.disabled) return;
+    if(options.length < 2) return;
+    wheel.classList.remove('spinning');
+    // 強制 reflow 再加類別
+    void wheel.offsetWidth;
+    wheel.classList.add('spinning');
+    // 隨機選一個
+    const chosen = options[Math.floor(Math.random() * options.length)];
+    // 在動畫結束後顯示結果
+    setTimeout(() => {
+      wheel.classList.remove('spinning');
+      result.textContent = chosen;
+      result.classList.remove('empty');
+      if(announce) announce.textContent = '選中 ' + chosen;
+    }, 920);
+  }
+
+  function addOption(){
+    const val = addInput.value.trim();
+    if(!val) return;
+    if(options.includes(val)){
+      if(announce) announce.textContent = '該選項已存在';
+      addInput.value = '';
+      return;
+    }
+    options.push(val);
+    saveOptions();
+    renderOptions();
+    addInput.value = '';
+    addInput.focus();
+    if(announce) announce.textContent = '已新增 ' + val;
+  }
+
+  function resetOptions(){
+    options = DEFAULT_OPTIONS.slice();
+    saveOptions();
+    renderOptions();
+    clearResult();
+    if(announce) announce.textContent = '已重置為預設選項';
+  }
+
+  addBtn.addEventListener('click', addOption);
+  addInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); addOption(); }
+  });
+  spinBtn.addEventListener('click', spin);
+  resetBtn.addEventListener('click', resetOptions);
+
+  // 鍵盤：S 旋轉、R 重置
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 's' || e.key === 'S'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        spin();
+        e.preventDefault();
+      }
+    } else if(e.key === 'r' || e.key === 'R'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        resetOptions();
+        e.preventDefault();
+      }
+    }
+  });
+
+  loadOptions();
+  renderOptions();
+  updateSpinEnabled();
+  clearResult();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>每日飲水記錄</title>
+<style>
+  :root{
+    --bg:#06141f;
+    --panel:#0d2536;
+    --panel2:#0f2c40;
+    --ink:#e6f2f7;
+    --muted:#8fb4c6;
+    --accent:#39e0d6;
+    --accent-dim:#1f8a82;
+    --ring:#1c4a60;
+    --warn:#f4c97a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
+    background: linear-gradient(160deg, #082433 0%, #05121c 100%);
+    color:var(--ink);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    width:min(390px,100%);
+    background:linear-gradient(180deg, #0e2838, #081c27);
+    border:1px solid #1c4054;
+    border-radius:28px;
+    padding:20px 18px 24px;
+    box-shadow:0 18px 46px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .title{
+    font-size:22px;
+    font-weight:600;
+    margin:0 0 16px;
+  }
+  .goal-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+    background:var(--panel2);
+    border:1px solid #1c4054;
+    border-radius:14px;
+    padding:10px 14px;
+  }
+  .goal-row label{
+    font-size:14px;
+    color:var(--muted);
+  }
+  .goal-row input{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:600;
+    padding:4px 0;
+    outline:none;
+    width:60px;
+  }
+  .goal-row input:focus-visible{
+    box-shadow:0 0 0 2px var(--accent);
+    border-radius:4px;
+  }
+  .goal-row .unit{
+    font-size:13px;
+    color:var(--muted);
+  }
+  .stage{
+    position:relative;
+    width:180px;
+    height:180px;
+    margin:0 auto 18px;
+  }
+  .drop{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #194e6b, #0a2738 80%);
+    border:1px solid #1c4a64;
+    box-shadow:inset 0 0 30px rgba(57,224,214,0.15);
+  }
+  .drop-inner{
+    position:absolute;
+    inset:18%;
+    border-radius:50%;
+    background:radial-gradient(circle at 40% 30%, #7fdfe9 0%, #2a9fb8 60%, #155e76 100%);
+    box-shadow:0 8px 24px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.15);
+    transition:transform 0.25s ease;
+  }
+  .drop-fill{
+    position:absolute;
+    left:8%;
+    right:8%;
+    bottom:12%;
+    border-radius:0 0 50% 50% / 0 0 100% 100%;
+    background:linear-gradient(180deg, #5ec2d6, #2a8fa8);
+    transition:height 0.4s ease;
+  }
+  .total-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .total-ring circle{
+    fill:none;
+    stroke:var(--accent);
+    stroke-width:6;
+    stroke-dasharray:339.292;
+    stroke-dashoffset:339.292;
+    transform:rotate(-90deg);
+    transform-origin:center;
+    filter:drop-shadow(0 0 8px rgba(57,224,214,0.35));
+  }
+  .center-label{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .total-large{
+    font-size:40px;
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
+    line-height:1;
+    color:var(--ink);
+  }
+  .total-unit{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:4px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+  .actions{
+    display:flex;
+    gap:10px;
+    margin:18px 0 14px;
+  }
+  .btn{
+    flex:1;
+    appearance:none;
+    border:1px solid #1c4054;
+    background:var(--panel);
+    color:var(--ink);
+    padding:14px 10px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s, transform 0.1s;
+  }
+  .btn:hover{background:var(--panel2)}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.primary{
+    background:linear-gradient(180deg,#104542,#0c332f);
+    border-color:#1f6e66;
+    color:var(--accent);
+  }
+  .btn.primary:hover{background:linear-gradient(180deg,#175852,#0e3d38)}
+  .btn.danger{
+    border-color:#5a3330;
+    color:#f0b1a6;
+    background:#2a1719;
+  }
+  .btn.danger:hover{background:#361f21}
+  .info{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--muted);
+    border-top:1px dashed #1c4054;
+    padding-top:12px;
+  }
+  .reset-row{
+    margin-top:14px;
+    text-align:center;
+  }
+  .reset-btn{
+    background:transparent;
+    border:1px dashed #1c4054;
+    color:var(--muted);
+    padding:8px 16px;
+    border-radius:12px;
+    font-size:13px;
+    cursor:pointer;
+    transition:color 0.2s, border-color 0.2s;
+  }
+  .reset-btn:hover{color:var(--ink);border-color:var(--muted)}
+  .reset-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:12px;
+    text-align:center;
+    line-height:1.5;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+</style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="每日飲水記錄">
+    <p class="eyebrow">每日追蹤 · 同日儲存</p>
+    <h1 class="title">每日飲水記錄</h1>
+
+    <div class="goal-row">
+      <label for="goalInput">目標</label>
+      <input id="goalInput" type="number" min="1" max="10000" step="1" value="2000" aria-describedby="goalHelp">
+      <span class="unit">ml</span>
+    </div>
+    <p id="goalHelp" class="sr-only">每日飲水目標毫升數</p>
+
+    <div class="stage" aria-hidden="true">
+      <div class="drop">
+        <div class="drop-inner">
+          <div class="drop-fill" id="dropFill"></div>
+        </div>
+      </div>
+      <svg class="total-ring" viewBox="0 0 120 120" width="100%" height="100%">
+        <circle id="progressCircle" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="center-label">
+        <div class="total-large" id="totalLarge">0</div>
+        <div class="total-unit">ml</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="button" data-action="add" id="addBtn">＋ 新增 200ml</button>
+      <button class="btn danger" type="button" data-action="remove" id="removeBtn">− 減少 200ml</button>
+    </div>
+
+    <div class="info">
+      <span>已飲 <span class="total" id="totalText">0</span> ml</span>
+      <span>目標 <span id="goalText">2000</span> ml</span>
+    </div>
+
+    <div class="reset-row">
+      <button class="reset-btn" type="button" data-action="reset" id="resetBtn">重新開始新的紀錄</button>
+    </div>
+    <p class="hint">每日自動儲存。點擊「重新開始新的紀錄」可清空當日數據。</p>
+    <div class="sr-only" id="announce" aria-live="polite"></div>
+  </main>
+
+<script>
+(function(){
+  const NS = 'water-tracker:v1';
+  const DATE_KEY = NS + ':date';
+  const GOAL_KEY = NS + ':goal';
+
+  const $ = (s) => document.querySelector(s);
+  const goalInput = $('#goalInput');
+  const totalLarge = $('#totalLarge');
+  const totalText = $('#totalText');
+  const goalText = $('#goalText');
+  const dropFill = $('#dropFill');
+  const progressCircle = $('#progressCircle');
+  const announce = $('#announce');
+  const addBtn = $('#addBtn');
+  const removeBtn = $('#removeBtn');
+  const resetBtn = $('#resetBtn');
+
+  const CIRCUMFERENCE = 2 * Math.PI * 54;
+
+  let total = 0;
+  let goal = 2000;
+
+  function todayStr(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function load(){
+    try{
+      const date = todayStr();
+      const raw = localStorage.getItem(DATE_KEY);
+      if(raw){
+        const data = JSON.parse(raw);
+        if(data.date === date){
+          total = typeof data.total === 'number' ? data.total : 0;
+        } else {
+          total = 0;
+        }
+      }
+      const g = localStorage.getItem(GOAL_KEY);
+      if(g){
+        const parsed = Number(g);
+        if(!isNaN(parsed) && parsed > 0){
+          goal = parsed;
+        }
+      }
+      goalInput.value = goal;
+    }catch(e){ total = 0; }
+  }
+
+  function saveTotal(){
+    try{
+      localStorage.setItem(DATE_KEY, JSON.stringify({ date: todayStr(), total }));
+    }catch(e){}
+  }
+
+  function saveGoal(){
+    try{
+      localStorage.setItem(GOAL_KEY, String(goal));
+    }catch(e){}
+  }
+
+  function formatNum(n){
+    return String(Math.round(n));
+  }
+
+  function updateDisplay(){
+    totalLarge.textContent = formatNum(total);
+    totalText.textContent = formatNum(total);
+    goalText.textContent = formatNum(goal);
+    // 進度
+    const pct = Math.min(1, total / goal);
+    const offset = CIRCUMFERENCE * (1 - pct);
+    progressCircle.setAttribute('stroke-dashoffset', offset.toFixed(2));
+    // 罐子高度
+    const fillH = Math.min(74, Math.max(4, 74 * pct));
+    dropFill.style.height = fillH + '%';
+    // 文字提示
+    if(announce) announce.textContent = '已飲 ' + formatNum(total) + ' 毫升，目標 ' + formatNum(goal) + ' 毫升';
+  }
+
+  function add(amount){
+    if(amount <= 0) return;
+    total += amount;
+    if(total > goal * 5) total = goal * 5; // 防止失控
+    saveTotal();
+    updateDisplay();
+    if(announce) announce.textContent = '已新增 ' + amount + ' 毫升，目前共 ' + formatNum(total) + ' 毫升';
+  }
+
+  function remove(amount){
+    if(amount <= 0) return;
+    total = Math.max(0, total - amount);
+    saveTotal();
+    updateDisplay();
+    if(announce) announce.textContent = '已減少 ' + amount + ' 毫升，目前共 ' + formatNum(total) + ' 毫升';
+  }
+
+  function reset(){
+    total = 0;
+    saveTotal();
+    updateDisplay();
+    if(announce) announce.textContent = '已清空當日飲水數據';
+  }
+
+  goalInput.addEventListener('change', () => {
+    const v = Number(goalInput.value);
+    if(isNaN(v) || v < 1){ goalInput.value = goal; return; }
+    goal = v;
+    saveGoal();
+    updateDisplay();
+    if(announce) announce.textContent = '目標已設定為 ' + formatNum(goal) + ' 毫升';
+  });
+
+  addBtn.addEventListener('click', () => add(200));
+  removeBtn.addEventListener('click', () => remove(200));
+  resetBtn.addEventListener('click', reset);
+
+  // 鍵盤支援
+  document.addEventListener('keydown', (e) => {
+    if(e.key === '+' && !e.ctrlKey && !e.metaKey && !e.altKey){
+      add(200);
+      e.preventDefault();
+    } else if(e.key === '-' && !e.ctrlKey && !e.metaKey && !e.altKey){
+      remove(200);
+      e.preventDefault();
+    } else if(e.key === 'r' || e.key === 'R'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        reset();
+        e.preventDefault();
+      }
+    }
+  });
+
+  load();
+  updateDisplay();
+})();
+</script>
+</body>
+</html>

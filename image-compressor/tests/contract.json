@@ -1,0 +1,36 @@
+{
+  "product": "image-compressor",
+  "version": "1.0.0",
+  "behaviors": [
+    {
+      "id": "file-input",
+      "description": "多檔案上傳輸入存在",
+      "selector": "input[type=file][multiple]",
+      "expected": "accept 圖片類型，可選多檔"
+    },
+    {
+      "id": "quality-control",
+      "description": "壓縮品質控制存在",
+      "selector": "input#qualityRange",
+      "expected": "數值選項 10-100"
+    },
+    {
+      "id": "original-size-display",
+      "description": "顯示原始檔案大小（動態顯示於 card 中 .orig）",
+      "selector": ".card .orig",
+      "expected": "加入圖片後顯示原始大小"
+    },
+    {
+      "id": "output-size-display",
+      "description": "顯示壓縮後大小（動態顯示於 card 中 .out）",
+      "selector": ".card .out",
+      "expected": "壓縮後顯示壓縮大小"
+    },
+    {
+      "id": "download-button",
+      "description": "個別檔案可下載（動態出現於 card 中 button[data-action=download]）",
+      "selector": ".card button[data-action=download]",
+      "expected": "處理完成的圖片有下載按鈕"
+    }
+  ]
+}

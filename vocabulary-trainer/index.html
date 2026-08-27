@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>單字訓練器</title>
+<style>
+  :root{
+    --bg:#eef2f7; --card:#fff; --primary:#2f6f9f; --learned:#7fb069;
+    --text:#1d2631; --border:#cdd6e0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
+  h1{font-size:18px;margin:0 0 12px}
+  .wrap{max-width:390px;margin:0 auto}
+  .field{display:flex;gap:8px;margin-bottom:12px}
+  .field input{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px}
+  button{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:13px;cursor:pointer}
+  button:hover{opacity:.92}
+  button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+  .card-wrap{position:relative;width:100%;max-width:320px;margin:0 auto 12px;perspective:600px}
+  .card{position:relative;width:100%;height:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;transform-style:preserve-3d;transition:transform .35s;user-select:none}
+  .card.flipped{transform:rotateY(180deg)}
+  .card-face{position:absolute;inset:0;backface-visibility:hidden;padding:14px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+  .card-back{transform:rotateY(180deg)}
+  .learned-btn{margin-top:8px;border:1px solid var(--learned);color:var(--learned);background:transparent;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer}
+  .learned-btn.rec{color:#fff;background:var(--learned)}
+  .controls{display:flex;gap:8px;justify-content:center;margin-top:8px}
+  .controls button{opacity:.95}
+  .meta{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>單字訓練器</h1>
+  <div class="field">
+    <input id="term-input" placeholder="單字">
+    <input id="meaning-input" placeholder="意思">
+    <button id="btn-add" type="button">新增</button>
+  </div>
+  <div class="card-wrap" id="card-wrap">
+    <div class="card" id="card" role="button" tabindex="0" aria-label="點擊翻轉單字卡">
+      <div class="card-face">
+        <div id="card-term" style="font-size:18px;font-weight:600"></div>
+        <div id="card-tip" style="font-size:13px;color:#555;margin-top:6px"></div>
+      </div>
+      <div class="card-face card-back">
+        <div id="card-meaning" style="font-size:15px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="btn-prev" type="button">上一張</button>
+    <button id="btn-shuffle" type="button">洗牌</button>
+    <button id="btn-next" type="button">下一張</button>
+    <button id="btn-learned" class="learned-btn" type="button">標示已學</button>
+    <button id="btn-reset" type="button">重置</button>
+  </div>
+  <div class="meta">
+    <span id="card-count">卡片 0 張</span>
+    <span id="card-position">1 / 1</span>
+  </div>
+</main>
+<script>
+(function(){
+  const NS = 'vocab-v1';
+  const DEFAULT = [
+    {t:'apple', m:'蘋果'},
+    {t:'blue', m:'藍色'},
+    {t:'happy', m:'快樂'},
+    {t:'rain', m:'雨'},
+    {t:'book', m:'書'}
+  ];
+  function save(data){
+    try{ localStorage.setItem(NS+':data', JSON.stringify(data)); }catch(e){}
+  }
+  function load(){
+    try{
+      const raw = localStorage.getItem(NS+':data');
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length) return parsed;
+      }
+    }catch(e){}
+    return null;
+  }
+  let cards = load() || DEFAULT.slice().map(d=>({term:d.t, meaning:d.m, learned:false}));
+  let idx = 0;
+  function render(){
+    const card = document.getElementById('card');
+    const term = cards[idx];
+    document.getElementById('card-term').textContent = term.term;
+    document.getElementById('card-meaning').textContent = term.meaning;
+    document.getElementById('card-tip').textContent = term.learned ? '（已學）' : '';
+    document.getElementById('card-count').textContent = '卡片 ' + cards.length + ' 張';
+    document.getElementById('card-position').textContent = (idx+1) + ' / ' + cards.length;
+    const btn = document.getElementById('btn-learned');
+    btn.textContent = term.learned ? '取消已學' : '標示已學';
+    btn.classList.toggle('rec', term.learned);
+  }
+  function flip(){
+    document.getElementById('card').classList.toggle('flipped');
+  }
+  function renderList(){ /* not needed; cards shown one at a time */ }
+  function persist(){ save(cards.map(c=>({term:c.term, meaning:c.meaning, learned:c.learned}))); }
+  document.getElementById('btn-add').addEventListener('click', ()=>{
+    const termInput = document.getElementById('term-input');
+    const meaningInput = document.getElementById('meaning-input');
+    const t = termInput.value.trim();
+    const m = meaningInput.value.trim();
+    if(!t || !m) return;
+    cards.push({term:t, meaning:m, learned:false});
+    persist();
+    termInput.value=''; meaningInput.value='';
+    render();
+  });
+  document.getElementById('card').addEventListener('click', flip);
+  document.getElementById('btn-next').addEventListener('click', ()=>{
+    if(cards.length===0) return;
+    idx = (idx+1) % cards.length;
+    document.getElementById('card').classList.remove('flipped');
+    render();
+  });
+  document.getElementById('btn-prev').addEventListener('click', ()=>{
+    if(cards.length===0) return;
+    idx = (idx-1+cards.length) % cards.length;
+    document.getElementById('card').classList.remove('flipped');
+    render();
+  });
+  document.getElementById('btn-shuffle').addEventListener('click', ()=>{
+    for(let i=cards.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    idx = 0;
+    document.getElementById('card').classList.remove('flipped');
+    render();
+  });
+  document.getElementById('btn-learned').addEventListener('click', ()=>{
+    cards[idx].learned = !cards[idx].learned;
+    persist();
+    render();
+  });
+  document.getElementById('btn-reset').addEventListener('click', ()=>{
+    cards = DEFAULT.map(d=>({term:d.t, meaning:d.m, learned:false}));
+    idx = 0;
+    persist();
+    document.getElementById('card').classList.remove('flipped');
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

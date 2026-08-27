@@ -1,0 +1,178 @@
+{
+  "status": "PASS",
+  "repo_count": 9,
+  "results": [
+    {
+      "repo": "fasting-clock",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "69fd4dcb128fd58fba46146d4de8845e2617e8ed3c26b7a328139eddb990a662"
+    },
+    {
+      "repo": "water-tracker",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "3c3507d1b4a9551031a246cb31e4aee774349b06ab0a9e93f521c4550a0d6b21"
+    },
+    {
+      "repo": "food-wheel",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "ceae10e8d85820df0cb22542f9b59a4d1cb997723faa9fbc5d978cb20784c6ac"
+    },
+    {
+      "repo": "image-compressor",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "f2d331074c8c59310408ec6f61ddebba769edbe8a75c67127f6d923ed88431df"
+    },
+    {
+      "repo": "bingo-generator",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "8eabdaaae6efaf5c013ccaa85957302146c83f07c29dd44d9802bb1e6931cc66"
+    },
+    {
+      "repo": "vocabulary-trainer",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "fa1faf0815237325fdb4ff657717a39482674cac8ff974ee3ef27fba26a18085"
+    },
+    {
+      "repo": "travel-guide",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "bbe3b1089258d15d82867f664af1e945ab430c319900039c649975e9797481e0"
+    },
+    {
+      "repo": "kids-reward-board",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "c8795f543af296f87a39c0b470a7896dccc36554ef5f3862d2666a8b1deb2414"
+    },
+    {
+      "repo": "group-randomizer",
+      "files": {
+        "index.html": true,
+        "README.md": true,
+        "DESIGN.md": true,
+        "tests/contract.json": true,
+        "evidence/RED.md": true,
+        "evidence/GREEN.md": true,
+        "evidence/VISUAL_REVIEW.md": true
+      },
+      "checks": {
+        "no_remote_assets": true,
+        "has_viewport": true,
+        "has_reset": true,
+        "has_local_storage": true
+      },
+      "sha256": "7fdd5fbd485089353a9edeccbebf2f80061c7ace87124f8d82fb2c455f819f75"
+    }
+  ],
+  "errors": []
+}

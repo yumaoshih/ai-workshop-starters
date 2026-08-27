@@ -1,0 +1,35 @@
+{
+  "product": "vocabulary-trainer",
+  "behaviors": [
+    {
+      "id": "add-term",
+      "selector": "#btn-add",
+      "expect": "Add button exists; adding term/meaning inserts a card"
+    },
+    {
+      "id": "flip-card",
+      "selector": ".card",
+      "expect": "Click flips to show meaning"
+    },
+    {
+      "id": "next-button",
+      "selector": "#btn-next",
+      "expect": "Next advances card index"
+    },
+    {
+      "id": "shuffle-button",
+      "selector": "#btn-shuffle",
+      "expect": "Shuffle button exists"
+    },
+    {
+      "id": "learned-toggle",
+      "selector": ".card .learned-btn",
+      "expect": "Toggle learned status per card"
+    },
+    {
+      "id": "persistence",
+      "selector": "#card-count",
+      "expect": "Card count persisted across reload"
+    }
+  ]
+}

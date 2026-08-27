@@ -1,0 +1,20 @@
+{
+  "name": "ai-workshop-friday",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:contracts": "node contract-test.js fasting-clock && node contract-test.js water-tracker && node contract-test.js food-wheel",
+    "test:starters": "playwright test tests/starters.spec.js --config=playwright.config.js",
+    "test:pages": "playwright test tests/pages.spec.js --config=playwright.config.js",
+    "verify:static": "python3 verify_static.py",
+    "verify": "npm run verify:static && npm run test:contracts && npm run test:starters && npm run test:pages"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "playwright": "^1.62.1"
+  },
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "jsdom": "^29.1.1"
+  }
+}

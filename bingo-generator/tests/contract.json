@@ -1,0 +1,35 @@
+{
+  "product": "bingo-generator",
+  "behaviors": [
+    {
+      "id": "board-initial",
+      "selector": "#bingo-board",
+      "expect": "Container exists with 25 cells (5x5)"
+    },
+    {
+      "id": "cell-count",
+      "selector": "#bingo-board .cell",
+      "expect": "Exactly 25 cells present"
+    },
+    {
+      "id": "free-center",
+      "selector": "#bingo-board .cell.free",
+      "expect": "Free center cell exists and displays '免費'"
+    },
+    {
+      "id": "regenerate",
+      "selector": "#btn-regenerate",
+      "expect": "Button exists; clicking reshuffles board items"
+    },
+    {
+      "id": "editable-item",
+      "selector": "#item-list input",
+      "expect": "24 editable inputs present"
+    },
+    {
+      "id": "print",
+      "selector": "#btn-print",
+      "expect": "Print button exists"
+    }
+  ]
+}

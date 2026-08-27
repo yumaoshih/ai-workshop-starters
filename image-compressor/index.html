@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>圖片壓縮工具</title>
+<style>
+  :root{
+    --bg:#070b10;
+    --panel:#11171f;
+    --panel2:#172029;
+    --ink:#e6edf3;
+    --muted:#8ea3b4;
+    --accent:#4fd1c5;
+    --accent-dim:#1e6e65;
+    --ring:#22303d;
+    --warn:#f2c86b;
+    --danger:#e57a6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
+    background: radial-gradient(120% 100% at 50% 0%, #12202b 0%, #04070a 100%);
+    color:var(--ink);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    width:min(390px,100%);
+    background:linear-gradient(180deg, #122029 0%, #0a131a 100%);
+    border:1px solid #1f3340;
+    border-radius:30px;
+    padding:20px 18px 22px;
+    box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .title{
+    font-size:22px;
+    font-weight:600;
+    margin:0 0 14px;
+    text-align:center;
+  }
+  .drop-zone{
+    border:2px dashed #22303d;
+    border-radius:16px;
+    padding:24px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color 0.2s, background 0.2s;
+    background:var(--panel);
+    position:relative;
+  }
+  .drop-zone:hover{border-color:var(--accent-dim);background:var(--panel2)}
+  .drop-zone.dragover{border-color:var(--accent);background:#102629}
+  .drop-zone input[type=file]{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    cursor:pointer;
+  }
+  .drop-icon{
+    font-size:34px;
+    line-height:1;
+    margin-bottom:6px;
+    color:var(--muted);
+    filter:drop-shadow(0 0 6px rgba(79,209,197,0.2));
+  }
+  .drop-label{
+    font-size:14px;
+    color:var(--ink);
+  }
+  .drop-hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:14px 0 14px;
+    background:var(--panel);
+    border:1px solid #1f3340;
+    border-radius:14px;
+    padding:10px 12px;
+  }
+  .controls label{
+    font-size:13px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .controls input[type=range]{
+    flex:1;
+    accent-color:var(--accent);
+    min-width:0;
+  }
+  .controls .value{
+    font-size:13px;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    min-width:36px;
+    text-align:right;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid #1f3340;
+    border-radius:12px;
+    padding:8px;
+  }
+  .card .file-name{
+    font-size:12px;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:4px;
+  }
+  .card .size-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+    margin-bottom:4px;
+  }
+  .card .size-row .orig{color:var(--warn)}
+  .card .size-row .out{color:var(--accent)}
+  .card .thumb{
+    width:100%;
+    aspect-ratio:1;
+    object-fit:cover;
+    border-radius:6px;
+    background:#0a1218;
+  }
+  .card .actions{
+    display:flex;
+    gap:6px;
+    margin-top:6px;
+  }
+  .card .actions button{
+    flex:1;
+    appearance:none;
+    border:1px solid #1f3340;
+    background:var(--panel2);
+    color:var(--ink);
+    padding:6px 8px;
+    border-radius:8px;
+    font-size:12px;
+    font-weight:500;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+  .card .actions button:hover{background:#1d2a33}
+  .card .actions button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .card .actions button.download{
+    background:linear-gradient(180deg,#103a35,#0c2c28);
+    border-color:#1f5e55;
+    color:var(--accent);
+  }
+  .card .actions button.download:hover{background:linear-gradient(180deg,#174a44,#103631)}
+  .empty{
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+    padding:20px 0;
+    border:1px dashed #22303d;
+    border-radius:12px;
+    background:var(--panel);
+  }
+  .actions-bar{
+    display:flex;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .btn{
+    flex:1;
+    appearance:none;
+    border:1px solid #1f3340;
+    background:var(--panel);
+    color:var(--ink);
+    padding:10px 12px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+  .btn:hover{background:var(--panel2)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.primary{
+    background:linear-gradient(180deg,#103a35,#0c2c28);
+    border-color:#1f5e55;
+    color:var(--accent);
+  }
+  .btn.primary:hover{background:linear-gradient(180deg,#174a44,#103631)}
+  .clear-btn{
+    background:transparent;
+    border:1px dashed #22303d;
+    color:var(--muted);
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:13px;
+    cursor:pointer;
+    transition:color 0.2s, border-color 0.2s;
+  }
+  .clear-btn:hover{color:var(--ink);border-color:var(--muted)}
+  .clear-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    line-height:1.5;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+</style>
+</head>
+<body>
+  <main class="app" role="application" aria-label="圖片壓縮工具">
+    <p class="eyebrow">瀏覽器本機處理 · 多檔案</p>
+    <h1 class="title">圖片壓縮工具</h1>
+
+    <div class="drop-zone" id="dropZone">
+      <input id="fileInput" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif" aria-label="選取要壓縮的圖片">
+      <div class="drop-icon">🖼︎</div>
+      <div class="drop-label">點擊或拖放圖片</div>
+      <div class="drop-hint">支援 PNG、JPEG、WebP</div>
+    </div>
+
+    <div class="controls">
+      <label for="qualityRange">壓縮品質</label>
+      <input id="qualityRange" type="range" min="10" max="100" step="1" value="80" aria-describedby="qualityHelp">
+      <span class="value" id="qualityValue">80</span>
+    </div>
+    <p id="qualityHelp" class="sr-only">JPEG 壓縮品質 10–100，越高檔案越大</p>
+
+    <div class="grid" id="grid">
+      <!-- 動態填入 -->
+    </div>
+    <div class="empty" id="emptyState">尚未加入圖片</div>
+
+    <div class="actions-bar">
+      <button class="btn primary" type="button" data-action="compress" id="compressBtn">全部壓縮</button>
+      <button class="clear-btn" type="button" data-action="clear" id="clearBtn">清除所有</button>
+    </div>
+
+    <p class="hint">所有處理皆在瀏覽器本機完成，不會上傳任何圖片。</p>
+    <div class="sr-only" id="announce" aria-live="polite"></div>
+  </main>
+
+<script>
+(function(){
+  const NS = 'image-compressor:v1';
+  const STATES_KEY = NS + ':files';
+
+  const $ = (s) => document.querySelector(s);
+  const fileInput = $('#fileInput');
+  const dropZone = $('#dropZone');
+  const qualityRange = $('#qualityRange');
+  const qualityValue = $('#qualityValue');
+  const grid = $('#grid');
+  const emptyState = $('#emptyState');
+  const compressBtn = $('#compressBtn');
+  const clearBtn = $('#clearBtn');
+  const announce = $('#announce');
+
+  let files = []; // { id, file, name, type, originalSize, compressedSize, dataUrl }
+  let nextId = 1;
+
+  function formatSize(bytes){
+    if(!bytes || bytes === 0) return '0 B';
+    const units = ['B','KB','MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const val = (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1);
+    return val + ' ' + units[i];
+  }
+
+  function loadStates(){
+    try{
+      const raw = localStorage.getItem(STATES_KEY);
+      if(raw){
+        const state = JSON.parse(raw);
+        if(Array.isArray(state)){
+          // 不能恢復 File 物件，僅恢復 meta
+          state.forEach(s => {
+            files.push({
+              id: s.id,
+              file: null,
+              name: s.name,
+              type: s.type,
+              originalSize: s.originalSize,
+              compressedSize: s.compressedSize,
+              dataUrl: s.dataUrl || null,
+              loaded: false
+            });
+            if(s.id >= nextId) nextId = s.id + 1;
+          });
+          renderGrid();
+        }
+      }
+    }catch(e){}
+  }
+
+  function saveStates(){
+    try{
+      const state = files.map(f => ({
+        id: f.id,
+        name: f.name,
+        type: f.type,
+        originalSize: f.originalSize,
+        compressedSize: f.compressedSize,
+        dataUrl: f.dataUrl || null
+      }));
+      localStorage.setItem(STATES_KEY, JSON.stringify(state));
+    }catch(e){}
+  }
+
+  function renderGrid(){
+    grid.innerHTML = '';
+    if(!files.length){
+      emptyState.style.display = 'block';
+      compressBtn.style.display = 'none';
+      clearBtn.style.display = 'none';
+      return;
+    }
+    emptyState.style.display = 'none';
+    compressBtn.style.display = 'block';
+    clearBtn.style.display = 'block';
+
+    files.forEach(f => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'file-name';
+      nameDiv.textContent = f.name;
+      card.appendChild(nameDiv);
+
+      const sizeRow = document.createElement('div');
+      sizeRow.className = 'size-row';
+      const orig = document.createElement('span');
+      orig.className = 'orig';
+      orig.textContent = '原尺寸 ' + formatSize(f.originalSize);
+      const out = document.createElement('span');
+      out.className = 'out';
+      out.textContent = '壓縮 ' + formatSize(f.compressedSize || 0);
+      sizeRow.appendChild(orig);
+      sizeRow.appendChild(out);
+      card.appendChild(sizeRow);
+
+      if(f.dataUrl){
+        const img = document.createElement('img');
+        img.className = 'thumb';
+        img.src = f.dataUrl;
+        img.alt = f.name;
+        card.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.style.cssText = 'width:100%;aspect-ratio:1;background:#0a1218;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px';
+        placeholder.textContent = '待處理';
+        card.appendChild(placeholder);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      if(f.dataUrl && f.compressedSize > 0){
+        const dlBtn = document.createElement('button');
+        dlBtn.type = 'button';
+        dlBtn.dataset.action = 'download';
+        dlBtn.textContent = '下載';
+        dlBtn.addEventListener('click', () => downloadFile(f));
+        actions.appendChild(dlBtn);
+      }
+      if(f.dataUrl){
+        const viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.textContent = '複製圖片';
+        viewBtn.addEventListener('click', () => copyToClipboard(f));
+        actions.appendChild(viewBtn);
+      }
+      card.appendChild(actions);
+      grid.appendChild(card);
+    });
+  }
+
+  function downloadFile(f){
+    if(!f.dataUrl) return;
+    const a = document.createElement('a');
+    a.href = f.dataUrl;
+    a.download = f.name.replace(/\.[^.]+$/, '') + '-compressed.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    if(announce) announce.textContent = '已下載 ' + a.download;
+  }
+
+  async function copyToClipboard(f){
+    if(!f.dataUrl) return;
+    try{
+      const resp = await fetch(f.dataUrl);
+      const blob = await resp.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob })
+      ]);
+      if(announce) announce.textContent = '已複製 ' + f.name;
+    }catch(e){
+      if(announce) announce.textContent = '複製失敗';
+    }
+  }
+
+  function addFiles(newFiles){
+    const promises = [];
+    newFiles.forEach(file => {
+      if(!file.type.startsWith('image/')) return;
+      const id = nextId++;
+      const entry = {
+        id,
+        file,
+        name: file.name,
+        type: file.type,
+        originalSize: file.size,
+        compressedSize: 0,
+        dataUrl: null,
+        loaded: false
+      };
+      files.push(entry);
+      promises.push(preloadImage(entry));
+    });
+    Promise.all(promises).then(() => {
+      renderGrid();
+      saveStates();
+    });
+  }
+
+  function preloadImage(entry){
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        entry.dataUrl = e.target.result;
+        entry.loaded = true;
+        resolve();
+      };
+      reader.readAsDataURL(entry.file);
+    });
+  }
+
+  async function compressAll(){
+    const quality = Number(qualityRange.value);
+    const toCompress = files.filter(f => f.loaded && f.dataUrl && f.compressedSize === 0);
+    if(!toCompress.length){
+      if(announce) announce.textContent = '沒有可壓縮的新圖片';
+      return;
+    }
+    for(const entry of toCompress){
+      try{
+        const img = new Image();
+        img.src = entry.dataUrl;
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality / 100);
+        // 解析大小
+        const base64 = compressedDataUrl.split(',')[1];
+        const bytes = Math.floor((base64.length * 3) / 4) - (compressedDataUrl.includes('base64') ? 0 : 0);
+        entry.compressedSize = bytes;
+        entry.dataUrl = compressedDataUrl;
+      }catch(e){
+        entry.compressedSize = entry.originalSize;
+      }
+    }
+    renderGrid();
+    saveStates();
+    if(announce) announce.textContent = '已壓縮 ' + toCompress.length + ' 張圖片';
+  }
+
+  function clearAll(){
+    files = [];
+    nextId = 1;
+    renderGrid();
+    saveStates();
+    if(announce) announce.textContent = '已清除所有圖片';
+  }
+
+  qualityRange.addEventListener('input', () => {
+    qualityValue.textContent = qualityRange.value;
+  });
+
+  fileInput.addEventListener('change', () => {
+    if(fileInput.files && fileInput.files.length){
+      addFiles(Array.from(fileInput.files));
+    }
+    fileInput.value = '';
+  });
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if(e.dataTransfer.files && e.dataTransfer.files.length){
+      addFiles(Array.from(e.dataTransfer.files));
+    }
+  });
+
+  compressBtn.addEventListener('click', compressAll);
+  clearBtn.addEventListener('click', clearAll);
+
+  // 鍵盤：C 壓縮、X 清除
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'c' || e.key === 'C'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        compressAll();
+        e.preventDefault();
+      }
+    } else if(e.key === 'x' || e.key === 'X'){
+      if(!e.ctrlKey && !e.metaKey && !e.altKey){
+        clearAll();
+        e.preventDefault();
+      }
+    }
+  });
+
+  loadStates();
+  renderGrid();
+})();
+</script>
+</body>
+</html>

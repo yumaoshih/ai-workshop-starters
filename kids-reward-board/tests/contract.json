@@ -1,0 +1,45 @@
+{
+  "product": "kids-reward-board",
+  "behaviors": [
+    {
+      "id": "child-config",
+      "selector": "#child-name-input",
+      "expect": "Input for child name exists"
+    },
+    {
+      "id": "reward-list",
+      "selector": "#reward-list",
+      "expect": "List of rewards with cost and redeem button"
+    },
+    {
+      "id": "add-points",
+      "selector": "#btn-add-points",
+      "expect": "Add points button exists"
+    },
+    {
+      "id": "subtract-points",
+      "selector": "#btn-subtract-points",
+      "expect": "Subtract button exists"
+    },
+    {
+      "id": "block-negative",
+      "selector": "#points-display",
+      "expect": "Balance never goes below zero"
+    },
+    {
+      "id": "block-unaffordable",
+      "selector": ".redeem-btn",
+      "expect": "Redeem disabled when points below cost"
+    },
+    {
+      "id": "persistence",
+      "selector": "#balance",
+      "expect": "Balance & rewards persist across reload"
+    },
+    {
+      "id": "reset",
+      "selector": "#btn-reset",
+      "expect": "Reset action exists"
+    }
+  ]
+}
