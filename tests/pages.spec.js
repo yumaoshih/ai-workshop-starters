@@ -75,6 +75,16 @@ test('hub separates three optional open-source exploration resources from the St
   await expect(section).toContainText('CONTRIBUTING');
 });
 
+test('fork guide explains how students sync later upstream updates', async ({ page }) => {
+  await page.goto(`${base}/`);
+  await page.locator('.fork-guide > summary').click();
+  const sync = page.locator('.sync-guide');
+  await expect(sync).toContainText('Sync fork');
+  await expect(sync).toContainText('Update branch');
+  await expect(sync).toContainText('開工前先 Sync，完成後再 PR。');
+  await expect(sync.getByRole('link', { name: /官方 Sync 說明/ })).toHaveAttribute('target', '_blank');
+});
+
 for (const starter of starters) {
   test(`${starter} serves from a Pages-style subpath`, async ({ page }) => {
     const errors = [];
