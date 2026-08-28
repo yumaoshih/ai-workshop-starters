@@ -69,35 +69,40 @@
       .hero-copy strong { color: var(--ink); }
 
       .hero-side {
-        display: grid;
-        gap: 18px;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 24px;
       }
 
       .repo-button {
-        display: grid;
-        gap: 4px;
-        width: fit-content;
-        min-width: min(100%, 320px);
-        padding: 14px 16px;
-        color: #fff;
-        background: var(--ink);
-        border: 1px solid var(--ink);
+        align-self: flex-end;
+        display: inline-flex;
+        gap: 9px;
+        align-items: center;
+        min-height: 44px;
+        padding: 9px 13px;
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--line);
         text-decoration: none;
       }
 
-      .repo-button strong {
-        font-size: 16px;
-        letter-spacing: -.01em;
+      .repo-button img {
+        width: 24px;
+        height: 24px;
       }
 
-      .repo-button small {
-        color: #c8cbc4;
-        font: 650 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      .repo-button span {
+        font-size: 14px;
+        font-weight: 800;
       }
 
       .repo-button:hover,
       .repo-button:focus-visible {
-        background: var(--blue);
+        color: var(--blue);
+        background: var(--surface);
         border-color: var(--blue);
         outline: 3px solid rgba(22, 93, 255, .2);
         outline-offset: 2px;
@@ -845,6 +850,9 @@
 
       @media (max-width: 900px) {
         .hero { grid-template-columns: 1fr; }
+        .hero-side { display: grid; gap: 18px; }
+        .hero-copy { order: 1; }
+        .repo-button { order: 2; align-self: start; justify-self: start; }
         .steps { grid-template-columns: repeat(2, 1fr); }
         .step:nth-child(2) { border-right: 0; }
         .step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
@@ -864,7 +872,6 @@
         .hero { gap: 24px; padding-bottom: 28px; }
         h1 { font-size: clamp(46px, 15vw, 64px); }
         .hero-copy { font-size: 17px; }
-        .repo-button { width: 100%; }
         .section-heading { display: block; }
         .section-heading p { margin-top: 8px; }
         .steps { grid-template-columns: 1fr; }
@@ -909,13 +916,13 @@
           <h1>選一個起點，<br>做成你的作品。</h1>
         </div>
         <div class="hero-side">
+          <a class="repo-button" href="https://github.com/yumaoshih/ai-workshop-starters" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看原始專案" title="在 GitHub 查看原始專案">
+            <img src="assets/github-mark.svg" alt="" width="24" height="24" aria-hidden="true">
+            <span>GitHub</span>
+          </a>
           <p class="hero-copy">
             從一個已經能運作的小工具開始。<strong>Fork 專案、選擇 Starter、完成改作，再用 Pull Request 投稿。</strong>
           </p>
-          <a class="repo-button" href="https://github.com/yumaoshih/ai-workshop-starters" target="_blank" rel="noopener noreferrer">
-            <strong>前往 GitHub Repository</strong>
-            <small>yumaoshih/ai-workshop-starters</small>
-          </a>
         </div>
       </header>
 
