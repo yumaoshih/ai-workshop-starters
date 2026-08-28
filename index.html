@@ -555,6 +555,124 @@
         font: 700 14px ui-monospace, SFMono-Regular, Menlo, monospace;
       }
 
+      .explore-section {
+        margin-top: 28px;
+        padding: 32px;
+        background: rgba(255, 253, 248, .72);
+        border: 1px solid var(--line);
+      }
+
+      .explore-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, .78fr);
+        gap: 32px;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+
+      .optional-badge {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 7px 10px;
+        color: var(--blue);
+        background: #e9efff;
+        font: 800 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: .09em;
+      }
+
+      .explore-heading h2 {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(28px, 3.6vw, 42px);
+        line-height: 1.05;
+        letter-spacing: -.04em;
+      }
+
+      .explore-heading p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .resource-card {
+        display: flex;
+        min-height: 220px;
+        flex-direction: column;
+        padding: 20px;
+        color: inherit;
+        text-decoration: none;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      }
+
+      .resource-card:hover,
+      .resource-card:focus-visible {
+        transform: translateY(-3px);
+        border-color: var(--blue);
+        box-shadow: 0 12px 28px rgba(28, 28, 24, .09);
+        outline: 3px solid rgba(22, 93, 255, .2);
+        outline-offset: 2px;
+      }
+
+      .resource-kind {
+        color: #777a73;
+        font: 750 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: .09em;
+      }
+
+      .resource-card h3 {
+        margin: 24px 0 8px;
+        font-size: 23px;
+        letter-spacing: -.03em;
+      }
+
+      .resource-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .resource-action {
+        margin-top: auto;
+        padding-top: 22px;
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .repo-check {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+        margin-top: 18px;
+        padding: 18px 20px;
+        background: #fff4ed;
+        border-left: 4px solid var(--orange);
+      }
+
+      .repo-check strong {
+        white-space: nowrap;
+        font-size: 14px;
+      }
+
+      .repo-check p {
+        margin: 0;
+        color: #4f504b;
+        line-height: 1.6;
+      }
+
+      .repo-check code {
+        color: #914224;
+        font: 750 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
       footer {
         display: flex;
         justify-content: space-between;
@@ -576,6 +694,9 @@
         .feynman-part { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
         .feynman-part:last-child { border-bottom: 0; }
         .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .explore-heading { grid-template-columns: 1fr; gap: 12px; }
+        .resource-grid { grid-template-columns: 1fr; }
+        .resource-card { min-height: 0; }
       }
 
       @media (max-width: 620px) {
@@ -604,6 +725,8 @@
         .grid { grid-template-columns: 1fr; }
         .card-body { min-height: 180px; }
         .rule { grid-template-columns: 1fr; gap: 12px; }
+        .explore-section { padding: 24px 18px; }
+        .repo-check { grid-template-columns: 1fr; gap: 8px; }
         footer { display: block; }
         footer span { display: block; margin-top: 6px; }
       }
@@ -982,6 +1105,44 @@
         <span class="rule-badge">唯一規則</span>
         <p>將 Starter 複製到 <code>submissions/你的GitHub帳號/</code> 後再修改，不要改動原始範例或其他學員的作品。</p>
       </aside>
+
+      <section class="explore-section" aria-labelledby="explore-title">
+        <div class="explore-heading">
+          <div>
+            <span class="optional-badge">課後延伸 · OPTIONAL</span>
+            <h2 id="explore-title">下一站：從練習專案走向開源世界</h2>
+          </div>
+          <p>先完成今天的 Starter；有餘裕時，再看看真實 GitHub 專案如何說明、維護與接受貢獻。</p>
+        </div>
+
+        <div class="resource-grid" aria-label="GitHub 課後探索資源">
+          <a class="resource-card" href="https://github.com/trending" target="_blank" rel="noopener noreferrer">
+            <span class="resource-kind">LOOK / TRENDING</span>
+            <h3>看現在流行什麼</h3>
+            <p>從今天、本週或本月的熱門專案，觀察大家正在關注哪些題目與技術。</p>
+            <span class="resource-action">開啟 GitHub Trending</span>
+          </a>
+
+          <a class="resource-card" href="https://github.com/sindresorhus/awesome" target="_blank" rel="noopener noreferrer">
+            <span class="resource-kind">CURATE / AWESOME</span>
+            <h3>依興趣找整理清單</h3>
+            <p>從社群策展的主題入口，尋找前端、設計、教育、AI 與更多領域的資源。</p>
+            <span class="resource-action">開啟 Awesome Lists</span>
+          </a>
+
+          <a class="resource-card" href="https://docs.github.com/en/get-started/exploring-projects-on-github/finding-ways-to-contribute-to-open-source-on-github" target="_blank" rel="noopener noreferrer">
+            <span class="resource-kind">START / CONTRIBUTE</span>
+            <h3>找到第一個可參與任務</h3>
+            <p>先從文件修改、<code>good first issue</code> 或 <code>help wanted</code> 等較清楚的小任務開始。</p>
+            <span class="resource-action">閱讀 GitHub 官方指南</span>
+          </a>
+        </div>
+
+        <aside class="repo-check" aria-label="Fork 外部專案前的檢查提醒">
+          <strong>Fork 前先檢查</strong>
+          <p>讀懂 <code>README</code>、查看最近更新，再確認 <code>LICENSE</code> 與 <code>CONTRIBUTING</code>；公開可見不代表可以任意改作與發布。</p>
+        </aside>
+      </section>
 
       <footer>
         <span>全部在瀏覽器運作・不需 API 金鑰</span>

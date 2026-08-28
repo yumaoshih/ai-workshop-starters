@@ -64,6 +64,17 @@ test('hub exposes exactly nine working Starter links', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('hub separates three optional open-source exploration resources from the Starter task', async ({ page }) => {
+  await page.goto(`${base}/`);
+  const section = page.locator('.explore-section');
+  await expect(section.getByText('課後延伸 · OPTIONAL')).toBeVisible();
+  await expect(section.getByRole('link')).toHaveCount(3);
+  await expect(section.getByRole('link', { name: /GitHub Trending/ })).toHaveAttribute('target', '_blank');
+  await expect(section.getByRole('link', { name: /Awesome Lists/ })).toHaveAttribute('href', 'https://github.com/sindresorhus/awesome');
+  await expect(section).toContainText('LICENSE');
+  await expect(section).toContainText('CONTRIBUTING');
+});
+
 for (const starter of starters) {
   test(`${starter} serves from a Pages-style subpath`, async ({ page }) => {
     const errors = [];
