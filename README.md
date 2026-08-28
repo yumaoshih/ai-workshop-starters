@@ -11,7 +11,7 @@
 | 斷食計時器 | `./fasting-clock/` |
 | 喝水記錄器 | `./water-tracker/` |
 | 食物輪盤 | `./food-wheel/` |
-| 圖片壓縮工具 | `./image-compressor/` |
+| 圖片瘦身站（轉檔＋壓縮） | `./image-compressor/` |
 | 賓果產生器 | `./bingo-generator/` |
 | 單字訓練器 | `./vocabulary-trainer/` |
 | 翻頁旅行手冊 | `./travel-guide/` |
@@ -30,11 +30,15 @@ python3 -m http.server 4175
 
 ## 課堂流程
 
-1. 從首頁選一個 Starter。
-2. 閱讀該目錄的 README。
-3. Fork／複製成自己的版本。
-4. 完成 Level 1，再選擇 Level 2 或 Level 3。
-5. Commit 並發布 GitHub Pages。
+1. Fork 整個 Repository 到自己的 GitHub。
+2. 從首頁選一個 Starter，閱讀該目錄的 README。
+3. 將 Starter 複製到 `submissions/自己的GitHub帳號/`。
+4. 只在自己的投稿資料夾中完成改作並測試。
+5. Commit 到自己的 Fork。
+6. 從 Fork 向原始 Repository 的 `main` 發出 Pull Request。
+7. 老師在 `Files changed` Review 後決定是否 Merge。
+
+首頁的「Fork 電路圖與 Pull Request 操作教學」包含 GitHub 網頁版的完整按鈕路徑與 base／head 方向說明。
 
 ## 驗證
 

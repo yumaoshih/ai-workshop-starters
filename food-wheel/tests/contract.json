@@ -1,18 +1,18 @@
 {
   "product": "food-wheel",
-  "version": "1.0.0",
+  "version": "3.2.1",
   "behaviors": [
     {
       "id": "options-list",
-      "description": "可編輯的選項列表存在",
+      "description": "可編輯的料理選項列表存在",
       "selector": "ul.options",
-      "expected": "列出可編輯的食物選項"
+      "expected": "列出至少兩個可編輯的料理選項"
     },
     {
       "id": "spin-button",
-      "description": "旋轉按鈕存在",
+      "description": "主要抽選按鈕存在",
       "selector": "button[data-action=spin]",
-      "expected": "按鈕可點擊"
+      "expected": "按鈕可啟動減速旋轉"
     },
     {
       "id": "result-display",
@@ -25,6 +25,42 @@
       "description": "無選項時禁止旋轉",
       "selector": "button[data-action=spin]",
       "expected": "選項為空時按鈕失效或警告"
+    },
+    {
+      "id": "group-selection",
+      "description": "料理分類可多選加入輪盤",
+      "selector": "#groupList",
+      "expected": "分類按鈕能切換是否加入輪盤"
+    },
+    {
+      "id": "simple-two-step-flow",
+      "description": "主要操作先選分類再轉輪盤",
+      "selector": ".quick-pick",
+      "expected": "第一個操作區只呈現分類複選，接續單一輪盤按鈕"
+    },
+    {
+      "id": "group-scroll-control",
+      "description": "分類列可拖曳也有明確的右移控制",
+      "selector": "#groupScrollBtn",
+      "expected": "滑鼠、觸控或按鈕都能查看右側分類"
+    },
+    {
+      "id": "group-editor",
+      "description": "每個分類都有獨立料理清單",
+      "selector": "#customizePanel",
+      "expected": "自訂功能預設收合，展開後可選擇分類並新增或刪除料理"
+    },
+    {
+      "id": "map-search",
+      "description": "抽選結果可直接在 Google 地圖查找",
+      "selector": "#mapBtn",
+      "expected": "結果產生後連到 Google 地圖搜尋頁"
+    },
+    {
+      "id": "food-notebook",
+      "description": "可瀏覽照片整理出的五組美食筆記",
+      "selector": "#notebookPanel",
+      "expected": "筆記預設收合，需要時顯示手繪小圖、店家筆記與加入分類操作"
     }
   ]
 }

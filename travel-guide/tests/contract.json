@@ -35,6 +35,31 @@
       "id": "keyboard-nav",
       "selector": "body",
       "expect": "ArrowLeft/ArrowRight navigate pages"
+    },
+    {
+      "id": "prompt-sync",
+      "selector": "#prompt-text",
+      "expect": "The editable prompt changes with the active booklet page"
+    },
+    {
+      "id": "prompt-copy",
+      "selector": "#copy-prompt",
+      "expect": "Copy button provides visible completion feedback"
+    },
+    {
+      "id": "packing-manager",
+      "selector": "#packing-dialog",
+      "expect": "A categorized packing library can be opened from the compact checklist"
+    },
+    {
+      "id": "packing-custom",
+      "selector": "#custom-item-input",
+      "expect": "Users can add custom packing items"
+    },
+    {
+      "id": "packing-reorder",
+      "selector": "#packing-sortable",
+      "expect": "Selected packing items can be dragged or moved to reorder"
     }
   ]
 }

@@ -3,428 +3,1659 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>食物輪盤</title>
+<meta name="theme-color" content="#edf5f3">
+<title>今天吃什麼？美食輪盤</title>
 <style>
   :root{
-    --bg:#100a0c;
-    --panel:#1c1214;
-    --panel2:#26171a;
-    --ink:#f3e7e0;
-    --muted:#b89aa3;
-    --accent:#ffb86b;
-    --accent-dim:#b56a2a;
-    --ring:#4a2c26;
-    --rose:#ff5a7a;
-    --leaf:#7fd4a0;
+    color-scheme:light;
+    --page:#edf5f3;
+    --surface:#ffffff;
+    --surface-soft:#f4f8f7;
+    --ink:#16363a;
+    --muted:#7f9699;
+    --line:#dce9e7;
+    --aqua:#10b8ca;
+    --aqua-deep:#087e84;
+    --aqua-pale:#daf5f3;
+    --danger:#a65354;
+    --danger-pale:#fff0ef;
+    --shadow:0 24px 70px rgba(26,79,78,.12);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  html{background:var(--page)}
+  html,body{margin:0;min-height:100%}
+  button,input,select{font:inherit}
+  button{-webkit-tap-highlight-color:transparent}
   body{
-    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
-    background: radial-gradient(120% 100% at 50% 0%, #1f1214 0%, #0a0506 100%);
-    color:var(--ink);
     min-height:100dvh;
     display:flex;
-    flex-direction:column;
-    align-items:center;
     justify-content:center;
-    padding:16px;
-    -webkit-tap-highlight-color:transparent;
+    background:var(--page);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",sans-serif;
   }
   .app{
-    width:min(390px,100%);
-    background:linear-gradient(180deg, #1d1113 0%, #100a0b 100%);
-    border:1px solid #3a1f1c;
-    border-radius:32px;
-    padding:20px 18px 24px;
-    box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,220,200,0.04);
-  }
-  .eyebrow{
-    font-size:12px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--muted);
-    margin-bottom:4px;
-  }
-  .title{
-    font-size:22px;
-    font-weight:600;
-    margin:0 0 14px;
-    text-align:center;
-  }
-  .wheel-wrap{
+    width:min(100vw,480px);
+    min-height:100dvh;
+    background:var(--surface);
+    overflow:hidden;
     position:relative;
-    width:200px;
-    height:200px;
-    margin:0 auto 16px;
   }
-  .wheel{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    background:
-      conic-gradient(
-        from 0deg,
-        #3a1f1c 0deg 60deg,
-        #ffb86b 60deg 120deg,
-        #26171a 120deg 180deg,
-        #ff5a7a 180deg 240deg,
-        #7fd4a0 240deg 300deg,
-        #4a2c26 300deg 360deg
-      );
-    box-shadow:0 0 0 4px #2a1613 inset, 0 12px 30px rgba(0,0,0,0.5);
-    transition:transform 0.05s linear;
-    will-change:transform;
-  }
-  .wheel.spinning{
-    animation:spin 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) 1;
-  }
-  @keyframes spin{
-    0%{transform:rotate(0deg)}
-    100%{transform:rotate(1440deg)}
-  }
-  .pointer{
-    position:absolute;
-    top:-10px;
-    left:50%;
-    transform:translateX(-50%);
-    width:0;
-    height:0;
-    border-left:12px solid transparent;
-    border-right:12px solid transparent;
-    border-top:18px solid var(--accent);
-    filter:drop-shadow(0 4px 8px rgba(255,184,107,0.6));
-    z-index:2;
-  }
-  .center-dot{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    background:radial-gradient(circle at 40% 35%, #ffb86b, #b56a2a);
-    box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    z-index:1;
-  }
-  .result{
-    text-align:center;
-    min-height:48px;
+  .topbar{
     display:flex;
     align-items:center;
-    justify-content:center;
-    font-size:18px;
-    font-weight:600;
-    color:var(--ink);
-    margin:8px 0 16px;
-    padding:10px;
-    background:var(--panel2);
-    border:1px solid #3a1f1c;
-    border-radius:14px;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 20px 4px;
   }
-  .result.empty{
+  .count-pill{
+    display:inline-flex;
+    align-items:baseline;
+    gap:5px;
+    min-height:46px;
+    padding:9px 16px;
+    border-radius:24px;
+    background:var(--aqua);
+    color:#fff;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .count-pill strong{font-size:23px;line-height:1;font-variant-numeric:tabular-nums}
+  .count-pill span{font-size:15px}
+  .reset-action{
+    min-height:46px;
+    padding:9px 16px;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
     color:var(--muted);
-    font-weight:400;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
   }
-  .options{
-    list-style:none;
-    margin:0 0 14px;
-    padding:0;
+  .reset-action:hover{border-color:var(--aqua);color:var(--aqua-deep)}
+  .reset-action:disabled{opacity:.45;cursor:not-allowed}
+  .intro{text-align:center;padding:8px 24px 0}
+  .intro-kicker{
+    margin:0 0 4px;
+    color:var(--muted);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.08em;
+  }
+  .intro h1{
+    margin:0;
+    font-size:clamp(30px,9vw,40px);
+    line-height:1.15;
+    font-weight:850;
+    letter-spacing:-.04em;
+  }
+  .intro-copy{
+    margin:8px 0 0;
+    color:var(--muted);
+    font-size:14px;
+    font-weight:650;
+  }
+  .quick-pick{
+    margin:14px 16px 2px;
+    padding:14px 14px 11px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:var(--surface-soft);
+  }
+  .step-head{
     display:flex;
-    flex-direction:column;
-    gap:6px;
-    max-height:200px;
-    overflow:auto;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:10px;
   }
-  .options li{
+  .step-label{
+    margin:0 0 3px;
+    color:var(--aqua-deep);
+    font-size:10px;
+    font-weight:850;
+    letter-spacing:.08em;
+  }
+  .step-head h2{margin:0;font-size:16px;font-weight:850}
+  .step-head>p{margin:0;color:var(--muted);font-size:11px;font-weight:700}
+  .step-actions{
     display:flex;
     align-items:center;
     gap:8px;
-    background:var(--panel2);
-    border:1px solid #3a1f1c;
-    border-radius:10px;
-    padding:8px 10px;
   }
-  .options li span{
-    flex:1;
-    font-size:14px;
-    line-height:1.3;
+  .step-actions span{color:var(--muted);font-size:11px;font-weight:700}
+  .group-scroll-button{
+    min-height:34px;
+    padding:6px 10px;
+    border:1px solid var(--aqua);
+    border-radius:12px;
+    background:var(--surface);
+    color:var(--aqua-deep);
+    font-size:11px;
+    font-weight:850;
+    cursor:pointer;
+  }
+  .group-scroll-button:hover{background:var(--aqua-pale)}
+  .group-scroll-button[hidden]{display:none}
+  .wheel-stage{
+    display:grid;
+    justify-items:center;
+    padding:8px 18px 0;
+  }
+  .wheel-step-head{
+    width:min(100%,360px);
+    margin:0 0 2px;
+  }
+  .wheel-canvas{
+    display:block;
+    width:min(84vw,356px);
+    height:min(84vw,356px);
+    max-width:356px;
+    max-height:356px;
+  }
+  .result{
+    width:min(100%,360px);
+    min-height:74px;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    margin-top:3px;
+    padding:13px 15px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--surface-soft);
+  }
+  .result.empty{display:none}
+  .result-main{
+    display:flex;
+    align-items:center;
+    gap:12px;
     min-width:0;
   }
-  .options li .del{
-    appearance:none;
-    background:transparent;
-    border:none;
-    color:var(--muted);
-    font-size:16px;
-    cursor:pointer;
-    padding:2px 6px;
-    border-radius:6px;
-    transition:color 0.2s, background 0.2s;
+  .result-thumb{
+    display:block;
+    width:72px;
+    height:72px;
+    flex:0 0 72px;
+    object-fit:contain;
+    padding:4px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--surface);
   }
-  .options li .del:hover{color:var(--rose);background:#2a1613}
-  .options li .del:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .result.empty .result-thumb{display:none}
+  .result-copy{min-width:0;flex:1}
+  .result-label{
+    display:block;
+    margin-bottom:3px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:750;
+    letter-spacing:.06em;
+  }
+  .result-value{
+    display:block;
+    overflow:hidden;
+    color:var(--ink);
+    font-size:22px;
+    font-weight:850;
+    line-height:1.2;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .result.empty .result-value{color:var(--muted);font-size:16px;font-weight:750}
+  .result-hint{
+    display:block;
+    overflow:hidden;
+    margin-top:5px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:700;
+    line-height:1.4;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .result.empty .result-hint{display:none}
+  .result-actions{
+    display:none;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .result:not(.empty) .result-actions{display:grid}
+  .result-action{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:42px;
+    padding:9px 13px;
+    border:1px solid var(--aqua);
+    border-radius:14px;
+    background:var(--aqua-pale);
+    color:var(--aqua-deep);
+    font-size:12px;
+    font-weight:850;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .result-action.map-action{background:var(--aqua);color:#fff}
+  .result-action:hover{background:#c8efec}
+  .result-action.map-action:hover{background:#0aa9b9}
+  .result-note-action{
+    display:none;
+    width:100%;
+    min-height:34px;
+    padding:4px 8px 0;
+    border:0;
+    background:transparent;
+    color:var(--aqua-deep);
+    font-size:11px;
+    font-weight:850;
+    cursor:pointer;
+  }
+  .result:not(.empty) .result-note-action{display:block}
+  .spin-button{
+    width:min(100%,360px);
+    min-height:56px;
+    margin-top:10px;
+    border:0;
+    border-radius:18px;
+    background:var(--aqua);
+    color:#fff;
+    font-size:17px;
+    font-weight:850;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(16,184,202,.23);
+    transition:transform .12s ease,background .2s ease;
+  }
+  .spin-button:hover{background:#0aa9b9}
+  .spin-button:active{transform:translateY(1px) scale(.995)}
+  .spin-button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  .spin-note{
+    min-height:18px;
+    margin:8px 0 11px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:650;
+    text-align:center;
+  }
+  .options-panel{
+    padding:14px 16px max(24px,env(safe-area-inset-bottom));
+    border-radius:30px 30px 0 0;
+    background:var(--surface-soft);
+  }
+  .disclosure{
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--surface);
+  }
+  .disclosure+.disclosure{margin-top:10px}
+  .disclosure summary{
+    min-height:62px;
+    padding:13px 16px;
+    color:var(--aqua-deep);
+    cursor:pointer;
+  }
+  .disclosure summary::marker{color:var(--aqua-deep)}
+  .disclosure-summary{
+    display:inline-grid;
+    gap:3px;
+    margin-left:4px;
+    vertical-align:middle;
+  }
+  .disclosure-title{color:var(--ink);font-size:14px;font-weight:850}
+  .disclosure-hint{color:var(--muted);font-size:11px;font-weight:700}
+  .disclosure-body{
+    padding:13px;
+    border-top:1px solid var(--line);
+  }
+  .disclosure[open] .disclosure-hint{color:var(--aqua-deep)}
+  .group-list{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin:0 -1px;
+    padding:1px 1px 9px;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    touch-action:pan-x pan-y;
+    overscroll-behavior-inline:contain;
+    -webkit-overflow-scrolling:touch;
+    cursor:grab;
+  }
+  .group-list::-webkit-scrollbar{display:none}
+  .group-list.is-dragging{
+    cursor:grabbing;
+    scroll-snap-type:none;
+    user-select:none;
+  }
+  .group-chip{
+    flex:0 0 auto;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 13px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface);
+    color:var(--ink);
+    font-size:13px;
+    font-weight:850;
+    cursor:pointer;
+    scroll-snap-align:start;
+  }
+  .group-thumb{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+    object-fit:contain;
+    padding:2px;
+    border-radius:10px;
+    background:rgba(255,255,255,.74);
+  }
+  .group-chip small{color:var(--muted);font-size:10px;font-weight:750}
+  .group-chip[aria-pressed="true"]{
+    border-color:var(--aqua);
+    background:var(--aqua-pale);
+    color:var(--aqua-deep);
+    box-shadow:0 0 0 3px rgba(16,184,202,.08);
+  }
+  .group-chip[aria-pressed="true"] small{color:var(--aqua-deep)}
+  .active-summary{
+    margin:0 2px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:700;
+  }
+  .group-add-row{margin:0 0 13px}
+  .editor-card{
+    padding:13px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--surface);
+  }
+  .notebook{
+    margin:0;
+    padding:0;
+  }
+  .notebook-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .notebook-head h3{margin:0;font-size:14px;font-weight:850}
+  .notebook-head p{margin:0;color:var(--muted);font-size:10px;font-weight:700}
+  .guide-tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin:10px -1px 0;
+    padding:1px 1px 8px;
+    scrollbar-width:none;
+  }
+  .guide-tabs::-webkit-scrollbar{display:none}
+  .guide-tab{
+    width:64px;
+    flex:0 0 64px;
+    padding:5px 4px 6px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:var(--surface-soft);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .guide-tab[aria-pressed="true"]{border-color:var(--aqua);background:var(--aqua-pale)}
+  .guide-tab img{display:block;width:46px;height:46px;margin:auto;object-fit:contain}
+  .guide-tab span{display:block;overflow:hidden;margin-top:2px;font-size:9px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}
+  .guide-preview{
+    display:grid;
+    grid-template-columns:58px minmax(0,1fr);
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-radius:16px;
+    background:var(--aqua-pale);
+  }
+  .guide-preview img{width:58px;height:58px;object-fit:contain}
+  .guide-preview strong{display:block;font-size:13px;font-weight:850}
+  .guide-preview p{margin:3px 0 0;color:var(--aqua-deep);font-size:10px;font-weight:700;line-height:1.45}
+  .guide-add{
+    grid-column:1 / -1;
+    min-height:38px;
+    border:1px solid var(--aqua);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--aqua-deep);
+    font-size:11px;
+    font-weight:850;
+    cursor:pointer;
+  }
+  .guide-add:disabled{opacity:.5;cursor:not-allowed}
+  .guide-places{
+    list-style:none;
+    display:grid;
+    gap:7px;
+    max-height:205px;
+    overflow:auto;
+    margin:9px 0 0;
+    padding:0;
+    scrollbar-width:thin;
+    scrollbar-color:var(--line) transparent;
+  }
+  .guide-place{padding:9px 10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-soft)}
+  .guide-place strong{display:block;font-size:11px;font-weight:850}
+  .guide-place p{margin:3px 0 0;color:var(--muted);font-size:10px;font-weight:650;line-height:1.45}
+  .source-note{margin:8px 2px 0;color:var(--muted);font-size:9px;font-weight:650;line-height:1.45;text-align:center}
+  .group-editor-head,.dish-editor-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .group-editor-head label,.dish-editor-head h3{margin:0;font-size:12px;font-weight:850}
+  .group-delete{
+    padding:5px 0;
+    border:0;
+    background:transparent;
+    color:var(--danger);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .group-delete:disabled{opacity:.4;cursor:not-allowed}
+  .group-select{
+    width:100%;
+    min-height:46px;
+    margin-top:8px;
+    padding:9px 38px 9px 12px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    outline:0;
+    background:var(--surface-soft);
+    color:var(--ink);
+    font-size:14px;
+    font-weight:800;
+  }
+  .group-select:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-pale)}
+  .dish-editor-head{margin:13px 1px 8px;padding-top:12px;border-top:1px solid var(--line)}
+  .dish-editor-head h3{font-size:13px}
+  .dish-editor-head span{color:var(--muted);font-size:10px;font-weight:750}
+  .options{
+    list-style:none;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    max-height:190px;
+    overflow:auto;
+    margin:0;
+    padding:1px;
+    scrollbar-width:thin;
+    scrollbar-color:var(--line) transparent;
+  }
+  .option-item{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    min-height:45px;
+    padding:6px 7px 6px 12px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:var(--surface);
+  }
+  .option-name{
+    min-width:0;
+    flex:1;
+    overflow:hidden;
+    font-size:13px;
+    font-weight:800;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .del{
+    flex:0 0 auto;
+    min-width:42px;
+    min-height:32px;
+    padding:5px 8px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .del:hover{background:var(--danger-pale);color:var(--danger)}
+  .del:disabled{opacity:.4;cursor:not-allowed}
+  .empty-option{
+    grid-column:1 / -1;
+    justify-content:center;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
   .add-row{
     display:flex;
-    gap:6px;
-    margin-bottom:14px;
+    gap:8px;
+    margin-top:11px;
   }
   .add-row input{
+    min-width:0;
     flex:1;
-    background:var(--panel);
-    border:1px solid #3a1f1c;
+    min-height:48px;
+    padding:10px 13px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    outline:0;
+    background:var(--surface);
     color:var(--ink);
-    padding:10px 12px;
-    border-radius:12px;
     font-size:14px;
-    outline:none;
+    font-weight:750;
   }
-  .add-row input:focus-visible{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent-dim)}
+  .add-row input::placeholder{color:#9dadaf;font-weight:650}
+  .add-row input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-pale)}
   .add-row button{
-    appearance:none;
-    background:linear-gradient(180deg,#2a1613,#1a0d0e);
-    border:1px solid #3a1f1c;
-    color:var(--accent);
-    padding:0 14px;
-    border-radius:12px;
-    font-size:14px;
-    font-weight:600;
+    min-width:76px;
+    min-height:48px;
+    padding:10px 14px;
+    border:1px solid var(--aqua);
+    border-radius:15px;
+    background:var(--aqua-pale);
+    color:var(--aqua-deep);
+    font-size:13px;
+    font-weight:850;
     cursor:pointer;
-    transition:background 0.2s;
   }
-  .add-row button:hover{background:linear-gradient(180deg,#331d1a,#221312)}
-  .add-row button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .actions{
-    display:flex;
-    gap:10px;
-    margin-bottom:14px;
-  }
-  .btn{
-    flex:1;
-    appearance:none;
-    border:1px solid #3a1f1c;
-    background:var(--panel);
-    color:var(--ink);
-    padding:12px 10px;
-    border-radius:14px;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:background 0.2s, transform 0.1s;
-  }
-  .btn:hover{background:var(--panel2)}
-  .btn:active{transform:translateY(1px)}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .btn.primary{
-    background:linear-gradient(180deg,#5a2f1a,#3d2012);
-    border-color:#7a4225;
-    color:var(--accent);
-  }
-  .btn.primary:hover{background:linear-gradient(180deg,#6a3820,#452516)}
-  .btn[disabled]{
-    opacity:0.4;
-    cursor:not-allowed;
-  }
-  .hint{
-    font-size:12px;
+  .add-row button:hover{background:#c8efec}
+  .add-row button:disabled{opacity:.45;cursor:not-allowed}
+  .option-help{
+    margin:11px 2px 0;
     color:var(--muted);
+    font-size:10px;
+    line-height:1.55;
     text-align:center;
-    line-height:1.5;
+  }
+  .spin-button:focus-visible,.reset-action:focus-visible,.del:focus-visible,.add-row button:focus-visible,.result-action:focus-visible,.result-note-action:focus-visible,.group-chip:focus-visible,.group-delete:focus-visible,.group-select:focus-visible,.guide-tab:focus-visible,.guide-add:focus-visible,.group-scroll-button:focus-visible,.disclosure summary:focus-visible{
+    outline:3px solid var(--aqua-pale);
+    outline-offset:2px;
   }
   .sr-only{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+  @media (min-width:560px){
+    body{padding:24px}
+    .app{
+      min-height:min(960px,calc(100dvh - 48px));
+      border:1px solid var(--line);
+      border-radius:34px;
+      box-shadow:var(--shadow);
+    }
+  }
+  @media (max-width:370px){
+    .topbar{padding-left:14px;padding-right:14px}
+    .quick-pick{margin-left:12px;margin-right:12px}
+    .wheel-stage{padding-left:12px;padding-right:12px}
+    .options-panel{padding-left:14px;padding-right:14px}
+    .option-name{font-size:12px}
+    .del{min-width:38px;padding-inline:5px}
+  }
+  @media (max-height:760px){
+    .intro{padding-top:3px}
+    .intro-copy{display:none}
+    .wheel-canvas{width:min(70vw,310px);height:min(70vw,310px)}
+    .result{min-height:64px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
   }
 </style>
 </head>
 <body>
-  <main class="app" role="application" aria-label="食物輪盤">
-    <p class="eyebrow">可編輯 · 本地輪盤</p>
-    <h1 class="title">食物輪盤</h1>
+  <main class="app" role="application" aria-label="今天吃什麼美食輪盤">
+    <header class="topbar">
+      <div class="count-pill" aria-label="目前輪盤有 15 道料理"><strong id="optionCount">15</strong><span>道</span></div>
+      <button class="reset-action" type="button" data-action="reset" id="resetBtn">恢復預設</button>
+    </header>
 
-    <div class="wheel-wrap" aria-hidden="true">
-      <div class="pointer"></div>
-      <div class="wheel" id="wheel"></div>
-      <div class="center-dot"></div>
-    </div>
+    <section class="intro" aria-labelledby="pageTitle">
+      <p class="intro-kicker">今天不想再選了</p>
+      <h1 id="pageTitle">今天吃什麼？</h1>
+      <p class="intro-copy">選分類、轉輪盤，就這兩步。</p>
+    </section>
 
-    <div class="result empty" id="result" aria-live="polite">尚未旋轉</div>
+    <section class="quick-pick" aria-labelledby="optionsHeading">
+      <div class="step-head">
+        <div>
+          <p class="step-label">步驟 1</p>
+          <h2 id="optionsHeading">想吃哪一類？</h2>
+        </div>
+        <div class="step-actions">
+          <span>可複選</span>
+          <button class="group-scroll-button" id="groupScrollBtn" type="button">更多分類</button>
+        </div>
+      </div>
+      <div class="group-list" id="groupList" aria-label="料理分類，可多選"></div>
+      <p class="active-summary" id="activeSummary">已選 5 個分類 · 15 道料理</p>
+    </section>
 
-    <ul class="options" id="optionsList" aria-label="可編輯的食物選項">
-      <!-- 預設選項，由 JS 填入 -->
-    </ul>
+    <section class="wheel-stage" aria-label="美食抽選">
+      <div class="step-head wheel-step-head">
+        <div>
+          <p class="step-label">步驟 2</p>
+          <h2>轉輪盤</h2>
+        </div>
+        <p>不滿意可再轉</p>
+      </div>
+      <canvas class="wheel-canvas" id="wheel" width="712" height="712" aria-hidden="true"></canvas>
+      <p class="sr-only" id="wheelDescription">輪盤會從目前的食物選項中隨機選出一項。</p>
 
-    <div class="add-row">
-      <input id="addInput" type="text" placeholder="輸入食物名稱" maxlength="40" aria-label="新增食物選項">
-      <button type="button" id="addBtn">新增</button>
-    </div>
+      <div class="result empty" id="result" aria-live="polite">
+        <div class="result-main">
+          <img class="result-thumb" id="resultThumb" src="assets/rice-guide.png" alt="">
+          <div class="result-copy">
+            <span class="result-label" id="resultLabel">輪盤還沒開動</span>
+            <strong class="result-value" id="resultValue">準備好就轉一圈</strong>
+            <span class="result-hint" id="resultHint"></span>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="result-action" id="copyBtn" type="button">複製搜尋詞</button>
+          <a class="result-action map-action" id="mapBtn" href="#" target="_blank" rel="noopener noreferrer">Google 地圖查找</a>
+        </div>
+        <button class="result-note-action" id="noteBtn" type="button">查看這組過往美食筆記</button>
+      </div>
 
-    <div class="actions">
-      <button class="btn primary" type="button" data-action="spin" id="spinBtn">旋轉</button>
-      <button class="btn" type="button" data-action="reset" id="resetBtn">重置選項</button>
-    </div>
+      <button class="spin-button" type="button" data-action="spin" id="spinBtn">幫我決定</button>
+      <p class="spin-note" id="spinNote">至少保留 2 個選項才能旋轉</p>
+    </section>
 
-    <p class="hint">編輯選項後旋轉，至少兩個選項才能旋轉。結果僅供參考。</p>
-    <div class="sr-only" id="announce" aria-live="assertive"></div>
+    <section class="options-panel" aria-label="更多設定與美食筆記">
+      <details class="disclosure" id="customizePanel">
+        <summary>
+          <span class="disclosure-summary">
+            <span class="disclosure-title">自訂分類與料理</span>
+            <span class="disclosure-hint">需要時再新增或修改</span>
+          </span>
+        </summary>
+        <div class="disclosure-body">
+          <div class="add-row group-add-row">
+            <input id="groupInput" type="text" placeholder="新增分類，例如：印度料理" maxlength="16" autocomplete="off" aria-label="新增料理分類">
+            <button type="button" id="groupAddBtn">新增分類</button>
+          </div>
+
+          <div class="editor-card">
+            <div class="group-editor-head">
+              <label for="editGroupSelect">目前編輯的分類</label>
+              <button class="group-delete" type="button" id="deleteGroupBtn">刪除此分類</button>
+            </div>
+            <select class="group-select" id="editGroupSelect" aria-label="目前編輯的分類"></select>
+            <div class="dish-editor-head">
+              <h3>分類內的料理</h3>
+              <span id="selectedGroupCount">0 / 12 道</span>
+            </div>
+            <ul class="options" id="optionsList" aria-label="可編輯的食物選項"></ul>
+            <div class="add-row">
+              <input id="addInput" type="text" placeholder="新增料理，例如：椒麻雞" maxlength="24" autocomplete="off" aria-label="新增食物選項">
+              <button type="button" id="addBtn">加入分類</button>
+            </div>
+          </div>
+          <p class="option-help">啟用的分類會合併進輪盤，分類和料理只儲存在這台裝置。最多同時抽選 24 道料理。</p>
+        </div>
+      </details>
+
+      <details class="disclosure" id="notebookPanel">
+        <summary>
+          <span class="disclosure-summary">
+            <span class="disclosure-title" id="notebookHeading">過往美食筆記</span>
+            <span class="disclosure-hint">5 組口袋名單與食物小圖</span>
+          </span>
+        </summary>
+        <div class="disclosure-body">
+          <section class="notebook" id="notebook" aria-labelledby="notebookHeading">
+            <div class="notebook-head">
+              <h3>選一組筆記</h3>
+              <p>點小圖切換</p>
+            </div>
+            <div class="guide-tabs" id="guideTabs" aria-label="美食筆記分類"></div>
+            <article class="guide-preview">
+              <img id="guideImage" src="assets/rice-guide.png" alt="飯食主義插圖">
+              <div>
+                <strong id="guideTitle">飯食主義</strong>
+                <p id="guideIntro">雞肉飯、便當與精緻飯食的口袋名單。</p>
+              </div>
+              <button class="guide-add" id="guideAddBtn" type="button">把這組料理加入分類</button>
+            </article>
+            <ul class="guide-places" id="guidePlaces" aria-label="飯食主義店家筆記"></ul>
+            <p class="source-note">內容整理自你提供的過往照片；店家營業與品項可能變動，出發前請再確認。</p>
+          </section>
+        </div>
+      </details>
+      <div class="sr-only" id="announce" aria-live="assertive"></div>
+    </section>
   </main>
 
 <script>
 (function(){
-  const NS = 'food-wheel:v1';
-  const STORAGE_KEY = NS;
+  const STORAGE_KEY = 'food-wheel:v3';
+  const LEGACY_KEY = 'food-wheel:v2';
+  const MAX_GROUPS = 10;
+  const MAX_FOODS_PER_GROUP = 12;
+  const MAX_WHEEL_ITEMS = 24;
+  const LEGACY_DEFAULT_OPTIONS = [
+    '便當','牛肉麵','火鍋','日式料理','義大利麵','燒肉',
+    '泰式料理','早午餐','水餃','咖哩飯','素食','自己煮'
+  ];
+  const DEFAULT_GROUPS = [
+    { id:'taiwanese', name:'台式', active:true, foods:['便當','牛肉麵','水餃'] },
+    { id:'japanese', name:'日式', active:true, foods:['壽司','拉麵','丼飯'] },
+    { id:'thai', name:'泰式', active:true, foods:['打拋豬','綠咖哩','泰式炒河粉'] },
+    { id:'vietnamese', name:'越式', active:true, foods:['越南河粉','越式法國麵包','生春捲'] },
+    { id:'korean', name:'韓式', active:true, foods:['石鍋拌飯','韓式炸雞','部隊鍋'] }
+  ];
+  const COLORS = [
+    '#10b8ca','#62c9d6','#f3b25e','#ee8f73','#78c6aa','#5ea6cf',
+    '#a48bd2','#e995ad','#6fbd69','#efc65c','#51b9b0','#7aa7d8'
+  ];
+  const GUIDE_LIBRARY = [
+    {
+      id:'rice',
+      title:'飯食主義',
+      groupName:'飯食筆記',
+      image:'assets/rice-guide.png',
+      intro:'雞肉飯、便當、釜飯與台式自助餐的口袋名單。',
+      foods:['雞肉飯','日式釜飯','燒臘便當','油飯','台式自助餐'],
+      places:[
+        {name:'梁記嘉義雞肉飯',note:'排隊人潮多但值得；旁有自助結帳機，照片筆記提醒只能刷悠遊卡。'},
+        {name:'瑞哥雞肉飯／純真雞肉飯',note:'穩定的美味選擇。'},
+        {name:'土雞康伊通店',note:'照片記錄為新開店，口味不錯。'},
+        {name:'木釜自然日式釜飯',note:'飯體與配料一起炒過，口感精緻，外帶袋份量大。'},
+        {name:'名門燒臘',note:'份量十足，便當盒設計精緻。'},
+        {name:'甲霸油飯',note:'想吃少一點時的選擇，可搭配雙拼。'},
+        {name:'鮮美香台式自助餐店／台式家園自助餐',note:'店員夾菜的傳統台式口味。'}
+      ]
+    },
+    {
+      id:'noodle',
+      title:'麵食與小點',
+      groupName:'麵食小點',
+      image:'assets/noodle-guide.png',
+      intro:'水餃、蒸餃、麵線、潤餅與滷味，適合換換口味。',
+      foods:['蝦餃','蒸餃','沙茶牛肉','麵線','潤餅捲','滷味'],
+      places:[
+        {name:'正豪季水餃專賣店',note:'激推蝦餃，蝦仁飽滿且皮 Q，是辦公室的人氣選擇。'},
+        {name:'珍美味水餃餛飩／紫琳蒸餃大王',note:'在地老店的美味保證，也是具知名度的蒸餃選擇。'},
+        {name:'福記沙茶牛羊肉店',note:'口味極佳，但份量較精簡。'},
+        {name:'阿維麵線／老胡記／鱻味',note:'適合天氣熱、沒胃口的時候。'},
+        {name:'元記潤餅捲',note:'份量足；過往筆記建議點餐時可說「不要甜」。'},
+        {name:'香師傅滷味',note:'CP 值高，便宜又美味。'}
+      ]
+    },
+    {
+      id:'global',
+      title:'異國風味',
+      groupName:'異國風味',
+      image:'assets/global-guide.png',
+      intro:'義式、咖哩、越式與日式烏龍麵，換一個國家的味道。',
+      foods:['義大利麵','咖哩飯','越南河粉','日式烏龍麵'],
+      places:[
+        {name:'轉角義式餐坊＿89 Corner',note:'個人回訪多次的愛店，義大利麵表現出色。'},
+        {name:'WoWwu 哇嗚咖哩',note:'照片筆記中的區域推薦咖哩飯，口味濃郁。'},
+        {name:'清水越南河粉',note:'口味清淡、價格便宜，適合追求低負擔午餐的日子。'}
+      ]
+    },
+    {
+      id:'healthy',
+      title:'健康輕食',
+      groupName:'健康輕食',
+      image:'assets/healthy-guide.png',
+      intro:'健康餐盒、蛋白質捲餅、碳烤吐司與精緻早午餐。',
+      foods:['健康餐盒','蛋白質捲餅','碳烤吐司','炸豬排飯'],
+      places:[
+        {name:'卡洛狸',note:'照片筆記中健康餐盒的首推品牌。'},
+        {name:'京簡康',note:'照片記錄為鬍鬚張旗下品牌，整體表現不錯。'},
+        {name:'優卡輕食',note:'主打蛋白質捲餅，份量適中且美味。'},
+        {name:'良晨吉司 碳烤吐司',note:'課桌椅裝潢有特色，菠蘿漢堡也受到推薦。'},
+        {name:'街角複合式餐坊',note:'過往筆記推薦 120 元炸豬排飯，並支援線上訂餐。'},
+        {name:'早吧 Morning Bar',note:'義大利麵表現出色。'}
+      ]
+    },
+    {
+      id:'tea',
+      title:'聚餐下午茶',
+      groupName:'聚餐下午茶',
+      image:'assets/tea-guide.png',
+      intro:'聚餐、手搖飲與下午茶點心的補給名單。',
+      foods:['聚餐','手搖飲','胡椒餅'],
+      places:[
+        {name:'Tempo House／老爺小花園',note:'氣氛佳、座位舒適，適合跨部門聚餐或主管請客。'},
+        {name:'有飲／青山／大茗／龜記／木衛二／六韻茶',note:'照片整理的手搖飲一條街選擇。'},
+        {name:'季緣',note:'願意多走一點時，是過往筆記中特別推薦的飲品選擇。'},
+        {name:'黑老闆胡椒餅',note:'網路高評價推薦，是下午茶的熱門點心。'}
+      ]
+    }
+  ];
 
-  const $ = (s) => document.querySelector(s);
-  const wheel = $('#wheel');
+  const $ = (selector) => document.querySelector(selector);
+  const canvas = $('#wheel');
+  const context = canvas.getContext('2d');
   const result = $('#result');
+  const resultLabel = $('#resultLabel');
+  const resultValue = $('#resultValue');
+  const resultThumb = $('#resultThumb');
+  const resultHint = $('#resultHint');
+  const copyBtn = $('#copyBtn');
+  const mapBtn = $('#mapBtn');
+  const noteBtn = $('#noteBtn');
+  const groupList = $('#groupList');
+  const groupScrollBtn = $('#groupScrollBtn');
+  const activeSummary = $('#activeSummary');
+  const groupInput = $('#groupInput');
+  const groupAddBtn = $('#groupAddBtn');
+  const editGroupSelect = $('#editGroupSelect');
+  const deleteGroupBtn = $('#deleteGroupBtn');
+  const selectedGroupCount = $('#selectedGroupCount');
   const optionsList = $('#optionsList');
+  const optionCount = $('#optionCount');
   const addInput = $('#addInput');
   const addBtn = $('#addBtn');
   const spinBtn = $('#spinBtn');
+  const spinNote = $('#spinNote');
   const resetBtn = $('#resetBtn');
+  const customizePanel = $('#customizePanel');
+  const notebookPanel = $('#notebookPanel');
+  const notebook = $('#notebook');
+  const guideTabs = $('#guideTabs');
+  const guideImage = $('#guideImage');
+  const guideTitle = $('#guideTitle');
+  const guideIntro = $('#guideIntro');
+  const guidePlaces = $('#guidePlaces');
+  const guideAddBtn = $('#guideAddBtn');
   const announce = $('#announce');
+  const prefersReducedMotion = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : { matches:false };
 
-  // 預設選項
-  const DEFAULT_OPTIONS = [
-    '蒲燒鰻魚飯',
-    '牛肉麵',
-    ' 환입하는 師傅、煎餅、炒麵',
-  ];
+  let groups = [];
+  let editGroupId = '';
+  let rotation = 0;
+  let spinning = false;
+  let selectedGuideId = GUIDE_LIBRARY[0].id;
+  let groupDragPointerId = null;
+  let groupDragStartX = 0;
+  let groupDragStartScroll = 0;
+  let groupDragMoved = false;
 
-  let options = [];
+  function cloneDefaults(){
+    return DEFAULT_GROUPS.map((group) => ({
+      id:group.id,
+      name:group.name,
+      active:group.active,
+      foods:group.foods.slice()
+    }));
+  }
 
-  function loadOptions(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed) && parsed.length){
-          options = parsed;
-        }
+  function normalizeFoods(values){
+    if(!Array.isArray(values)) return [];
+    const output = [];
+    const seen = new Set();
+    values.forEach((value) => {
+      const normalized = typeof value === 'string' ? value.trim() : '';
+      const key = normalized.toLocaleLowerCase('zh-Hant-TW');
+      if(normalized && normalized.length <= 24 && !seen.has(key) && output.length < MAX_FOODS_PER_GROUP){
+        seen.add(key);
+        output.push(normalized);
       }
-    }catch(e){ options = []; }
-    if(!options.length){
-      options = DEFAULT_OPTIONS.slice();
-    }
+    });
+    return output;
   }
 
-  function saveOptions(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(options)); }catch(e){}
-  }
-
-  function renderOptions(){
-    optionsList.innerHTML = '';
-    if(!options.length){
-      const li = document.createElement('li');
-      li.style.justifyContent = 'center';
-      li.style.color = 'var(--muted)';
-      li.style.fontSize = '13px';
-      li.textContent = '目前沒有選項，請新增';
-      optionsList.appendChild(li);
-    } else {
-      options.forEach((opt, idx) => {
-        const li = document.createElement('li');
-        const textSpan = document.createElement('span');
-        textSpan.textContent = opt;
-        li.appendChild(textSpan);
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'del';
-        delBtn.textContent = '✕';
-        delBtn.setAttribute('aria-label', '刪除 ' + opt);
-        delBtn.addEventListener('click', () => {
-          options.splice(idx,1);
-          saveOptions();
-          renderOptions();
-          updateSpinEnabled();
-          if(announce) announce.textContent = '已刪除 ' + opt;
-        });
-        li.appendChild(delBtn);
-        optionsList.appendChild(li);
+  function normalizeGroups(values){
+    if(!Array.isArray(values)) return [];
+    const output = [];
+    const names = new Set();
+    const ids = new Set();
+    values.forEach((value,index) => {
+      if(!value || typeof value !== 'object' || output.length >= MAX_GROUPS) return;
+      const name = typeof value.name === 'string' ? value.name.trim() : '';
+      const nameKey = name.toLocaleLowerCase('zh-Hant-TW');
+      if(!name || name.length > 16 || names.has(nameKey)) return;
+      let id = typeof value.id === 'string' && value.id ? value.id : 'group-' + index;
+      while(ids.has(id)) id += '-copy';
+      names.add(nameKey);
+      ids.add(id);
+      output.push({
+        id,
+        name,
+        active:value.active !== false,
+        foods:normalizeFoods(value.foods)
       });
-    }
-    updateSpinEnabled();
+    });
+    return output;
   }
 
-  function updateSpinEnabled(){
-    spinBtn.disabled = options.length < 2;
-    if(options.length < 2 && result.classList.contains('empty') === false){
-      // 若剛好選完且清空
+  function arraysEqual(left,right){
+    return left.length === right.length && left.every((value,index) => value === right[index]);
+  }
+
+  function makeGroupId(){
+    return 'group-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7);
+  }
+
+  function loadState(){
+    try{
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      const storedGroups = normalizeGroups(parsed && parsed.groups);
+      if(storedGroups.length){
+        groups = storedGroups;
+        editGroupId = storedGroups.some((group) => group.id === parsed.editGroupId)
+          ? parsed.editGroupId
+          : storedGroups[0].id;
+        return;
+      }
+
+      const legacy = normalizeFoods(JSON.parse(localStorage.getItem(LEGACY_KEY) || '[]'));
+      if(legacy.length && !arraysEqual(legacy,LEGACY_DEFAULT_OPTIONS)){
+        groups = [{
+          id:'my-foods',
+          name:'我的料理',
+          active:true,
+          foods:legacy
+        }];
+        editGroupId = groups[0].id;
+        saveState();
+        return;
+      }
+    }catch(error){
+      groups = [];
     }
+    groups = cloneDefaults();
+    editGroupId = groups[0].id;
+    saveState();
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY,JSON.stringify({groups,editGroupId}));
+    }catch(error){
+      announce.textContent = '瀏覽器無法儲存目前分類與料理';
+    }
+  }
+
+  function currentGroup(){
+    return groups.find((group) => group.id === editGroupId) || groups[0] || null;
+  }
+
+  function guideById(id){
+    return GUIDE_LIBRARY.find((guide) => guide.id === id) || GUIDE_LIBRARY[0];
+  }
+
+  function guideForGroup(group){
+    if(!group) return null;
+    const exact = GUIDE_LIBRARY.find((guide) => guide.groupName === group.name || 'guide-' + guide.id === group.id);
+    if(exact) return exact;
+    if(/健康|輕食|餐盒|早午餐/.test(group.name)) return guideById('healthy');
+    if(/聚餐|下午茶|飲料|飲品|手搖/.test(group.name)) return guideById('tea');
+    if(/越|日|泰|韓|義|咖哩|異國|印度/.test(group.name)) return guideById('global');
+    if(/麵|小點|水餃|蒸餃|滷味/.test(group.name)) return guideById('noodle');
+    if(/台|飯|便當/.test(group.name)) return guideById('rice');
+    return null;
+  }
+
+  function guideForChoice(choice){
+    const text = choice.groupName + ' ' + choice.name;
+    if(/健康|輕食|餐盒|捲餅|吐司|早午餐/.test(text)) return guideById('healthy');
+    if(/聚餐|下午茶|飲料|飲品|手搖|胡椒餅/.test(text)) return guideById('tea');
+    if(/越式|日式|泰式|韓式|義式|義大利|咖哩|烏龍|河粉|異國|印度/.test(text)) return guideById('global');
+    if(/麵|水餃|蒸餃|蝦餃|滷味|潤餅|沙茶/.test(text)) return guideById('noodle');
+    return guideById('rice');
+  }
+
+  function noteHintForChoice(choice,guide){
+    const text = choice.groupName + ' ' + choice.name;
+    const matches = [
+      [/雞肉飯/,'梁記嘉義雞肉飯'],
+      [/便當|燒臘/,'名門燒臘'],
+      [/釜飯/,'木釜自然日式釜飯'],
+      [/油飯/,'甲霸油飯'],
+      [/水餃|蝦餃/,'正豪季水餃專賣店'],
+      [/蒸餃/,'紫琳蒸餃大王'],
+      [/潤餅/,'元記潤餅捲'],
+      [/滷味/,'香師傅滷味'],
+      [/義大利/,'轉角義式餐坊＿89 Corner'],
+      [/咖哩/,'WoWwu 哇嗚咖哩'],
+      [/越式|越南|河粉/,'清水越南河粉'],
+      [/健康|餐盒/,'卡洛狸'],
+      [/吐司/,'良晨吉司 碳烤吐司'],
+      [/胡椒餅/,'黑老闆胡椒餅'],
+      [/手搖|飲料|飲品/,'手搖飲一條街']
+    ];
+    const match = matches.find(([pattern]) => pattern.test(text));
+    return match ? match[1] : guide.title + ' · ' + guide.places.length + ' 筆店家';
+  }
+
+  function renderGuideLibrary(){
+    const guide = guideById(selectedGuideId);
+    guideTabs.innerHTML = '';
+    GUIDE_LIBRARY.forEach((item) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'guide-tab';
+      button.setAttribute('aria-pressed',String(item.id === guide.id));
+      button.setAttribute('aria-label','查看' + item.title + '筆記，共 ' + item.places.length + ' 筆');
+      const image = document.createElement('img');
+      image.src = item.image;
+      image.alt = '';
+      const label = document.createElement('span');
+      label.textContent = item.title;
+      button.append(image,label);
+      button.addEventListener('click',() => {
+        selectedGuideId = item.id;
+        renderGuideLibrary();
+      });
+      guideTabs.appendChild(button);
+    });
+
+    guideImage.src = guide.image;
+    guideImage.alt = guide.title + '插圖';
+    guideTitle.textContent = guide.title;
+    guideIntro.textContent = guide.intro;
+    guidePlaces.setAttribute('aria-label',guide.title + '店家筆記');
+    guidePlaces.innerHTML = '';
+    guide.places.forEach((place) => {
+      const item = document.createElement('li');
+      item.className = 'guide-place';
+      const name = document.createElement('strong');
+      name.textContent = place.name;
+      const note = document.createElement('p');
+      note.textContent = place.note;
+      item.append(name,note);
+      guidePlaces.appendChild(item);
+    });
+
+    const existing = groups.find((group) => group.name === guide.groupName);
+    guideAddBtn.textContent = existing ? '已收錄，前往編輯這組料理' : '把這組料理加入分類';
+    guideAddBtn.disabled = spinning || (!existing && groups.length >= MAX_GROUPS);
+  }
+
+  function addGuideGroup(){
+    if(spinning) return;
+    const guide = guideById(selectedGuideId);
+    const existing = groups.find((group) => group.name === guide.groupName);
+    if(existing){
+      editGroupId = existing.id;
+      saveState();
+      customizePanel.open = true;
+      renderAll();
+      requestAnimationFrame(() => {
+        document.querySelector('.editor-card').scrollIntoView({behavior:prefersReducedMotion.matches ? 'auto' : 'smooth',block:'start'});
+      });
+      announce.textContent = '已切換到' + existing.name + '分類';
+      return;
+    }
+    if(groups.length >= MAX_GROUPS){
+      announce.textContent = '分類已達 ' + MAX_GROUPS + ' 組上限，請先刪除不需要的分類';
+      return;
+    }
+    const used = new Set(groups.flatMap((group) => group.foods).map((food) => food.toLocaleLowerCase('zh-Hant-TW')));
+    const foods = guide.foods.filter((food) => !used.has(food.toLocaleLowerCase('zh-Hant-TW'))).slice(0,MAX_FOODS_PER_GROUP);
+    if(!foods.length){
+      announce.textContent = guide.title + '的料理已經收錄在其他分類';
+      return;
+    }
+    const active = activeWheelItems().length + foods.length <= MAX_WHEEL_ITEMS;
+    const group = {id:'guide-' + guide.id,name:guide.groupName,active,foods};
+    groups.push(group);
+    editGroupId = group.id;
+    saveState();
+    clearResult();
+    customizePanel.open = true;
+    renderAll();
+    requestAnimationFrame(() => {
+      document.querySelector('.editor-card').scrollIntoView({behavior:prefersReducedMotion.matches ? 'auto' : 'smooth',block:'start'});
+    });
+    announce.textContent = '已加入' + group.name + '，共 ' + foods.length + ' 道料理' + (active ? '' : '；因輪盤上限先保持關閉');
+  }
+
+  function activeWheelItems(){
+    const items = [];
+    groups.forEach((group) => {
+      if(!group.active) return;
+      group.foods.forEach((food) => {
+        items.push({groupId:group.id,groupName:group.name,name:food});
+      });
+    });
+    return items;
+  }
+
+  function fitCanvas(){
+    const cssSize = Math.max(260,Math.round(canvas.getBoundingClientRect().width));
+    const density = Math.min(2,window.devicePixelRatio || 1);
+    const pixels = Math.round(cssSize * density);
+    if(canvas.width !== pixels || canvas.height !== pixels){
+      canvas.width = pixels;
+      canvas.height = pixels;
+    }
+    drawWheel(activeWheelItems());
+  }
+
+  function drawWheel(items){
+    const size = canvas.width;
+    const center = size / 2;
+    const scale = size / 712;
+    const radius = 285 * scale;
+    const innerRadius = 51 * scale;
+    const pointerTop = 14 * scale;
+    const pointerWidth = 38 * scale;
+    const arc = items.length ? Math.PI * 2 / items.length : Math.PI * 2;
+    context.clearRect(0,0,size,size);
+    context.save();
+    context.translate(center,center + 18 * scale);
+
+    context.shadowColor = 'rgba(26,79,78,.16)';
+    context.shadowBlur = 30 * scale;
+    context.shadowOffsetY = 10 * scale;
+    context.beginPath();
+    context.arc(0,0,radius + 7 * scale,0,Math.PI * 2);
+    context.fillStyle = '#ffffff';
+    context.fill();
+    context.shadowColor = 'transparent';
+
+    if(!items.length){
+      context.beginPath();
+      context.arc(0,0,radius,0,Math.PI * 2);
+      context.fillStyle = '#e5eceb';
+      context.fill();
+    }
+
+    items.forEach((item,index) => {
+      const start = -Math.PI / 2 + rotation + index * arc;
+      const end = start + arc;
+      context.beginPath();
+      context.moveTo(0,0);
+      context.arc(0,0,radius,start,end);
+      context.closePath();
+      context.fillStyle = COLORS[index % COLORS.length];
+      context.fill();
+      context.strokeStyle = 'rgba(255,255,255,.82)';
+      context.lineWidth = 3 * scale;
+      context.stroke();
+
+      const middle = start + arc / 2;
+      context.save();
+      context.rotate(middle);
+      context.translate(radius * .63,0);
+      if(Math.cos(middle) < 0) context.rotate(Math.PI);
+      context.fillStyle = '#16363a';
+      context.font = '800 ' + Math.max(21,Math.min(25,42 - items.length)) * scale + 'px -apple-system, BlinkMacSystemFont, PingFang TC, sans-serif';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      const maxLength = items.length > 18 ? 3 : items.length > 12 ? 4 : 6;
+      const label = item.name.length > maxLength ? item.name.slice(0,maxLength - 1) + '…' : item.name;
+      context.fillText(label,0,0,radius * .48);
+      context.restore();
+    });
+
+    context.beginPath();
+    context.arc(0,0,innerRadius,0,Math.PI * 2);
+    context.fillStyle = '#ffffff';
+    context.fill();
+    context.lineWidth = 8 * scale;
+    context.strokeStyle = '#087e84';
+    context.stroke();
+    context.fillStyle = '#16363a';
+    context.font = '850 ' + 27 * scale + 'px -apple-system, BlinkMacSystemFont, PingFang TC, sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText('吃',0,1 * scale);
+    context.restore();
+
+    context.beginPath();
+    context.moveTo(center - pointerWidth,pointerTop);
+    context.lineTo(center + pointerWidth,pointerTop);
+    context.lineTo(center,83 * scale);
+    context.closePath();
+    context.fillStyle = '#087e84';
+    context.fill();
   }
 
   function clearResult(){
-    result.textContent = '尚未旋轉';
     result.classList.add('empty');
+    resultLabel.textContent = '輪盤還沒開動';
+    resultValue.textContent = '準備好就轉一圈';
+    resultThumb.alt = '';
+    resultHint.textContent = '';
+    copyBtn.dataset.query = '';
+    mapBtn.dataset.query = '';
+    mapBtn.href = '#';
+  }
+
+  function updateGroupScrollControl(){
+    const maxScroll = Math.max(0,groupList.scrollWidth - groupList.clientWidth);
+    const canScroll = maxScroll > 2;
+    const atEnd = canScroll && groupList.scrollLeft >= maxScroll - 4;
+    groupScrollBtn.hidden = !canScroll;
+    groupScrollBtn.textContent = atEnd ? '回到前面' : '更多分類';
+    groupScrollBtn.setAttribute('aria-label',atEnd ? '回到第一個料理分類' : '查看右側更多料理分類');
+  }
+
+  function scrollGroupList(){
+    const maxScroll = Math.max(0,groupList.scrollWidth - groupList.clientWidth);
+    if(maxScroll <= 2) return;
+    const atEnd = groupList.scrollLeft >= maxScroll - 4;
+    const target = atEnd
+      ? 0
+      : Math.min(maxScroll,groupList.scrollLeft + Math.max(140,groupList.clientWidth * .72));
+    groupList.scrollTo({left:target,behavior:prefersReducedMotion.matches ? 'auto' : 'smooth'});
+    announce.textContent = atEnd ? '已回到第一個料理分類' : '已顯示右側更多料理分類';
+  }
+
+  function renderGroups(){
+    if(!groups.some((group) => group.id === editGroupId)) editGroupId = groups[0] ? groups[0].id : '';
+    groupList.innerHTML = '';
+    groups.forEach((group) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'group-chip';
+      button.dataset.groupId = group.id;
+      button.setAttribute('aria-pressed',String(group.active));
+      button.setAttribute(
+        'aria-label',
+        group.name + '，' + group.foods.length + ' 道料理，' + (group.active ? '已加入輪盤' : '未加入輪盤')
+      );
+      const guide = guideForGroup(group);
+      if(guide){
+        const image = document.createElement('img');
+        image.className = 'group-thumb';
+        image.src = guide.image;
+        image.alt = '';
+        button.appendChild(image);
+      }
+      const name = document.createElement('span');
+      name.textContent = group.name;
+      const count = document.createElement('small');
+      count.textContent = group.foods.length + ' 道';
+      button.append(name,count);
+      button.addEventListener('click',() => toggleGroup(group.id));
+      groupList.appendChild(button);
+    });
+
+    editGroupSelect.innerHTML = '';
+    groups.forEach((group) => {
+      const option = document.createElement('option');
+      option.value = group.id;
+      option.textContent = group.name;
+      option.selected = group.id === editGroupId;
+      editGroupSelect.appendChild(option);
+    });
+    requestAnimationFrame(updateGroupScrollControl);
+  }
+
+  function renderDishes(){
+    const group = currentGroup();
+    optionsList.innerHTML = '';
+    if(!group){
+      selectedGroupCount.textContent = '0 / ' + MAX_FOODS_PER_GROUP + ' 道';
+      return;
+    }
+    optionsList.setAttribute('aria-label',group.name + '分類的可編輯料理');
+    selectedGroupCount.textContent = group.foods.length + ' / ' + MAX_FOODS_PER_GROUP + ' 道';
+    if(!group.foods.length){
+      const empty = document.createElement('li');
+      empty.className = 'option-item empty-option';
+      empty.textContent = '這個分類還沒有料理，先新增一道。';
+      optionsList.appendChild(empty);
+      return;
+    }
+    group.foods.forEach((food,index) => {
+      const item = document.createElement('li');
+      item.className = 'option-item';
+      const name = document.createElement('span');
+      name.className = 'option-name';
+      name.textContent = food;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'del';
+      remove.textContent = '刪除';
+      remove.setAttribute('aria-label','從' + group.name + '刪除 ' + food);
+      remove.addEventListener('click',() => {
+        if(spinning) return;
+        group.foods.splice(index,1);
+        saveState();
+        clearResult();
+        renderAll();
+        announce.textContent = '已從' + group.name + '刪除 ' + food;
+      });
+      item.append(name,remove);
+      optionsList.appendChild(item);
+    });
+  }
+
+  function updateControls(){
+    const items = activeWheelItems();
+    const activeGroups = groups.filter((group) => group.active);
+    const group = currentGroup();
+    const guide = guideById(selectedGuideId);
+    const existingGuideGroup = groups.find((item) => item.name === guide.groupName);
+    const canSpin = items.length >= 2 && !spinning;
+    spinBtn.disabled = !canSpin;
+    resetBtn.disabled = spinning;
+    groupInput.disabled = spinning || groups.length >= MAX_GROUPS;
+    groupAddBtn.disabled = spinning || groups.length >= MAX_GROUPS;
+    editGroupSelect.disabled = spinning;
+    deleteGroupBtn.disabled = spinning || groups.length <= 1;
+    guideAddBtn.disabled = spinning || (!existingGuideGroup && groups.length >= MAX_GROUPS);
+    addInput.disabled = spinning || !group || group.foods.length >= MAX_FOODS_PER_GROUP ||
+      Boolean(group && group.active && items.length >= MAX_WHEEL_ITEMS);
+    addBtn.disabled = addInput.disabled;
+    groupList.querySelectorAll('.group-chip').forEach((button) => { button.disabled = spinning; });
+    optionsList.querySelectorAll('.del').forEach((button) => { button.disabled = spinning; });
+
+    optionCount.textContent = String(items.length);
+    optionCount.parentElement.setAttribute('aria-label','目前輪盤有 ' + items.length + ' 道料理');
+    activeSummary.textContent = '已選 ' + activeGroups.length + ' 個分類 · ' + items.length + ' 道料理';
+
+    if(spinning){
+      spinBtn.textContent = '輪盤旋轉中…';
+      spinNote.textContent = '輪盤正在慢慢停下來…';
+    }else{
+      spinBtn.textContent = result.classList.contains('empty') ? '幫我決定' : '再轉一次';
+      if(!activeGroups.length){
+        spinNote.textContent = '請先啟用至少一個料理分類';
+      }else if(items.length < 2){
+        spinNote.textContent = '至少需要 2 道料理才能旋轉';
+      }else if(result.classList.contains('empty')){
+        spinNote.textContent = '已選 ' + activeGroups.length + ' 類、' + items.length + ' 道，按「幫我決定」開始';
+      }else{
+        spinNote.textContent = '不滿意結果，可以再轉一次';
+      }
+    }
+  }
+
+  function renderAll(){
+    renderGroups();
+    renderDishes();
+    renderGuideLibrary();
+    updateControls();
+    drawWheel(activeWheelItems());
+  }
+
+  function toggleGroup(groupId){
+    if(spinning) return;
+    const group = groups.find((item) => item.id === groupId);
+    if(!group) return;
+    if(!group.active && activeWheelItems().length + group.foods.length > MAX_WHEEL_ITEMS){
+      announce.textContent = '加入' + group.name + '會超過 ' + MAX_WHEEL_ITEMS + ' 道料理上限';
+      editGroupId = groupId;
+      renderGroups();
+      renderDishes();
+      updateControls();
+      return;
+    }
+    group.active = !group.active;
+    editGroupId = groupId;
+    saveState();
+    clearResult();
+    renderAll();
+    announce.textContent = group.name + (group.active ? '已加入輪盤' : '已從輪盤移除');
+  }
+
+  function addGroup(){
+    if(spinning || groups.length >= MAX_GROUPS) return;
+    const name = groupInput.value.trim();
+    if(!name) return;
+    const duplicate = groups.some((group) => group.name.toLocaleLowerCase('zh-Hant-TW') === name.toLocaleLowerCase('zh-Hant-TW'));
+    if(duplicate){
+      announce.textContent = name + '分類已經存在';
+      groupInput.select();
+      return;
+    }
+    const group = {id:makeGroupId(),name,active:true,foods:[]};
+    groups.push(group);
+    editGroupId = group.id;
+    groupInput.value = '';
+    saveState();
+    clearResult();
+    renderAll();
+    addInput.focus();
+    announce.textContent = '已新增' + name + '分類，現在可以加入料理';
+  }
+
+  function deleteCurrentGroup(){
+    if(spinning || groups.length <= 1) return;
+    const group = currentGroup();
+    if(!group) return;
+    groups = groups.filter((item) => item.id !== group.id);
+    editGroupId = groups[0].id;
+    saveState();
+    clearResult();
+    renderAll();
+    announce.textContent = '已刪除' + group.name + '分類';
+  }
+
+  function addFood(){
+    const group = currentGroup();
+    if(spinning || !group || group.foods.length >= MAX_FOODS_PER_GROUP) return;
+    const value = addInput.value.trim();
+    if(!value) return;
+    const duplicate = group.foods.some((food) => food.toLocaleLowerCase('zh-Hant-TW') === value.toLocaleLowerCase('zh-Hant-TW'));
+    if(duplicate){
+      announce.textContent = value + '已經在' + group.name + '分類裡';
+      addInput.select();
+      return;
+    }
+    if(group.active && activeWheelItems().length >= MAX_WHEEL_ITEMS){
+      announce.textContent = '輪盤已放滿 ' + MAX_WHEEL_ITEMS + ' 道料理，請先停用其他分類';
+      return;
+    }
+    group.foods.push(value);
+    saveState();
+    addInput.value = '';
+    clearResult();
+    renderAll();
+    addInput.focus();
+    announce.textContent = '已把' + value + '加入' + group.name + '分類';
+  }
+
+  function finishSpin(chosenIndex,items){
+    spinning = false;
+    const chosen = items[chosenIndex];
+    const guide = guideForChoice(chosen);
+    const query = chosen.name + ' ' + chosen.groupName + ' 附近';
+    result.classList.remove('empty');
+    resultLabel.textContent = chosen.groupName + ' · 今天就吃這個';
+    resultValue.textContent = chosen.name;
+    resultThumb.src = guide.image;
+    resultThumb.alt = guide.title + '食物插圖';
+    resultHint.textContent = '過往筆記 · ' + noteHintForChoice(chosen,guide);
+    selectedGuideId = guide.id;
+    copyBtn.dataset.query = query;
+    mapBtn.dataset.query = query;
+    const mapsBase = ['https:','','www.google.com','maps','search',''].join('/');
+    mapBtn.href = mapsBase + '?api=1&query=' + encodeURIComponent(query);
+    renderGuideLibrary();
+    updateControls();
+    announce.textContent = '輪盤選中' + chosen.groupName + '的' + chosen.name;
   }
 
   function spin(){
-    if(spinBtn.disabled) return;
-    if(options.length < 2) return;
-    wheel.classList.remove('spinning');
-    // 強制 reflow 再加類別
-    void wheel.offsetWidth;
-    wheel.classList.add('spinning');
-    // 隨機選一個
-    const chosen = options[Math.floor(Math.random() * options.length)];
-    // 在動畫結束後顯示結果
-    setTimeout(() => {
-      wheel.classList.remove('spinning');
-      result.textContent = chosen;
-      result.classList.remove('empty');
-      if(announce) announce.textContent = '選中 ' + chosen;
-    }, 920);
+    const items = activeWheelItems();
+    if(spinning || items.length < 2) return;
+    spinning = true;
+    clearResult();
+    updateControls();
+    const chosenIndex = Math.floor(Math.random() * items.length);
+    const arc = Math.PI * 2 / items.length;
+    const normalizedRotation = ((rotation % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const selectedOffset = -((chosenIndex + .5) * arc);
+    const targetModulo = ((selectedOffset % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const correction = (targetModulo - normalizedRotation + Math.PI * 2) % (Math.PI * 2);
+    const fullTurns = prefersReducedMotion.matches ? 0 : 5 + Math.floor(Math.random() * 2);
+    const startRotation = rotation;
+    const targetRotation = rotation + fullTurns * Math.PI * 2 + correction;
+    const duration = prefersReducedMotion.matches ? 180 : 4100;
+    const startTime = performance.now();
+
+    function frame(now){
+      const elapsed = Math.min(1,(now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - elapsed,4);
+      rotation = startRotation + (targetRotation - startRotation) * eased;
+      drawWheel(items);
+      if(elapsed < 1){
+        requestAnimationFrame(frame);
+      }else{
+        rotation = targetRotation;
+        drawWheel(items);
+        finishSpin(chosenIndex,items);
+      }
+    }
+    requestAnimationFrame(frame);
   }
 
-  function addOption(){
-    const val = addInput.value.trim();
-    if(!val) return;
-    if(options.includes(val)){
-      if(announce) announce.textContent = '該選項已存在';
-      addInput.value = '';
+  function resetAll(){
+    if(spinning) return;
+    groups = cloneDefaults();
+    editGroupId = groups[0].id;
+    rotation = 0;
+    saveState();
+    clearResult();
+    renderAll();
+    announce.textContent = '已恢復預設分類與料理';
+  }
+
+  function fallbackCopy(query){
+    const helper = document.createElement('textarea');
+    helper.value = query;
+    helper.setAttribute('readonly','');
+    helper.style.position = 'fixed';
+    helper.style.opacity = '0';
+    document.body.appendChild(helper);
+    helper.select();
+    let copied = false;
+    try{ copied = document.execCommand('copy'); }catch(error){ copied = false; }
+    helper.remove();
+    return copied;
+  }
+
+  async function copySearchQuery(){
+    const query = copyBtn.dataset.query;
+    if(!query) return;
+    let copied = false;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try{
+        await navigator.clipboard.writeText(query);
+        copied = true;
+      }catch(error){ copied = fallbackCopy(query); }
+    }else{
+      copied = fallbackCopy(query);
+    }
+    if(!copied){
+      copyBtn.textContent = '複製失敗';
+      resultLabel.textContent = '可手動搜尋：' + query;
+      announce.textContent = '無法自動複製，請手動搜尋 ' + query;
+      window.setTimeout(() => { copyBtn.textContent = '複製搜尋詞'; },1600);
       return;
     }
-    options.push(val);
-    saveOptions();
-    renderOptions();
-    addInput.value = '';
-    addInput.focus();
-    if(announce) announce.textContent = '已新增 ' + val;
+    copyBtn.textContent = '已複製';
+    announce.textContent = '已複製搜尋詞 ' + query;
+    window.setTimeout(() => { copyBtn.textContent = '複製搜尋詞'; },1200);
   }
 
-  function resetOptions(){
-    options = DEFAULT_OPTIONS.slice();
-    saveOptions();
-    renderOptions();
-    clearResult();
-    if(announce) announce.textContent = '已重置為預設選項';
-  }
-
-  addBtn.addEventListener('click', addOption);
-  addInput.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){ e.preventDefault(); addOption(); }
-  });
-  spinBtn.addEventListener('click', spin);
-  resetBtn.addEventListener('click', resetOptions);
-
-  // 鍵盤：S 旋轉、R 重置
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 's' || e.key === 'S'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        spin();
-        e.preventDefault();
-      }
-    } else if(e.key === 'r' || e.key === 'R'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        resetOptions();
-        e.preventDefault();
-      }
+  groupAddBtn.addEventListener('click',addGroup);
+  groupInput.addEventListener('keydown',(event) => {
+    if(event.key === 'Enter'){
+      event.preventDefault();
+      addGroup();
     }
   });
+  editGroupSelect.addEventListener('change',() => {
+    editGroupId = editGroupSelect.value;
+    saveState();
+    renderDishes();
+    updateControls();
+  });
+  deleteGroupBtn.addEventListener('click',deleteCurrentGroup);
+  addBtn.addEventListener('click',addFood);
+  addInput.addEventListener('keydown',(event) => {
+    if(event.key === 'Enter'){
+      event.preventDefault();
+      addFood();
+    }
+  });
+  spinBtn.addEventListener('click',spin);
+  resetBtn.addEventListener('click',resetAll);
+  copyBtn.addEventListener('click',copySearchQuery);
+  groupScrollBtn.addEventListener('click',scrollGroupList);
+  groupList.addEventListener('scroll',updateGroupScrollControl,{passive:true});
+  groupList.addEventListener('pointerdown',(event) => {
+    if(event.pointerType !== 'mouse' || event.button !== 0) return;
+    groupDragPointerId = event.pointerId;
+    groupDragStartX = event.clientX;
+    groupDragStartScroll = groupList.scrollLeft;
+    groupDragMoved = false;
+  });
+  groupList.addEventListener('pointermove',(event) => {
+    if(event.pointerId !== groupDragPointerId) return;
+    const distance = event.clientX - groupDragStartX;
+    if(Math.abs(distance) > 5 && !groupDragMoved){
+      groupDragMoved = true;
+      groupList.setPointerCapture(event.pointerId);
+    }
+    if(!groupDragMoved) return;
+    event.preventDefault();
+    groupList.classList.add('is-dragging');
+    groupList.scrollLeft = groupDragStartScroll - distance;
+  });
+  function endGroupDrag(event){
+    if(event.pointerId !== groupDragPointerId) return;
+    if(groupList.hasPointerCapture(event.pointerId)) groupList.releasePointerCapture(event.pointerId);
+    groupDragPointerId = null;
+    groupList.classList.remove('is-dragging');
+  }
+  groupList.addEventListener('pointerup',endGroupDrag);
+  groupList.addEventListener('pointercancel',endGroupDrag);
+  groupList.addEventListener('click',(event) => {
+    if(!groupDragMoved) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    groupDragMoved = false;
+  },true);
+  noteBtn.addEventListener('click',() => {
+    notebookPanel.open = true;
+    requestAnimationFrame(() => {
+      notebook.scrollIntoView({behavior:prefersReducedMotion.matches ? 'auto' : 'smooth',block:'start'});
+    });
+  });
+  guideAddBtn.addEventListener('click',addGuideGroup);
+  mapBtn.addEventListener('click',(event) => {
+    const query = mapBtn.dataset.query;
+    if(!query){
+      event.preventDefault();
+      return;
+    }
+    announce.textContent = '已開啟 Google 地圖查找 ' + query;
+  });
+  window.addEventListener('resize',() => {
+    fitCanvas();
+    updateGroupScrollControl();
+  });
 
-  loadOptions();
-  renderOptions();
-  updateSpinEnabled();
+  loadState();
+  renderAll();
   clearResult();
+  updateControls();
+  requestAnimationFrame(fitCanvas);
 })();
 </script>
 </body>

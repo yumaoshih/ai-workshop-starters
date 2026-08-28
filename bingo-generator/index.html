@@ -2,112 +2,738 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=390, initial-scale=1">
-<title>賓果產生器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一起賓果｜朋友到齊就開局</title>
 <style>
   :root{
-    --bg:#f4ede4; --card:#fff; --accent:#7c5cbf; --free:#e08dc0;
-    --text:#2b2622; --border:#d9cfbf;
+    --bg:#fbf7f0;--card:#fffdfa;--ink:#26221f;--muted:#756d66;--line:#e2d6c7;
+    --purple:#6d49c5;--purple-dark:#5632ae;--purple-soft:#f6f1ff;
+    --pink:#e75182;--pink-soft:#fff4f7;--green:#35a965;--amber:#b18a59;--danger:#a63b46;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
-  h1{font-size:18px;margin:0 0 12px}
-  .layout{display:grid;grid-template-columns:1fr;gap:14px;max-width:390px;margin:0 auto}
-  .field{display:flex;gap:8px;align-items:flex-start}
-  .item-list{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;flex:1;max-height:200px;overflow:auto}
-  .item-list input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px;font-size:13px;margin:3px 0}
-  .board{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px;max-width:390px;margin:0 auto}
-  .board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-  .cell{background:#f6f1ea;border:1px solid var(--border);border-radius:8px;height:48px;display:flex;align-items:center;justify-content:center;font-size:12px;text-align:center;padding:4px;word-break:break-word}
-  .cell.free{background:var(--free);color:#fff;font-weight:700;border-color:var(--free)}
-  .tools{display:flex;gap:10px;margin-top:10px}
-  button{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;cursor:pointer}
-  button:hover{opacity:.92}
-  button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  @media (min-width:560px){
-    .layout{grid-template-columns:240px 1fr}
+  html{background:var(--bg)}
+  body{margin:0;color:var(--ink);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  button,input,textarea{font:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:.42}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,[role="button"]:focus-visible{outline:3px solid #78a8ff;outline-offset:3px}
+  [hidden]{display:none!important}
+  .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+  .topbar{width:min(1360px,100%);margin:0 auto;padding:28px 34px 0;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{border:0;background:transparent;color:var(--ink);padding:0;font-size:28px;font-weight:950;letter-spacing:-.06em}
+  .quick-nav{display:flex;align-items:center;gap:8px}
+  .nav-action{border:1px solid transparent;border-radius:999px;padding:9px 15px;background:transparent;color:var(--ink);font-weight:800}
+  .nav-action:hover{background:#f1e9df}.nav-action[aria-selected="true"]{border-color:var(--line);background:var(--card)}
+  .app{width:min(1360px,100%);margin:0 auto;padding:48px 34px 72px}
+  h1,h2,h3,p{margin-top:0}
+  h1{font-size:clamp(46px,6vw,82px);line-height:1.05;letter-spacing:-.065em;margin-bottom:20px}
+  h2{font-size:26px;letter-spacing:-.035em;margin-bottom:8px}
+  h3{font-size:18px;letter-spacing:-.025em}
+  .lead{font-size:19px;color:var(--muted);line-height:1.65;margin-bottom:0}
+  .welcome-copy{text-align:center;max-width:900px;margin:36px auto 38px}
+  .welcome-copy .lead{font-size:21px}
+  .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;max-width:1120px;margin:0 auto}
+  .choice-card{min-height:410px;border:1px solid var(--line);border-radius:24px;padding:36px 44px 34px;text-align:center;background:var(--card);display:flex;flex-direction:column;align-items:center}
+  .choice-card.host{background:var(--purple-soft);border-color:#d8caef}
+  .choice-card.player{background:var(--pink-soft);border-color:#f3cdd9}
+  .choice-icon{width:112px;height:112px;object-fit:contain;margin-bottom:4px;border-radius:24px}
+  .choice-card.player .choice-icon{background:var(--pink-soft)}
+  .choice-card h2{font-size:44px;margin:4px 0 9px}
+  .choice-card.host h2{color:var(--purple-dark)}.choice-card.player h2{color:var(--pink)}
+  .choice-card p{font-size:17px;color:#554e48;margin-bottom:26px}
+  .choice-card .product-button{width:100%;margin-top:auto}
+  .product-button,.outline-button,.text-button,.danger-button{border-radius:12px;padding:14px 20px;font-weight:850;border:1px solid transparent}
+  .product-button{background:var(--purple);color:#fff}.product-button:hover:not(:disabled){background:var(--purple-dark)}
+  .product-button.pink{background:var(--pink)}.product-button.pink:hover{background:#ca3c6b}
+  .outline-button{background:transparent;border-color:var(--purple);color:var(--purple)}
+  .text-button{background:#f5efe7;border-color:var(--line);color:var(--ink)}
+  .danger-button{background:#fff2f2;border-color:#ecc2c5;color:var(--danger)}
+  .theme-strip{max-width:900px;margin:40px auto 0;text-align:center}
+  .theme-strip h2{font-size:18px;margin-bottom:16px}.theme-options{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .theme-option{border:1px solid var(--line);border-radius:14px;background:transparent;color:var(--ink);padding:16px;font-weight:850}
+  .theme-option[aria-pressed="true"]{background:var(--card);border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 2px rgba(109,73,197,.08)}
+  .no-signup{margin:24px 0 0;color:var(--muted);font-size:14px}
+  .page-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:34px}
+  .page-intro h1{font-size:clamp(42px,5vw,66px);margin-bottom:10px}.page-intro .lead{font-size:17px}
+  .status{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--card);color:var(--muted);font-size:13px;font-weight:800;white-space:nowrap}
+  .status::before{content:"";width:9px;height:9px;border-radius:50%;background:#b8aa9b}
+  .status.connected::before,.status.ready::before{background:var(--green)}.status.waiting::before{background:var(--amber)}
+  .lobby-grid{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(460px,1.18fr);gap:22px}
+  .panel{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:28px}
+  .room-card{display:flex;flex-direction:column;min-height:560px}
+  .room-label{font-size:15px;font-weight:850;text-align:center;margin:26px 0 18px}
+  .room-code{font:950 clamp(54px,6vw,84px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--purple);text-align:center;margin-bottom:30px}
+  .room-card .outline-button{width:100%;font-size:17px}.room-card .hint{text-align:center;margin:18px auto 0;max-width:360px}
+  .hint{color:var(--muted);font-size:14px;line-height:1.6}
+  .request-box{margin-top:auto;border-top:1px solid var(--line);padding-top:22px}
+  details summary{cursor:pointer;font-weight:850;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  details summary::-webkit-details-marker{display:none}details summary::after{content:"＋";color:var(--pink);font-size:22px}details[open] summary::after{content:"－"}
+  .request-fields{padding-top:18px}.request-fields label{margin-top:12px}
+  label{display:block;font-size:14px;font-weight:850;margin-bottom:8px}
+  input[type="text"],textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);padding:13px 14px}
+  input[type="text"]{font-size:17px}textarea{min-height:86px;resize:vertical;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .request-actions,.tools,.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .request-actions button,.tools button{flex:1}
+  .toast{min-height:20px;margin-top:8px;color:var(--green);font-size:13px}
+  .pending{margin-top:14px;padding:14px 16px;border:1px solid #f0cbd7;background:var(--pink-soft);border-radius:12px}
+  .pending strong{display:block;margin-bottom:3px}.pending + .product-button{margin-top:10px;width:100%}
+  .confirmation{margin-top:14px;padding:14px;border-radius:14px;background:var(--purple-soft);border:1px solid #d9cdf0}
+  .confirmation p{margin:0 0 10px;color:#5d5271;font-size:13px;line-height:1.5}
+  .people-card h2{font-size:22px}.people-card .subhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .section-rule{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .player-list{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+  .player-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:#fffaf4}
+  .player-actions{display:flex;align-items:center;gap:8px}.compact{padding:7px 10px;font-size:12px}
+  .empty{padding:18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;text-align:center}
+  .lobby-footer{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(420px,1.18fr);gap:22px;margin-top:22px}
+  .theme-card{display:flex;align-items:center;justify-content:space-between;gap:20px}.theme-card p{margin:0;color:var(--muted);font-size:13px}.theme-card strong{display:block;font-size:21px;margin-top:5px}
+  .start-card{padding:0;border:0;background:transparent}.start-card .product-button{width:100%;min-height:116px;font-size:27px}.start-copy{display:block;font-size:14px;font-weight:650;margin-top:6px;opacity:.78}
+  .topic-settings{margin-top:22px}.topic-settings > summary{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:18px 20px}
+  .topic-settings[open] > summary{border-radius:16px 16px 0 0}.editor-card{border-radius:0 0 18px 18px;border-top:0}
+  .setup-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(300px,1.25fr);gap:18px}
+  .item-list{background:#f8f2e9;border:1px solid var(--line);border-radius:14px;padding:10px;max-height:380px;overflow:auto}
+  .item-list input{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 10px;font-size:13px;margin:3px 0;color:var(--ink)}
+  .board{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;max-width:560px;margin:0 auto;width:100%}
+  .board-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .cell{background:#f8f2e9;border:1px solid var(--line);border-radius:9px;min-height:68px;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1.25;text-align:center;padding:5px;word-break:break-word;position:relative}
+  .cell.free{background:var(--pink);color:#fff;font-weight:850;border-color:var(--pink)}
+  .cell.marked{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:800}
+  .cell.marked::after{content:"✓";position:absolute;right:5px;top:3px;font-size:11px}.player-board .cell:not(.free){cursor:pointer}
+  .game-card{margin-top:22px}.game-console{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(360px,1.28fr);gap:18px}
+  .call-display{display:grid;place-items:center;min-height:180px;padding:20px;text-align:center;background:var(--ink);color:#fff;border-radius:16px}
+  .call-display span{color:#d7cec7;font-size:12px;letter-spacing:.1em}.call-display strong{display:block;font-size:clamp(24px,4vw,40px);line-height:1.2;margin-top:10px}
+  .called-list{display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start}.called-chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:#f8f2e9;font-size:12px}
+  .winner{background:var(--pink-soft);border:1px solid #edc5dd;color:#8b336a;padding:13px;border-radius:11px;font-weight:850;margin-top:12px}
+  .player-shell{max-width:920px;margin:0 auto}.player-shell .page-intro{text-align:center;display:block}.player-shell .page-intro .lead{max-width:560px;margin:0 auto}
+  .join-card{max-width:720px;margin:0 auto 18px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.join-card .product-button{width:100%;margin-top:16px}
+  .join-package{margin-top:18px;padding:18px;border:1px solid #d9cdf0;background:var(--purple-soft);border-radius:16px}.join-package h3{margin-bottom:6px}.join-package p{font-size:13px;color:var(--muted);line-height:1.55}
+  .connection-status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.game-message{padding:13px;border-radius:11px;background:#f8f2e9;color:var(--muted);line-height:1.55}.game-message.success{background:#eaf7f0;color:#247a52;font-weight:800}
+  .player-game-stage{margin-top:18px}
+  @media(max-width:820px){
+    .topbar{padding:20px 18px 0}.app{padding:34px 18px 54px}.brand{font-size:23px}.quick-nav{gap:2px}.nav-action{font-size:13px;padding:8px 10px}
+    .welcome-copy{margin-top:18px}.choice-grid,.lobby-grid,.lobby-footer,.setup-grid,.game-console,.form-row{grid-template-columns:1fr}.choice-grid{gap:16px}.choice-card{min-height:330px;padding:28px 24px}.choice-card h2{font-size:36px}.choice-icon{width:88px;height:88px}
+    .theme-options{grid-template-columns:1fr}.page-intro{display:block}.page-intro .status{margin-top:16px}.room-card{min-height:auto}.request-box{margin-top:28px}.room-code{font-size:50px}.start-card .product-button{min-height:96px}
+    .cell{min-height:52px;font-size:10px}.player-row{align-items:flex-start}.player-actions{flex-direction:column;align-items:flex-end}
+  }
+  @media print{
+    body{background:#fff}.topbar,#welcome-screen,.page-intro,.room-card,.people-card,.lobby-footer,.topic-settings>summary,.tools,.game-card{display:none!important}
+    .app{padding:0}.topic-settings{display:block}.editor-card{display:block;border:0;padding:0}.setup-grid{display:block}.item-list{display:none}.board{max-width:none;border:0}.cell{min-height:18vw;border-radius:0;font-size:17px}
   }
 </style>
 </head>
 <body>
-<main>
-  <h1>賓果卡產生器</h1>
-  <div class="layout">
-    <div class="field">
-      <div class="item-list" id="item-list"></div>
+<header class="topbar">
+  <button class="brand" id="btn-home" type="button">一起賓果</button>
+  <nav class="quick-nav" role="tablist" aria-label="遊戲入口">
+    <button class="nav-action" id="role-host" type="button" role="tab" aria-controls="host-panel" aria-selected="true">開一局</button>
+    <button class="nav-action" id="role-player" type="button" role="tab" aria-controls="player-panel" aria-selected="false">加入遊戲</button>
+  </nav>
+</header>
+
+<main class="app">
+  <section id="welcome-screen">
+    <div class="welcome-copy">
+      <h1>今晚，來一局吧</h1>
+      <p class="lead">開個房間，邀朋友一起玩賓果。</p>
     </div>
-    <div class="board">
-      <div class="board-grid" id="bingo-board"></div>
+
+    <div class="choice-grid">
+      <article class="choice-card host">
+        <img class="choice-icon" src="assets/open-room.png" alt="">
+        <h2>開一局</h2>
+        <p>選好題目，馬上邀請朋友</p>
+        <button class="product-button" id="btn-create-room" type="button">開一局</button>
+      </article>
+      <article class="choice-card player">
+        <img class="choice-icon" src="assets/join-game.png" alt="">
+        <h2>加入遊戲</h2>
+        <p>輸入房間碼就能開始</p>
+        <button class="product-button pink" id="btn-open-join" type="button">加入遊戲</button>
+      </article>
     </div>
-    <div class="tools">
-      <button id="btn-regenerate" type="button">重新產生</button>
-      <button id="btn-print" type="button">列印</button>
-      <button id="btn-reset" type="button">重置</button>
+
+    <section class="theme-strip" aria-labelledby="theme-heading">
+      <h2 id="theme-heading">快速選擇主題</h2>
+      <div class="theme-options">
+        <button class="theme-option" type="button" data-theme="party" aria-pressed="true">聚會破冰</button>
+        <button class="theme-option" type="button" data-theme="friends" aria-pressed="false">朋友默契</button>
+        <button class="theme-option" type="button" data-theme="custom" aria-pressed="false">自訂題目</button>
+      </div>
+      <p class="no-signup">不用註冊，打開就玩</p>
+    </section>
+  </section>
+
+  <section id="host-panel" role="tabpanel" aria-labelledby="role-host" hidden>
+    <div class="page-intro">
+      <div>
+        <h1>朋友到齊，就開始吧</h1>
+        <p class="lead">分享房間碼、允許朋友加入，準備好就能開局。</p>
+      </div>
+      <span class="status" id="host-room-status">等待開局</span>
     </div>
-  </div>
+
+    <div id="host-room-flow" hidden>
+      <div class="lobby-grid">
+        <section class="panel room-card">
+          <div class="room-label">房間碼</div>
+          <div class="room-code" id="room-code">------</div>
+          <button class="outline-button" id="btn-copy-room" type="button">複製邀請</button>
+          <p class="hint">把房間碼傳給朋友，他們就能加入。</p>
+          <div class="toast" id="host-copy-status" role="status"></div>
+
+          <details class="request-box" id="host-request-box">
+            <summary>收到朋友的加入申請</summary>
+            <div class="request-fields">
+              <label for="host-offer-input">貼上朋友傳來的加入申請</label>
+              <textarea id="host-offer-input" autocomplete="off" spellcheck="false" placeholder="貼上加入申請內容"></textarea>
+              <div class="request-actions">
+                <button class="text-button" id="btn-inspect-offer" type="button">顯示申請人</button>
+              </div>
+            </div>
+          </details>
+
+          <div class="confirmation" id="host-confirmation" hidden>
+            <p>已允許加入。把這份入場確認傳回給玩家。</p>
+            <textarea class="visually-hidden" id="host-answer-output" readonly aria-label="入場確認內容"></textarea>
+            <button class="outline-button" id="btn-copy-answer" type="button">複製入場確認</button>
+          </div>
+        </section>
+
+        <section class="panel people-card">
+          <div class="subhead"><h2>等你允許</h2></div>
+          <div class="pending" id="pending-player" hidden></div>
+          <button class="product-button pink" id="btn-approve-player" type="button" hidden>允許加入</button>
+          <div class="empty" id="pending-empty">還沒有新的加入申請</div>
+
+          <hr class="section-rule">
+          <div class="subhead"><h2>已加入</h2><span class="status" id="host-game-status">等待朋友</span></div>
+          <ul class="player-list" id="host-player-list"><li class="empty">還沒有朋友加入</li></ul>
+        </section>
+      </div>
+
+      <div class="lobby-footer">
+        <section class="panel theme-card">
+          <div><p>遊戲題目</p><strong id="selected-theme-name">聚會破冰</strong></div>
+          <button class="text-button" id="btn-edit-theme" type="button">更換題目</button>
+        </section>
+        <section class="start-card">
+          <button class="product-button" id="btn-start-game" type="button" disabled>開始遊戲<span class="start-copy" id="start-ready-copy">等朋友準備好就能開始</span></button>
+        </section>
+      </div>
+
+      <details class="topic-settings" id="topic-settings">
+        <summary>編輯這一局的題目</summary>
+        <section class="panel editor-card">
+          <div class="setup-grid">
+            <div class="item-list" id="item-list" aria-label="賓果題目清單"></div>
+            <div class="board"><div class="board-grid" id="bingo-board" aria-label="主持人卡片預覽"></div></div>
+          </div>
+          <div class="tools">
+            <button class="product-button" id="btn-regenerate" type="button">換一張預覽</button>
+            <button class="text-button" id="btn-print" type="button">列印</button>
+            <button class="danger-button" id="btn-reset" type="button">恢復這組題目</button>
+          </div>
+        </section>
+      </details>
+
+      <section class="panel game-card" id="host-game-card" hidden>
+        <div class="page-intro">
+          <div><h2>這一局正在進行</h2><p class="hint">依序開題，朋友就能在自己的卡片上畫記。</p></div>
+        </div>
+        <div class="game-console">
+          <div>
+            <div class="call-display"><div><span>目前題目</span><strong id="host-current-call">尚未開題</strong></div></div>
+            <div class="actions"><button class="product-button" id="btn-call-next" type="button" disabled>開下一題</button></div>
+            <div class="winner" id="host-winner" hidden></div>
+          </div>
+          <div><h3>已開題目</h3><div class="called-list" id="host-called-list"><p class="empty">開題後會依序記錄在這裡</p></div></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="player-panel" class="player-shell" role="tabpanel" aria-labelledby="role-player" hidden>
+    <div class="page-intro">
+      <div><h1>加入朋友的賓果局</h1><p class="lead">拿到房間碼了嗎？輸入後就能一起玩。</p></div>
+    </div>
+
+    <section class="panel join-card">
+      <div class="form-row">
+        <div><label for="player-room-code">房間碼</label><input id="player-room-code" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="123 456"></div>
+        <div><label for="player-name">你的暱稱</label><input id="player-name" type="text" maxlength="24" autocomplete="nickname" placeholder="大家怎麼叫你？"></div>
+      </div>
+      <button class="product-button" id="btn-create-offer" type="button">送出加入申請</button>
+      <p class="hint" style="text-align:center;margin:12px 0 0">暱稱只會顯示在這一局。</p>
+
+      <div class="join-package" id="player-request-package" hidden>
+        <h3>把加入申請傳給主持人</h3>
+        <p>主持人看到你的名字並允許後，會傳回一份入場確認。</p>
+        <textarea class="visually-hidden" id="player-offer-output" readonly aria-label="加入申請內容"></textarea>
+        <button class="outline-button" id="btn-copy-offer" type="button">複製加入申請</button>
+        <div class="toast" id="player-copy-status" role="status"></div>
+      </div>
+
+      <div class="join-package" id="player-confirmation-package" hidden>
+        <h3>完成入場</h3>
+        <p>貼上主持人傳回的入場確認，就能進入房間。</p>
+        <label for="player-answer-input">入場確認</label>
+        <textarea id="player-answer-input" autocomplete="off" spellcheck="false" placeholder="貼上主持人傳回的內容"></textarea>
+        <button class="product-button" id="btn-apply-answer" type="button">完成加入</button>
+      </div>
+
+      <div class="connection-status">
+        <span class="status" id="player-connection-status">尚未加入</span>
+        <button class="text-button" id="btn-player-ready" type="button" disabled>我準備好了</button>
+      </div>
+      <div class="game-message" id="player-message" role="status">送出申請後，等主持人允許你加入。</div>
+    </section>
+
+    <section class="panel player-game-stage" id="player-game-card" hidden>
+      <div class="page-intro">
+        <div><h2>你的賓果卡</h2><p class="hint">主持人開出題目後，點一下對應的格子。</p></div>
+        <span class="status" id="player-game-status">等待開始</span>
+      </div>
+      <div class="call-display"><div><span>主持人目前開出</span><strong id="player-current-call">尚未開題</strong></div></div>
+      <div class="board player-board" style="margin-top:14px"><div class="board-grid" id="player-board" aria-label="玩家賓果卡"></div></div>
+      <button class="product-button" id="btn-claim-bingo" type="button" style="width:100%;margin-top:12px" disabled>我連成一線了！Bingo</button>
+    </section>
+  </section>
 </main>
+
 <script>
 (function(){
-  const NS = 'bingo-v1';
-  const DEFAULTS = [
-    '午餐吃什麼？','多喝水','早睡','讀一章書','散步 15 分鐘',
-    '回覆一封信','整理桌面','做 10 俯伏','寫日記','背 5 單字',
-    '打掃浴室','學一首歌','喝茶','整理郵件','做 20 伏伸',
-    '吃水果','記一個想法','打電話問候','做瑜伽','煮一道簡單菜',
-    '丟垃圾','寫待辦三件事','整理書架','學習 15 分鐘'
+  'use strict';
+  const ITEMS_KEY = 'bingo-v2:items';
+  const THEME_KEY = 'bingo-v2:theme';
+  const SIGNAL_VERSION = 1;
+  const FREE = '免費';
+  const THEMES = {
+    party:{name:'聚會破冰',items:[
+      '今天最早到','穿著黑色上衣','喜歡喝咖啡','今年去過旅行','養過寵物',
+      '會說兩種語言','最近看過電影','喜歡唱歌','是夜貓子','會做一道拿手菜',
+      '曾經迷路','喜歡吃辣','今年換過髮型','會玩樂器','手機剩不到 30%',
+      '喜歡拍照','有兄弟姊妹','今天搭大眾運輸','最近買了新東西','生日在下半年',
+      '喜歡戶外活動','看過日出','會騎腳踏車','第一次來這裡'
+    ]},
+    friends:{name:'朋友默契',items:[
+      '最常遲到的人','最會找美食的人','最會拍照的人','最適合當隊長','最容易睡著的人',
+      '聊天聊最久','最敢吃辣','最愛講冷笑話','最會安排行程','最常忘東忘西',
+      '最懂你的梗','最會安慰人','最愛買東西','最常分享迷因','最可能突然出國',
+      '最會記生日','最愛喝飲料','最常說隨便','最適合上節目','最會帶氣氛',
+      '最有神秘感','最容易迷路','最愛唱歌','認識最久的人'
+    ]},
+    custom:{name:'自訂題目',items:Array.from({length:24},(_,index)=>'自訂題目 '+(index+1))}
+  };
+  const DEFAULTS = THEMES.party.items;
+  const WIN_LINES = [
+    [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+    [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+    [0,6,12,18,24],[4,8,12,16,20]
   ];
-  function save(items){ try{ localStorage.setItem(NS+':items', JSON.stringify(items)); }catch(e){} }
-  function load(){
-    try{
-      const raw = localStorage.getItem(NS+':items');
-      if(raw){
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed) && parsed.length===24) return parsed;
-      }
-    }catch(e){}
-    return null;
+  const state = {
+    role:'welcome',
+    selectedTheme:loadTheme(),
+    items:loadItems(),
+    previewBoard:[],
+    room:{code:'',status:'idle',callDeck:[],called:[],current:''},
+    hostPeers:new Map(),
+    pendingOffer:null,
+    player:{id:'',name:'',roomCode:'',pc:null,channel:null,status:'idle',board:[],marks:new Set([12]),called:[]}
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function saveItems(){ try{ localStorage.setItem(ITEMS_KEY,JSON.stringify(state.items)); }catch(error){} }
+  function loadTheme(){
+    try{ const saved=localStorage.getItem(THEME_KEY); if(saved&&THEMES[saved]) return saved; }catch(error){}
+    return 'party';
   }
-  function renderList(items){
-    const host = document.getElementById('item-list');
-    host.innerHTML = '';
-    items.forEach((v,i)=>{
-      const inp = document.createElement('input');
-      inp.value = v;
-      inp.placeholder = '格子 '+(i+1);
-      inp.addEventListener('input', ()=>{
-        items[i] = inp.value;
-        save(items);
-      });
-      host.appendChild(inp);
+  function loadItems(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(ITEMS_KEY));
+      if(Array.isArray(parsed)&&parsed.length===24) return parsed;
+    }catch(error){}
+    return DEFAULTS.slice();
+  }
+  function randomId(bytes){
+    const values=new Uint8Array(bytes||8); crypto.getRandomValues(values);
+    return Array.from(values,value=>value.toString(16).padStart(2,'0')).join('');
+  }
+  function createRoomCode(){
+    const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const values=new Uint8Array(6); crypto.getRandomValues(values);
+    return Array.from(values,value=>alphabet[value%alphabet.length]).join('');
+  }
+  function shuffle(values){
+    const result=values.slice();
+    for(let i=result.length-1;i>0;i--){
+      const random=new Uint32Array(1); crypto.getRandomValues(random);
+      const j=random[0]%(i+1); [result[i],result[j]]=[result[j],result[i]];
+    }
+    return result;
+  }
+  function createBoard(items){
+    const shuffled=shuffle(items).slice(0,24); const board=[];
+    for(let i=0;i<25;i++) board.push(i===12?FREE:shuffled[i<12?i:i-1]);
+    return board;
+  }
+  function encodeSignal(payload){
+    const bytes=new TextEncoder().encode(JSON.stringify(payload)); let binary='';
+    bytes.forEach(byte=>{ binary+=String.fromCharCode(byte); });
+    return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function decodeSignal(code){
+    const raw=String(code||'').trim();
+    if(!raw||raw.length>120000) throw new Error('加入資料不完整，請重新複製一次');
+    const normalized=raw.replace(/-/g,'+').replace(/_/g,'/');
+    const padded=normalized+'='.repeat((4-normalized.length%4)%4);
+    const binary=atob(padded); const bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  function waitForIce(pc){
+    if(pc.iceGatheringState==='complete') return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      const timeout=setTimeout(()=>{ cleanup(); reject(new Error('準備加入申請逾時，請再試一次')); },10000);
+      function cleanup(){ clearTimeout(timeout); pc.removeEventListener('icegatheringstatechange',check); }
+      function check(){ if(pc.iceGatheringState==='complete'){ cleanup(); resolve(); } }
+      pc.addEventListener('icegatheringstatechange',check);
     });
   }
-  function renderBoard(items){
-    const host = document.getElementById('bingo-board');
-    host.innerHTML = '';
-    const shuffled = items.slice().sort(()=> Math.random()-0.5);
-    const all = shuffled.slice(0,24);
-    for(let i=0;i<25;i++){
-      const cell = document.createElement('div');
-      cell.className = 'cell' + (i===12 ? ' free' : '');
-      cell.textContent = i===12 ? '免費' : (all[i] || '');
+  function assertWebRTC(){ if(!window.RTCPeerConnection) throw new Error('目前這個瀏覽器無法開啟多人遊戲，請改用最新版瀏覽器'); }
+  function send(channel,message){ if(channel&&channel.readyState==='open') channel.send(JSON.stringify(message)); }
+  function safeMessage(event){
+    if(typeof event.data!=='string'||event.data.length>8192) return null;
+    try{ const message=JSON.parse(event.data); return message&&typeof message.type==='string'?message:null; }
+    catch(error){ return null; }
+  }
+  async function copyText(sourceId,statusId,label){
+    const source=$(sourceId); const textValue='value' in source?source.value:source.textContent;
+    if(!textValue||textValue.includes('---')) return;
+    try{
+      if(navigator.clipboard&&window.isSecureContext) await navigator.clipboard.writeText(textValue);
+      else{
+        const fallback=document.createElement('textarea'); fallback.value=textValue;
+        fallback.style.position='fixed'; fallback.style.opacity='0'; document.body.appendChild(fallback); fallback.select();
+        const copied=document.execCommand('copy'); fallback.remove(); if(!copied) throw new Error('copy failed');
+      }
+      $(statusId).textContent=label||'已複製';
+    }catch(error){ $(statusId).textContent='請手動全選複製'; }
+  }
+  function setText(id,text){ $(id).textContent=text; }
+  function setStatus(id,text,className){ const node=$(id); node.textContent=text; node.className='status'+(className?' '+className:''); }
+
+  function renderList(){
+    const host=$('item-list'); host.innerHTML='';
+    state.items.forEach((value,index)=>{
+      const input=document.createElement('input'); input.value=value; input.placeholder='格子 '+(index+1);
+      input.setAttribute('aria-label','格子 '+(index+1));
+      input.addEventListener('input',()=>{ state.items[index]=input.value; saveItems(); });
+      host.appendChild(input);
+    });
+  }
+  function renderBoard(hostId,board,marks,interactive){
+    const host=$(hostId); host.innerHTML='';
+    board.forEach((value,index)=>{
+      const cell=document.createElement('div');
+      cell.className='cell'+(index===12?' free':'')+(marks&&marks.has(index)?' marked':'');
+      cell.textContent=value||'';
+      if(interactive){
+        cell.setAttribute('role','button'); cell.tabIndex=index===12?-1:0;
+        const activate=()=>requestPlayerMark(index);
+        cell.addEventListener('click',activate);
+        cell.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); activate(); } });
+      }
       host.appendChild(cell);
+    });
+  }
+  function regeneratePreview(){ state.previewBoard=createBoard(state.items); renderBoard('bingo-board',state.previewBoard,null,false); }
+  function showWelcome(){
+    state.role='welcome';
+    $('welcome-screen').hidden=false; $('host-panel').hidden=true; $('player-panel').hidden=true;
+    $('role-host').setAttribute('aria-selected','true'); $('role-player').setAttribute('aria-selected','false');
+  }
+  function selectRole(role){
+    state.role=role; const isHost=role==='host';
+    $('welcome-screen').hidden=true;
+    $('role-host').setAttribute('aria-selected',String(isHost));
+    $('role-player').setAttribute('aria-selected',String(!isHost));
+    $('host-panel').hidden=!isHost; $('player-panel').hidden=isHost;
+  }
+  function applyTheme(themeKey){
+    const theme=THEMES[themeKey]; if(!theme) return;
+    state.selectedTheme=themeKey; state.items=theme.items.slice(); saveItems();
+    try{ localStorage.setItem(THEME_KEY,themeKey); }catch(error){}
+    document.querySelectorAll('.theme-option').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===themeKey)));
+    setText('selected-theme-name',theme.name); renderList(); regeneratePreview();
+  }
+
+  function closeHostPeers(){
+    state.hostPeers.forEach(peer=>{ if(peer.channel) peer.channel.close(); if(peer.pc) peer.pc.close(); });
+    state.hostPeers.clear();
+  }
+  function createRoom(){
+    if(state.hostPeers.size&& !window.confirm('建立新房間會中斷目前所有玩家，確定繼續嗎？')) return;
+    selectRole('host');
+    closeHostPeers();
+    state.room={code:createRoomCode(),status:'lobby',callDeck:[],called:[],current:''};
+    state.pendingOffer=null;
+    $('host-room-flow').hidden=false; setText('room-code',state.room.code);
+    $('host-offer-input').value=''; $('host-answer-output').value='';
+    $('pending-player').hidden=true; $('pending-empty').hidden=false; $('btn-approve-player').hidden=true; $('host-confirmation').hidden=true;
+    $('host-winner').hidden=true; $('host-game-card').hidden=true;
+    setStatus('host-room-status','等待開局','waiting');
+    setStatus('host-game-status','等待朋友','waiting');
+    setText('host-current-call','尚未開題');
+    renderHostCalled(); renderHostPlayers(); updateHostControls();
+  }
+  function inspectOffer(){
+    try{
+      if(state.room.status!=='lobby') throw new Error('請先建立仍在等待中的房間');
+      const offer=decodeSignal($('host-offer-input').value);
+      if(offer.v!==SIGNAL_VERSION||offer.kind!=='join-offer'||!offer.description||offer.description.type!=='offer') throw new Error('這份加入申請無法辨識，請朋友重新傳一次');
+      if(offer.roomCode!==state.room.code) throw new Error('這份加入申請不是這個房間的');
+      offer.name=String(offer.name||'').trim().slice(0,24);
+      if(!offer.playerId||!offer.name) throw new Error('加入申請缺少玩家資料');
+      if(state.hostPeers.has(offer.playerId)) throw new Error('這位玩家已經提出過申請');
+      state.pendingOffer=offer;
+      $('pending-player').innerHTML='<strong>'+escapeHtml(offer.name)+'</strong>想加入這一局';
+      $('pending-player').hidden=false; $('pending-empty').hidden=true; $('btn-approve-player').hidden=false;
+      $('host-request-box').open=false;
+    }catch(error){ state.pendingOffer=null; $('pending-player').textContent=error.message; $('pending-player').hidden=false; $('pending-empty').hidden=true; $('btn-approve-player').hidden=true; }
+  }
+  async function approvePlayer(){
+    const offer=state.pendingOffer; if(!offer) return;
+    const button=$('btn-approve-player'); button.disabled=true; button.textContent='正在允許加入…';
+    try{
+      assertWebRTC();
+      const pc=new RTCPeerConnection({iceServers:[]});
+      const peer={id:offer.playerId,name:offer.name,pc,channel:null,status:'approved',board:[],marks:new Set([12])};
+      state.hostPeers.set(peer.id,peer);
+      pc.addEventListener('datachannel',event=>{ peer.channel=event.channel; configureHostChannel(peer); });
+      pc.addEventListener('connectionstatechange',()=>{
+        if(['failed','closed','disconnected'].includes(pc.connectionState)){ peer.status='disconnected'; renderHostPlayers(); updateHostControls(); }
+      });
+      await pc.setRemoteDescription(offer.description);
+      await pc.setLocalDescription(await pc.createAnswer());
+      await waitForIce(pc);
+      $('host-answer-output').value=encodeSignal({v:SIGNAL_VERSION,kind:'join-answer',roomCode:state.room.code,playerId:peer.id,description:pc.localDescription.toJSON()});
+      state.pendingOffer=null; $('pending-player').hidden=true; $('pending-empty').hidden=false; $('btn-approve-player').hidden=true; $('host-offer-input').value='';
+      $('host-confirmation').hidden=false;
+      renderHostPlayers(); updateHostControls();
+    }catch(error){
+      $('pending-player').textContent=error.message; $('pending-player').hidden=false;
+      if(offer&&state.hostPeers.has(offer.playerId)){ const peer=state.hostPeers.get(offer.playerId); peer.pc.close(); state.hostPeers.delete(offer.playerId); }
+    }finally{ button.disabled=false; button.textContent='允許加入'; }
+  }
+  function configureHostChannel(peer){
+    const channel=peer.channel;
+    channel.addEventListener('open',()=>{
+      peer.status='connected';
+      send(channel,{type:'approved',roomCode:state.room.code,playerId:peer.id});
+      renderHostPlayers(); updateHostControls();
+    });
+    channel.addEventListener('message',event=>handleHostMessage(peer,safeMessage(event)));
+    channel.addEventListener('close',()=>{ peer.status='disconnected'; renderHostPlayers(); updateHostControls(); });
+  }
+  function handleHostMessage(peer,message){
+    if(!message) return;
+    if(message.type==='ready'&&state.room.status==='lobby'){
+      peer.status=message.ready?'ready':'connected'; renderHostPlayers(); updateHostControls();
+    }
+    if(message.type==='mark'&&state.room.status==='playing'){
+      const index=Number(message.index); const item=peer.board[index];
+      const valid=Number.isInteger(index)&&index>=0&&index<25&&(index===12||state.room.called.includes(item));
+      if(valid){ peer.marks.add(index); send(peer.channel,{type:'mark-result',index,marked:true}); }
+      else send(peer.channel,{type:'notice',text:'這一格還沒有被主持人開出'});
+    }
+    if(message.type==='bingo-claim'&&state.room.status==='playing'){
+      const won=WIN_LINES.some(line=>line.every(index=>peer.marks.has(index)));
+      send(peer.channel,{type:'bingo-result',won});
+      if(won){
+        state.room.status='finished'; setStatus('host-game-status','遊戲結束','connected');
+        $('host-winner').textContent=peer.name+' 完成 Bingo！'; $('host-winner').hidden=false;
+        broadcast({type:'game-finished',winner:peer.name}); updateHostControls();
+      }
     }
   }
-  function init(){
-    let items = load();
-    if(!items){ items = DEFAULTS.slice(); save(items); }
-    renderList(items);
-    renderBoard(items);
-    document.getElementById('btn-regenerate').addEventListener('click', ()=> renderBoard(items));
-    document.getElementById('btn-print').addEventListener('click', ()=> window.print());
-    document.getElementById('btn-reset').addEventListener('click', ()=>{
-      items.splice(0, items.length, ...DEFAULTS);
-      save(items);
-      renderList(items);
-      renderBoard(items);
+  function activePeers(){ return Array.from(state.hostPeers.values()).filter(peer=>peer.channel&&peer.channel.readyState==='open'&&peer.status!=='disconnected'); }
+  function renderHostPlayers(){
+    const host=$('host-player-list'); const peers=Array.from(state.hostPeers.values()); host.innerHTML='';
+    if(!peers.length){ host.innerHTML='<li class="empty">還沒有朋友加入</li>'; return; }
+    peers.forEach(peer=>{
+      const row=document.createElement('li'); row.className='player-row';
+      const label=peer.status==='ready'?'準備好了':peer.status==='connected'?'已加入':peer.status==='disconnected'?'暫時離開':peer.status==='playing'?'遊戲中':'已允許・等待入場';
+      const className=['ready','connected','playing'].includes(peer.status)?'connected':peer.status==='approved'?'waiting':'';
+      row.innerHTML='<strong>'+escapeHtml(peer.name)+'</strong><div class="player-actions"><span class="status '+className+'">'+label+'</span></div>';
+      if(state.room.status==='lobby'){
+        const remove=document.createElement('button'); remove.className='text-button compact'; remove.type='button'; remove.textContent='移除';
+        remove.addEventListener('click',()=>removeHostPeer(peer.id)); row.querySelector('.player-actions').appendChild(remove);
+      }
+      host.appendChild(row);
     });
   }
-  document.addEventListener('DOMContentLoaded', init);
+  function removeHostPeer(playerId){
+    if(state.room.status!=='lobby') return;
+    const peer=state.hostPeers.get(playerId); if(!peer) return;
+    send(peer.channel,{type:'removed'}); if(peer.channel) peer.channel.close(); peer.pc.close();
+    state.hostPeers.delete(playerId); renderHostPlayers(); updateHostControls();
+  }
+  function updateHostControls(){
+    const peers=Array.from(state.hostPeers.values());
+    const allReady=peers.length>0&&peers.every(peer=>peer.channel&&peer.channel.readyState==='open'&&peer.status==='ready');
+    $('btn-start-game').disabled=state.room.status!=='lobby'||!allReady;
+    $('btn-call-next').disabled=state.room.status!=='playing'||state.room.callDeck.length===0;
+    const readyCount=peers.filter(peer=>peer.status==='ready').length;
+    setText('start-ready-copy',allReady?'目前 '+readyCount+' 位玩家已準備好':peers.length?readyCount+' / '+peers.length+' 位玩家準備好':'等朋友準備好就能開始');
+  }
+  function startGame(){
+    const peers=Array.from(state.hostPeers.values());
+    if(!peers.length||!peers.every(peer=>peer.channel&&peer.channel.readyState==='open'&&peer.status==='ready')) return;
+    state.room.status='playing'; state.room.called=[]; state.room.current=''; state.room.callDeck=shuffle(state.items);
+    peers.forEach(peer=>{
+      peer.board=createBoard(state.items); peer.marks=new Set([12]); peer.status='playing';
+      send(peer.channel,{type:'game-started',board:peer.board});
+    });
+    setStatus('host-game-status','遊戲進行中','connected'); setStatus('host-room-status','已開局','connected'); setText('host-current-call','準備開第一題');
+    $('host-game-card').hidden=false;
+    renderHostPlayers(); renderHostCalled(); updateHostControls();
+    $('host-game-card').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function callNext(){
+    if(state.room.status!=='playing'||!state.room.callDeck.length) return;
+    const item=state.room.callDeck.shift(); state.room.current=item; state.room.called.push(item);
+    setText('host-current-call',item); broadcast({type:'item-called',item,called:state.room.called.slice()});
+    renderHostCalled(); updateHostControls();
+  }
+  function broadcast(message){ activePeers().forEach(peer=>send(peer.channel,message)); }
+  function renderHostCalled(){
+    const host=$('host-called-list'); host.innerHTML='';
+    if(!state.room.called.length){ host.innerHTML='<p class="empty">開始後會依序記錄在這裡</p>'; return; }
+    state.room.called.forEach((item,index)=>{ const chip=document.createElement('span'); chip.className='called-chip'; chip.textContent=(index+1)+'. '+item; host.appendChild(chip); });
+  }
+
+  function resetPlayerConnection(){
+    const player=state.player;
+    if(player.channel) player.channel.close(); if(player.pc) player.pc.close();
+    state.player={id:'',name:'',roomCode:'',pc:null,channel:null,status:'idle',board:[],marks:new Set([12]),called:[]};
+    $('player-offer-output').value=''; $('player-answer-input').value='';
+    $('player-request-package').hidden=true; $('player-confirmation-package').hidden=true;
+    $('player-game-card').hidden=true;
+    setStatus('player-connection-status','尚未加入',''); setStatus('player-game-status','等待開始','');
+    $('btn-player-ready').disabled=true; $('btn-player-ready').textContent='我準備好了'; $('btn-claim-bingo').disabled=true;
+    setText('player-current-call','尚未開題'); setPlayerMessage('送出申請後，等主持人允許你加入。');
+    renderBoard('player-board',[],state.player.marks,true);
+  }
+  async function createPlayerOffer(){
+    const roomCode=$('player-room-code').value.trim().toUpperCase(); const name=$('player-name').value.trim();
+    if(!/^[A-Z0-9]{6}$/.test(roomCode)){ setPlayerMessage('請輸入 6 位房間碼'); return; }
+    if(!name){ setPlayerMessage('請先輸入暱稱'); return; }
+    const button=$('btn-create-offer'); button.disabled=true; button.textContent='正在準備申請…';
+    try{
+      assertWebRTC(); resetPlayerConnection();
+      const pc=new RTCPeerConnection({iceServers:[]}); const channel=pc.createDataChannel('bingo',{ordered:true});
+      state.player={id:randomId(8),name,roomCode,pc,channel,status:'offered',board:[],marks:new Set([12]),called:[]};
+      configurePlayerChannel(channel);
+      pc.addEventListener('connectionstatechange',()=>{
+        if(['failed','closed','disconnected'].includes(pc.connectionState)){
+          state.player.status='disconnected'; setStatus('player-connection-status','已離開房間',''); $('btn-player-ready').disabled=true;
+        }
+      });
+      await pc.setLocalDescription(await pc.createOffer()); await waitForIce(pc);
+      $('player-offer-output').value=encodeSignal({v:SIGNAL_VERSION,kind:'join-offer',roomCode,playerId:state.player.id,name,description:pc.localDescription.toJSON()});
+      $('player-request-package').hidden=false; $('player-confirmation-package').hidden=false;
+      setStatus('player-connection-status','等待主持人允許','waiting'); setPlayerMessage('把加入申請傳給主持人，接著等待入場確認。');
+    }catch(error){ resetPlayerConnection(); setPlayerMessage(error.message); }
+    finally{ button.disabled=false; button.textContent='送出加入申請'; }
+  }
+  async function applyPlayerAnswer(){
+    const player=state.player; if(!player.pc){ setPlayerMessage('請先送出加入申請'); return; }
+    try{
+      const answer=decodeSignal($('player-answer-input').value);
+      if(answer.v!==SIGNAL_VERSION||answer.kind!=='join-answer'||!answer.description||answer.description.type!=='answer') throw new Error('這份入場確認無法辨識，請主持人重新傳一次');
+      if(answer.roomCode!==player.roomCode||answer.playerId!==player.id) throw new Error('這份入場確認不是給這次申請的');
+      await player.pc.setRemoteDescription(answer.description);
+      setStatus('player-connection-status','正在加入房間','waiting'); setPlayerMessage('正在加入，馬上就好…');
+    }catch(error){ setPlayerMessage(error.message); }
+  }
+  function configurePlayerChannel(channel){
+    channel.addEventListener('open',()=>{
+      state.player.status='connected'; setStatus('player-connection-status','已加入','connected');
+      $('btn-player-ready').disabled=false; setPlayerMessage('你已加入這一局，準備好就告訴主持人。');
+    });
+    channel.addEventListener('message',event=>handlePlayerMessage(safeMessage(event)));
+    channel.addEventListener('close',()=>{ state.player.status='disconnected'; setStatus('player-connection-status','已離開房間',''); $('btn-player-ready').disabled=true; });
+  }
+  function playerReady(){
+    if(!state.player.channel||state.player.channel.readyState!=='open') return;
+    state.player.status='ready'; send(state.player.channel,{type:'ready',ready:true});
+    setStatus('player-connection-status','準備好了','ready'); $('btn-player-ready').disabled=true; $('btn-player-ready').textContent='準備好了';
+    setPlayerMessage('已通知主持人，等待遊戲開始。');
+  }
+  function handlePlayerMessage(message){
+    if(!message) return;
+    if(message.type==='approved'&&state.player.status!=='playing'){
+      state.player.status='connected'; setStatus('player-connection-status','已加入','connected'); $('btn-player-ready').disabled=false;
+    }
+    if(message.type==='game-started'&&Array.isArray(message.board)&&message.board.length===25){
+      state.player.status='playing'; state.player.board=message.board; state.player.marks=new Set([12]); state.player.called=[];
+      renderBoard('player-board',state.player.board,state.player.marks,true);
+      $('player-game-card').hidden=false;
+      setStatus('player-game-status','遊戲進行中','connected'); setText('player-current-call','等待主持人開題');
+      $('btn-claim-bingo').disabled=false; setPlayerMessage('遊戲開始！主持人開題後，點擊卡片中對應的格子。');
+    }
+    if(message.type==='item-called'){
+      state.player.called=Array.isArray(message.called)?message.called:state.player.called.concat(message.item);
+      setText('player-current-call',message.item); setPlayerMessage('已開出「'+message.item+'」');
+    }
+    if(message.type==='mark-result'&&message.marked){ state.player.marks.add(Number(message.index)); renderBoard('player-board',state.player.board,state.player.marks,true); }
+    if(message.type==='notice') setPlayerMessage(message.text);
+    if(message.type==='removed'){
+      state.player.status='removed'; setStatus('player-connection-status','主持人已取消加入','');
+      $('btn-player-ready').disabled=true; setPlayerMessage('主持人已取消這次加入；想再玩時，可以重新送出加入申請。');
+    }
+    if(message.type==='bingo-result') setPlayerMessage(message.won?'Bingo！主持人確認成功！':'目前還沒有連成一線，繼續加油。',message.won);
+    if(message.type==='game-finished'){
+      state.player.status='finished'; setStatus('player-game-status','遊戲結束','connected');
+      setPlayerMessage(message.winner+' 完成 Bingo！',message.winner===state.player.name); $('btn-claim-bingo').disabled=true;
+    }
+  }
+  function requestPlayerMark(index){
+    const player=state.player; if(player.status!=='playing'||index===12) return;
+    send(player.channel,{type:'mark',index});
+  }
+  function claimBingo(){ if(state.player.status==='playing') send(state.player.channel,{type:'bingo-claim'}); }
+  function setPlayerMessage(text,success){ const node=$('player-message'); node.textContent=text; node.className='game-message'+(success?' success':''); }
+  function escapeHtml(value){ const span=document.createElement('span'); span.textContent=String(value); return span.innerHTML; }
+
+  function init(){
+    saveItems(); renderList(); regeneratePreview(); renderBoard('player-board',[],state.player.marks,true);
+    setText('selected-theme-name',THEMES[state.selectedTheme].name);
+    document.querySelectorAll('.theme-option').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===state.selectedTheme)));
+    showWelcome();
+    $('btn-home').addEventListener('click',showWelcome);
+    $('role-host').addEventListener('click',()=>state.room.code?selectRole('host'):createRoom());
+    $('role-player').addEventListener('click',()=>selectRole('player'));
+    $('btn-open-join').addEventListener('click',()=>selectRole('player'));
+    document.querySelectorAll('.theme-option').forEach(button=>button.addEventListener('click',()=>applyTheme(button.dataset.theme)));
+    $('btn-regenerate').addEventListener('click',regeneratePreview);
+    $('btn-print').addEventListener('click',()=>window.print());
+    $('btn-reset').addEventListener('click',()=>applyTheme(state.selectedTheme));
+    $('btn-create-room').addEventListener('click',createRoom);
+    $('btn-copy-room').addEventListener('click',()=>copyText('room-code','host-copy-status','邀請已複製'));
+    $('btn-inspect-offer').addEventListener('click',inspectOffer);
+    $('btn-approve-player').addEventListener('click',approvePlayer);
+    $('btn-copy-answer').addEventListener('click',()=>copyText('host-answer-output','host-copy-status','入場確認已複製'));
+    $('btn-edit-theme').addEventListener('click',()=>{ $('topic-settings').open=true; $('topic-settings').scrollIntoView({behavior:'smooth',block:'start'}); });
+    $('btn-start-game').addEventListener('click',startGame);
+    $('btn-call-next').addEventListener('click',callNext);
+    $('player-room-code').addEventListener('input',event=>{ event.target.value=event.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+    $('btn-create-offer').addEventListener('click',createPlayerOffer);
+    $('btn-copy-offer').addEventListener('click',()=>copyText('player-offer-output','player-copy-status','加入申請已複製'));
+    $('btn-apply-answer').addEventListener('click',applyPlayerAnswer);
+    $('btn-player-ready').addEventListener('click',playerReady);
+    $('btn-claim-bingo').addEventListener('click',claimBingo);
+  }
+  init();
 })();
 </script>
 </body>

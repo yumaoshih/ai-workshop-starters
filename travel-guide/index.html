@@ -2,213 +2,2023 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=390, initial-scale=1">
-<title>旅遊指南</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#efe8da">
+<title>臺南慢旅｜翻頁旅行手冊</title>
 <style>
-  :root{
-    --bg:#f7f4ec; --card:#fff; --ink:#2a2724; --muted:#6b655c;
-    --accent:#b76b3b; --progress:#b76b3b; --border:#e2dccb;
+  :root {
+    --canvas: #efe8da;
+    --paper: #fffdf6;
+    --paper-deep: #f7f0df;
+    --ink: #30302b;
+    --muted: #767268;
+    --line: #d8cfbd;
+    --terracotta: #ad5f47;
+    --terracotta-dark: #7b4335;
+    --sage: #7a8b72;
+    --sky: #dce9e7;
+    --white: #ffffff;
+    --shadow: rgba(78, 58, 40, .16);
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;
-    background:var(--bg);color:var(--ink);
-    height:100vh;overflow:hidden;
+
+  * { box-sizing: border-box; }
+
+  html { min-width: 320px; background: var(--canvas); }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    background: var(--canvas);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif;
   }
-  .app{display:flex;flex-direction:column;height:100vh}
-  header{
-    padding:12px 16px;border-bottom:1px solid var(--border);
-    display:flex;justify-content:space-between;align-items:center;
-    background:var(--card);
+
+  button, textarea { font: inherit; }
+
+  button { -webkit-tap-highlight-color: transparent; }
+
+  .app-shell {
+    width: min(1440px, 100%);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px clamp(18px, 3.2vw, 48px) 32px;
   }
-  h1{font-size:16px;margin:0}
-  .progress{font-size:12px;color:var(--muted);background:var(--bg);padding:4px 8px;border-radius:999px}
-  main{
-    flex:1;position:relative;overflow:hidden;
-    background:var(--card);
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 52px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(93, 77, 60, .2);
   }
-  .page{
-    position:absolute;inset:0;padding:20px;opacity:0;pointer-events:none;
-    transition:opacity .25s;overflow-y:auto;
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
   }
-  .page.active{opacity:1;pointer-events:auto}
-  .page h2{font-size:18px;margin:0 0 8px}
-  .page p{margin:0 0 10px;line-height:1.5;font-size:14px}
-  .page ul{margin:0;padding-left:18px;font-size:14px}
-  .hint{position:absolute;top:12px;right:14px;color:var(--muted);font-size:12px}
-  .pagination{
-    position:absolute;inset:0;pointer-events:none;
+
+  .brand-mark {
+    color: var(--terracotta);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .14em;
   }
-  .page-turn{
-    position:absolute;top:0;bottom:0;width:56px;cursor:pointer;
+
+  .brand-name {
+    overflow: hidden;
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .page-turn.left{left:0;background:linear-gradient(90deg, rgba(0,0,0,0.05), transparent);opacity:0;transition:opacity .2s}
-  .page-turn.right{right:0;background:linear-gradient(270deg, rgba(0,0,0,0.05), transparent);opacity:0;transition:opacity .2s}
-  .page-wrap:hover .page-turn.left,
-  .page-wrap:focus-within .page-turn.left,
-  .page-wrap .page-wrap:hover .page-turn.left{opacity:1}
-  .page-turn:hover, .page-turn:focus{opacity:1 !important}
-  .page-wrap{outline:none}
-  footer{
-    padding:12px 16px;border-top:1px solid var(--border);background:var(--card);
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
   }
-  .checklist-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
-  .checklist-label input{accent-color:var(--accent)}
-  .controls{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
-  button{
-    background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;
+
+  .progress-track {
+    width: 96px;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(48, 48, 43, .12);
   }
-  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-  button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .page-info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted);background:var(--card);padding:2px 10px;border-radius:999px;border:1px solid var(--border)}
+
+  .progress-bar {
+    width: 14.285%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--terracotta);
+    transition: width .45s ease;
+  }
+
+  .progress {
+    min-width: 40px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .05em;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(560px, 1.35fr) minmax(360px, .75fr);
+    gap: clamp(22px, 3vw, 46px);
+    align-items: stretch;
+    min-height: calc(100vh - 129px);
+  }
+
+  .book-area {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(20px, 3vw, 38px);
+    border: 1px solid rgba(130, 102, 77, .14);
+    border-radius: 28px;
+    background: #e2d4c2;
+    box-shadow: 0 22px 55px rgba(84, 62, 40, .1);
+  }
+
+  .book-heading {
+    display: flex;
+    width: min(100%, 560px);
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 14px;
+  }
+
+  .book-heading-kicker,
+  .panel-kicker,
+  .page-kicker {
+    margin: 0 0 4px;
+    color: var(--terracotta);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .book-heading h2 {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(20px, 2.1vw, 28px);
+    letter-spacing: .04em;
+  }
+
+  .swipe-note {
+    margin: 0;
+    color: #6e655b;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .page-wrap {
+    position: relative;
+    width: min(100%, 490px);
+    aspect-ratio: 3 / 4;
+    outline: none;
+    cursor: grab;
+    perspective: 1800px;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .page-wrap.is-dragging { cursor: grabbing; }
+  .page-wrap.is-dragging .page { transition: none; }
+
+  .book-back {
+    position: absolute;
+    inset: 9px -8px -9px 8px;
+    border: 1px solid #9b624e;
+    border-radius: 8px 18px 18px 8px;
+    background: var(--terracotta-dark);
+    box-shadow: 0 22px 38px rgba(61, 42, 28, .2);
+  }
+
+  #pages {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .page {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    padding: clamp(19px, 3.4vw, 34px);
+    border: 1px solid #ded3bf;
+    border-radius: 7px 17px 17px 7px;
+    background: var(--paper);
+    box-shadow: inset 12px 0 22px rgba(89, 61, 37, .045), 0 8px 18px rgba(92, 70, 45, .1);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(5%) rotateY(8deg);
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: transform .62s cubic-bezier(.32, .72, .2, 1), opacity .32s ease;
+  }
+
+  .page::after {
+    position: absolute;
+    inset: 13px 13px 13px auto;
+    width: 1px;
+    background: rgba(120, 96, 70, .12);
+    content: "";
+  }
+
+  .page.active {
+    z-index: 20;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) rotateY(0);
+  }
+
+  .page.turned {
+    z-index: 25;
+    opacity: 0;
+    transform: translateX(-62%) rotateY(-105deg);
+  }
+
+  .page-number {
+    position: absolute;
+    right: 27px;
+    bottom: 19px;
+    color: #948d81;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+  }
+
+  .cover-page {
+    padding: 22px;
+    background: #f8f1df;
+  }
+
+  .cover-rule {
+    width: 46px;
+    height: 3px;
+    margin: 3px 0 16px;
+    border-radius: 99px;
+    background: var(--terracotta);
+  }
+
+  .cover-title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.12;
+    letter-spacing: .08em;
+  }
+
+  .cover-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 10px 0 18px;
+    color: var(--terracotta-dark);
+    font-size: clamp(13px, 1.5vw, 17px);
+    font-weight: 700;
+    letter-spacing: .16em;
+  }
+
+  .cover-image {
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    border: 1px solid rgba(123, 86, 55, .18);
+    border-radius: 4px 18px 4px 18px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .cover-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .1em;
+  }
+
+  .page-title {
+    margin: 0 0 6px;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(25px, 3.2vw, 38px);
+    line-height: 1.2;
+    letter-spacing: .06em;
+  }
+
+  .page-lead {
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-size: clamp(11px, 1.25vw, 14px);
+    line-height: 1.65;
+  }
+
+  .page-image {
+    display: block;
+    width: 100%;
+    height: clamp(120px, 25%, 176px);
+    margin-bottom: 15px;
+    border: 1px solid rgba(123, 86, 55, .18);
+    border-radius: 4px 14px 4px 14px;
+    object-fit: cover;
+  }
+
+  .route-list,
+  .timeline,
+  .spot-grid,
+  .food-grid,
+  .note-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .route-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .route-card {
+    min-width: 0;
+    padding: 10px;
+    border-top: 2px solid var(--terracotta);
+    background: var(--paper-deep);
+  }
+
+  .route-card strong,
+  .food-item strong {
+    display: block;
+    margin-bottom: 3px;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(12px, 1.4vw, 15px);
+  }
+
+  .route-card span,
+  .food-item span {
+    display: block;
+    color: var(--muted);
+    font-size: clamp(9px, 1vw, 11px);
+    line-height: 1.45;
+  }
+
+  .overview-note {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+    margin-top: auto;
+    padding: 12px 0 2px;
+    border-top: 1px solid var(--line);
+  }
+
+  .overview-note strong {
+    color: var(--terracotta);
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: 12px;
+  }
+
+  .overview-note p {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(9px, 1vw, 11px);
+    line-height: 1.6;
+  }
+
+  .timeline {
+    display: grid;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .timeline li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .timeline time {
+    color: var(--terracotta);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .timeline strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: clamp(11px, 1.25vw, 14px);
+  }
+
+  .timeline span {
+    color: var(--muted);
+    font-size: clamp(9px, 1vw, 11px);
+    line-height: 1.45;
+  }
+
+  .spot-grid,
+  .food-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .spot-card,
+  .food-item {
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid var(--line);
+    border-radius: 10px 3px 10px 3px;
+    background: rgba(255, 255, 255, .48);
+  }
+
+  .spot-card b {
+    display: block;
+    margin-bottom: 4px;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(12px, 1.35vw, 15px);
+  }
+
+  .spot-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(9px, 1vw, 11px);
+    line-height: 1.5;
+  }
+
+  .mini-label {
+    display: inline-block;
+    margin-top: 7px;
+    padding: 3px 6px;
+    border-radius: 99px;
+    background: var(--sky);
+    color: #435c5a;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .08em;
+  }
+
+  .food-page .page-image { height: 31%; }
+
+  .food-item:nth-child(2n) { border-top-color: rgba(122, 139, 114, .65); }
+
+  .packing-box {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px 4px 12px 4px;
+    background: var(--paper-deep);
+  }
+
+  .packing-box h4 {
+    margin: 0 0 9px;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: 15px;
+  }
+
+  .packing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .packing-grid li {
+    position: relative;
+    padding-left: 18px;
+    color: #57544d;
+    font-size: clamp(10px, 1.1vw, 12px);
+  }
+
+  .packing-grid li::before {
+    position: absolute;
+    top: .18em;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #aa9f8e;
+    border-radius: 2px;
+    content: "";
+  }
+
+  .note-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 13px;
+  }
+
+  .note-list li {
+    padding: 9px 11px;
+    border-left: 3px solid var(--sage);
+    background: rgba(122, 139, 114, .08);
+    color: var(--muted);
+    font-size: clamp(9px, 1vw, 11px);
+    line-height: 1.5;
+  }
+
+  .end-page {
+    align-items: center;
+    justify-content: center;
+    padding: 34px;
+    text-align: center;
+    background: #f6efdf;
+  }
+
+  .end-page .page-image {
+    width: 78%;
+    height: 40%;
+    margin: 0 auto 24px;
+    border-radius: 50% 50% 7px 7px;
+  }
+
+  .end-title {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(30px, 4vw, 46px);
+    letter-spacing: .1em;
+  }
+
+  .end-copy {
+    max-width: 290px;
+    margin: 12px auto 0;
+    color: var(--muted);
+    font-size: clamp(11px, 1.2vw, 13px);
+    line-height: 1.75;
+  }
+
+  .page-turn {
+    position: absolute;
+    z-index: 35;
+    top: 0;
+    bottom: 0;
+    width: 18%;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    cursor: pointer;
+    opacity: 0;
+    touch-action: pan-y;
+  }
+
+  .page-turn.left { left: 0; }
+  .page-turn.right { right: 0; }
+  .page-turn:disabled { cursor: default; }
+
+  .controls {
+    display: flex;
+    width: min(100%, 560px);
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .nav-button,
+  .copy-button,
+  .reset-button {
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 9px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 750;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease;
+  }
+
+  .nav-button:hover:not(:disabled),
+  .copy-button:hover,
+  .reset-button:hover { transform: translateY(-2px); }
+
+  .nav-button.primary,
+  .copy-button {
+    background: var(--terracotta);
+    color: var(--white);
+  }
+
+  .nav-button.ghost,
+  .reset-button {
+    border-color: rgba(123, 67, 53, .34);
+    background: rgba(255, 253, 246, .58);
+    color: var(--terracotta-dark);
+  }
+
+  .nav-button:disabled {
+    border-color: transparent;
+    background: rgba(255, 255, 255, .3);
+    color: rgba(48, 48, 43, .36);
+    cursor: not-allowed;
+  }
+
+  button:focus-visible,
+  textarea:focus-visible,
+  .page-wrap:focus-visible {
+    outline: 3px solid #2f6f78;
+    outline-offset: 3px;
+  }
+
+  .page-info {
+    min-width: 112px;
+    color: #6e655b;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .checklist-strip {
+    width: min(100%, 560px);
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(103, 83, 62, .19);
+  }
+
+  .checklist-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .checklist-title {
+    color: #5c544b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+  }
+
+  .checklist-heading {
+    display: grid;
+    gap: 2px;
+  }
+
+  .checklist-summary {
+    color: #756c61;
+    font-size: 10px;
+  }
+
+  .checklist-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .reset-button {
+    min-height: auto;
+    padding: 4px 9px;
+    font-size: 10px;
+  }
+
+  .manage-button {
+    min-height: auto;
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: var(--terracotta);
+    color: var(--white);
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  #checklist {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .checklist-label {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 7px;
+    color: #5c544b;
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  .checklist-label input {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    margin: 0;
+    accent-color: var(--terracotta);
+  }
+
+  .checklist-label span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .checklist-more {
+    display: none;
+    margin-top: 8px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--terracotta-dark);
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 750;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .checklist-more.visible { display: inline-block; }
+
+  .packing-dialog {
+    width: min(940px, calc(100vw - 32px));
+    max-height: min(820px, calc(100vh - 32px));
+    margin: auto;
+    overflow: hidden;
+    border: 1px solid rgba(130, 102, 77, .24);
+    border-radius: 24px;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 28px 80px rgba(48, 37, 27, .28);
+  }
+
+  .packing-dialog::backdrop { background: rgba(49, 41, 33, .55); }
+
+  .packing-dialog-shell {
+    display: flex;
+    max-height: min(820px, calc(100vh - 32px));
+    flex-direction: column;
+  }
+
+  .packing-dialog-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 26px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .packing-dialog-head h2 {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: 28px;
+    letter-spacing: .05em;
+  }
+
+  .packing-dialog-head p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .dialog-close {
+    min-height: 38px;
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 13px;
+    background: var(--paper-deep);
+    color: var(--terracotta-dark);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .packing-dialog-body {
+    display: grid;
+    min-height: 0;
+    flex: 1;
+    grid-template-columns: .9fr 1.1fr;
+  }
+
+  .packing-library,
+  .my-packing-list {
+    min-width: 0;
+    overflow-y: auto;
+    padding: 20px 24px 24px;
+  }
+
+  .packing-library { border-right: 1px solid var(--line); }
+
+  .packing-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .packing-section-title h3 {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: .06em;
+  }
+
+  .packing-section-title span {
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .category-tab {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 9px;
+    background: var(--paper);
+    color: #665f56;
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  .category-tab.active {
+    border-color: var(--terracotta);
+    background: rgba(173, 95, 71, .09);
+    color: var(--terracotta-dark);
+    font-weight: 800;
+  }
+
+  .library-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .library-item {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 9px 3px 9px 3px;
+    padding: 9px;
+    background: rgba(255, 255, 255, .54);
+    color: #514d47;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: left;
+  }
+
+  .library-item span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .library-item b {
+    flex: 0 0 auto;
+    color: var(--terracotta);
+    font-size: 9px;
+  }
+
+  .library-item[aria-pressed="true"] {
+    border-color: rgba(122, 139, 114, .55);
+    background: rgba(122, 139, 114, .1);
+  }
+
+  .library-item[aria-pressed="true"] b { color: #52614c; }
+
+  .custom-item-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .custom-item-input {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 9px 3px 9px 3px;
+    padding: 9px 11px;
+    background: var(--white);
+    color: var(--ink);
+    font-size: 12px;
+  }
+
+  .custom-item-submit {
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 13px;
+    background: var(--terracotta);
+    color: var(--white);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .packing-sortable {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .packing-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 9px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 10px 3px 10px 3px;
+    padding: 8px;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(84, 62, 40, .05);
+  }
+
+  .packing-row.dragging {
+    border-color: var(--terracotta);
+    box-shadow: 0 8px 22px rgba(84, 62, 40, .16);
+  }
+
+  .packing-row-label {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .packing-row-label input { accent-color: var(--terracotta); }
+
+  .packing-row-label span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .drag-handle {
+    border: 1px solid rgba(173, 95, 71, .24);
+    border-radius: 999px;
+    padding: 5px 7px;
+    background: rgba(173, 95, 71, .06);
+    color: var(--terracotta-dark);
+    cursor: grab;
+    font-size: 9px;
+    font-weight: 800;
+    touch-action: none;
+  }
+
+  .drag-handle:active { cursor: grabbing; }
+
+  .row-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .row-action {
+    border: 0;
+    border-radius: 999px;
+    padding: 5px 7px;
+    background: var(--paper-deep);
+    color: #6d6258;
+    cursor: pointer;
+    font-size: 9px;
+  }
+
+  .packing-empty {
+    padding: 30px 12px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .prompt-panel {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    min-width: 0;
+    height: calc(100vh - 82px);
+    min-height: 640px;
+    flex-direction: column;
+    padding: clamp(24px, 3vw, 38px);
+    border: 1px solid rgba(130, 102, 77, .17);
+    border-radius: 28px;
+    background: var(--paper);
+    box-shadow: 0 22px 55px rgba(84, 62, 40, .1);
+  }
+
+  .panel-head {
+    position: relative;
+    display: block;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.2;
+    letter-spacing: .04em;
+  }
+
+  .prompt-page {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: var(--sky);
+    color: #385552;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .08em;
+  }
+
+  .panel-intro {
+    margin: 10px 0 16px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .prompt-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--terracotta-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .1em;
+  }
+
+  .prompt-text {
+    width: 100%;
+    min-height: 270px;
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--line);
+    border-radius: 14px 4px 14px 4px;
+    padding: 18px;
+    background: #f8f3e8;
+    color: #44413b;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .prompt-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .copy-status {
+    min-height: 20px;
+    color: var(--sage);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .copy-button { min-width: 112px; }
+
+  .prompt-formula {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .prompt-formula h3 {
+    margin: 0 0 10px;
+    font-size: 12px;
+    letter-spacing: .08em;
+  }
+
+  .formula-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .formula-tags span {
+    padding: 6px 9px;
+    border: 1px solid rgba(173, 95, 71, .25);
+    border-radius: 999px;
+    background: rgba(173, 95, 71, .06);
+    color: var(--terracotta-dark);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .screen-reader-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 980px) {
+    .app-shell { padding-bottom: 24px; }
+    .workspace { grid-template-columns: 1fr; }
+    .book-area { min-height: auto; }
+    .prompt-panel {
+      position: static;
+      height: auto;
+      min-height: 0;
+    }
+    .prompt-text { min-height: 240px; }
+  }
+
+  @media (max-width: 620px) {
+    .app-shell { padding: 14px 12px 20px; }
+    .topbar { margin-bottom: 12px; }
+    .brand-mark { display: none; }
+    .brand-name { font-size: 18px; }
+    .progress-track { width: 58px; }
+    .workspace { gap: 14px; }
+    .book-area,
+    .prompt-panel {
+      padding: 17px;
+      border-radius: 18px;
+    }
+    .book-heading { align-items: center; }
+    .book-heading h2 { font-size: 18px; }
+    .swipe-note { font-size: 10px; }
+    .page-wrap { width: min(100%, 430px); }
+    .page { padding: 18px; }
+    .cover-page { padding: 17px; }
+    .route-list { gap: 5px; }
+    .route-card { padding: 7px; }
+    .page-image { margin-bottom: 10px; }
+    .timeline { gap: 3px; }
+    .timeline li { grid-template-columns: 40px 1fr; gap: 7px; padding: 5px 0; }
+    .spot-card,
+    .food-item { padding: 8px; }
+    .controls { gap: 7px; margin-top: 14px; }
+    .nav-button { min-height: 39px; padding: 8px 13px; font-size: 12px; }
+    .page-info { min-width: 88px; font-size: 10px; }
+    #checklist { grid-template-columns: 1fr; }
+    .checklist-label span { overflow: visible; }
+    .checklist-topline { align-items: flex-start; }
+    .checklist-actions { align-items: flex-end; flex-direction: column; }
+    .packing-dialog { width: calc(100vw - 18px); max-height: calc(100vh - 18px); border-radius: 18px; }
+    .packing-dialog-shell { max-height: calc(100vh - 18px); }
+    .packing-dialog-head { padding: 18px; }
+    .packing-dialog-head h2 { font-size: 23px; }
+    .packing-dialog-body { display: block; overflow-y: auto; }
+    .packing-library,
+    .my-packing-list { overflow: visible; padding: 18px; }
+    .packing-library { border-right: 0; border-bottom: 1px solid var(--line); }
+    .library-list { grid-template-columns: 1fr 1fr; }
+    .prompt-panel { margin-top: 0; }
+    .panel-title { font-size: 27px; }
+  }
+
+  @media (max-width: 380px) {
+    .page:not(.cover-page):not(.end-page) {
+      overflow-y: auto;
+      padding-bottom: 34px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(173, 95, 71, .32) transparent;
+    }
+    .page:not(.cover-page):not(.end-page)::after { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      transition-duration: .01ms !important;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <h1>臺南兩日行</h1>
-    <span class="progress" id="progress">1 / 7</span>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">07 / EXPLORE</span>
+      <h1 class="brand-name">翻頁旅行手冊</h1>
+    </div>
+    <div class="progress-wrap" aria-label="閱讀進度">
+      <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+      <span class="progress" id="progress">1 / 7</span>
+    </div>
   </header>
-  <main id="main">
-    <div class="pagination" id="pagination">
-      <div class="page-turn left" id="prev-zone" role="button" tabindex="0" aria-label="上一頁"></div>
-      <div class="page-turn right" id="next-zone" role="button" tabindex="0" aria-label="下一頁"></div>
-    </div>
-    <div id="pages"></div>
-    <div class="page-info" id="page-info">第 1 頁，共 7 頁</div>
+
+  <main class="workspace">
+    <section class="book-area" aria-labelledby="book-title">
+      <div class="book-heading">
+        <div>
+          <p class="book-heading-kicker">TAINAN POCKET GUIDE</p>
+          <h2 id="book-title">臺南兩日慢旅</h2>
+        </div>
+          <p class="swipe-note">按住拖曳或左右滑動</p>
+      </div>
+
+      <div class="page-wrap" id="main" tabindex="0" aria-label="可翻頁的臺南旅行手冊">
+        <div class="book-back" aria-hidden="true"></div>
+        <div id="pages">
+          <article class="page cover-page active" data-title="封面">
+            <p class="page-kicker">WEEKEND TRAVEL NOTES</p>
+            <div class="cover-rule" aria-hidden="true"></div>
+            <h3 class="cover-title">臺南<br>慢旅手帖</h3>
+            <p class="cover-subtitle">兩天一夜・散步與小吃</p>
+            <img class="cover-image" src="assets/tainan-cover.webp" width="1200" height="900" decoding="async" fetchpriority="high" alt="臺南老街、廟宇與單車的手繪水彩旅行風景">
+            <div class="cover-meta"><span>TAIWAN・TAINAN</span><span>VOL. 01</span></div>
+            <span class="page-number">01</span>
+          </article>
+
+          <article class="page" data-title="旅程總覽">
+            <p class="page-kicker">ROUTE OVERVIEW</p>
+            <h3 class="page-title">慢慢走，才看得見</h3>
+            <p class="page-lead">以火車站為起點，把古蹟、老街、小吃和午後留白排進兩天，不追景點數量。</p>
+            <img class="page-image" src="assets/tainan-itinerary.webp" width="1200" height="900" loading="lazy" decoding="async" alt="臺南車站、孔廟、神農街與河道的水彩拼貼">
+            <ol class="route-list">
+              <li class="route-card"><strong>Day 1</strong><span>孔廟散步<br>神農街夜色</span></li>
+              <li class="route-card"><strong>Day 2</strong><span>安平巷弄<br>運河午後</span></li>
+              <li class="route-card"><strong>Taste</strong><span>牛肉湯<br>甜點巡禮</span></li>
+            </ol>
+            <div class="overview-note">
+              <strong>慢旅提醒</strong>
+              <p>每天只安排兩個主要區域，景點之間保留 30 分鐘彈性；遇到喜歡的巷子，就放心多停一會。</p>
+            </div>
+            <span class="page-number">02</span>
+          </article>
+
+          <article class="page" data-title="第一天行程">
+            <p class="page-kicker">DAY 1・OLD TOWN</p>
+            <h3 class="page-title">老城的早晨與夜色</h3>
+            <p class="page-lead">穿一雙好走的鞋，把移動距離留給散步。</p>
+            <ul class="timeline">
+              <li><time>08:30</time><div><strong>臺南火車站集合</strong><span>寄放行李，先喝一碗熱湯開場。</span></div></li>
+              <li><time>10:00</time><div><strong>孔廟文化園區</strong><span>紅牆、老樹與府中街，預留 90 分鐘。</span></div></li>
+              <li><time>13:30</time><div><strong>林百貨與中西區</strong><span>午餐後逛老建築與選物店。</span></div></li>
+              <li><time>17:30</time><div><strong>神農街散步</strong><span>在天色變藍前抵達，拍下燈籠亮起的時刻。</span></div></li>
+              <li><time>19:00</time><div><strong>國華街晚餐</strong><span>小份量分食，一次多嚐幾間。</span></div></li>
+            </ul>
+            <span class="page-number">03</span>
+          </article>
+
+          <article class="page" data-title="第二天行程">
+            <p class="page-kicker">DAY 2・ANPING</p>
+            <h3 class="page-title">巷弄、海風與午後</h3>
+            <p class="page-lead">從安平老街往水邊走，讓第二天的速度再慢一點。</p>
+            <img class="page-image" src="assets/tainan-cover.webp" width="1200" height="900" loading="lazy" decoding="async" alt="安平老街與臺南巷弄的水彩風景">
+            <div class="spot-grid">
+              <section class="spot-card"><b>安平古堡</b><p>早上光線柔和，先看城牆再進老街。</p><span class="mini-label">停留 60 MIN</span></section>
+              <section class="spot-card"><b>樹屋巷弄</b><p>沿途找劍獅與老宅，不趕固定路線。</p><span class="mini-label">步行 15 MIN</span></section>
+              <section class="spot-card"><b>運河午後</b><p>選一間靠水咖啡館，寫幾張旅行明信片。</p><span class="mini-label">留白 90 MIN</span></section>
+              <section class="spot-card"><b>日落返程</b><p>回車站前取行李，也別忘了帶一份伴手禮。</p><span class="mini-label">17:30 出發</span></section>
+            </div>
+            <span class="page-number">04</span>
+          </article>
+
+          <article class="page food-page" data-title="臺南味道">
+            <p class="page-kicker">LOCAL FLAVORS</p>
+            <h3 class="page-title">一口一口認識臺南</h3>
+            <img class="page-image" src="assets/tainan-food.webp" width="1200" height="900" loading="lazy" decoding="async" alt="臺南牛肉湯、蝦捲、擔仔麵與豆花的水彩插畫">
+            <div class="food-grid">
+              <div class="food-item"><strong>牛肉湯</strong><span>清晨限定的溫柔鹹香</span></div>
+              <div class="food-item"><strong>蝦捲</strong><span>外脆內鮮，適合邊走邊吃</span></div>
+              <div class="food-item"><strong>擔仔麵</strong><span>小碗剛好，留胃給下一站</span></div>
+              <div class="food-item"><strong>豆花</strong><span>午後甜點，配一杯古早味茶</span></div>
+            </div>
+            <span class="page-number">05</span>
+          </article>
+
+          <article class="page" data-title="行前清單">
+            <p class="page-kicker">PACKING CHECKLIST</p>
+            <h3 class="page-title">輕裝出發</h3>
+            <p class="page-lead">旅行不需要塞滿行李；從完整分類挑選，再把自己的必需品加進清單。</p>
+            <div class="packing-box">
+              <h4>常見分類</h4>
+              <ul class="packing-grid">
+                <li>證件與金錢</li><li>3C 與充電</li>
+                <li>衣物與鞋子</li><li>盥洗與保養</li>
+                <li>健康與藥品</li><li>旅途小物</li>
+                <li>相機與記錄</li><li>自訂必需品</li>
+              </ul>
+            </div>
+            <ul class="note-list">
+              <li>下方「編輯清單」提供 47 個常見選項，也可以新增自己的項目。</li>
+              <li>把加入「我的行李」的項目拖曳排序，常用物品可以排在最前面。</li>
+              <li>勾選狀態與排序都會保留，重新開啟手冊也不必重做。</li>
+            </ul>
+            <span class="page-number">06</span>
+          </article>
+
+          <article class="page end-page" data-title="旅程結尾">
+            <img class="page-image" src="assets/tainan-itinerary.webp" width="1200" height="900" loading="lazy" decoding="async" alt="臺南旅行回憶的水彩拼貼">
+            <p class="page-kicker">THE END・SEE YOU AGAIN</p>
+            <h3 class="end-title">下次再見，臺南</h3>
+            <p class="end-copy">把沒吃到的那一間店、沒走進去的那條巷子，留給下一次旅行。</p>
+            <span class="page-number">07</span>
+          </article>
+        </div>
+
+        <button class="page-turn left" id="prev-zone" type="button" tabindex="-1" aria-label="上一頁">上一頁</button>
+        <button class="page-turn right" id="next-zone" type="button" tabindex="-1" aria-label="下一頁">下一頁</button>
+      </div>
+
+      <div class="controls" aria-label="翻頁控制">
+        <button class="nav-button ghost" id="btn-prev" type="button">上一頁</button>
+        <span class="page-info" id="page-info">第 1 頁，共 7 頁</span>
+        <button class="nav-button primary" id="btn-next" type="button">下一頁</button>
+      </div>
+
+      <div class="checklist-strip">
+        <div class="checklist-topline">
+          <div class="checklist-heading">
+            <span class="checklist-title">旅行行李檢查表・行李不漏帶</span>
+            <span class="checklist-summary" id="checklist-summary">0 / 0 已打包</span>
+          </div>
+          <div class="checklist-actions">
+            <button class="manage-button" id="btn-manage-checklist" type="button">編輯清單</button>
+            <button class="reset-button" id="btn-reset" type="button">清除勾選</button>
+          </div>
+        </div>
+        <div id="checklist"></div>
+        <button class="checklist-more" id="checklist-more" type="button"></button>
+      </div>
+    </section>
+
+    <aside class="prompt-panel" aria-labelledby="prompt-title">
+      <div class="panel-head">
+        <div>
+          <p class="panel-kicker">PROMPT FOR THIS PAGE</p>
+          <h2 class="panel-title" id="prompt-title">這一頁的提示詞</h2>
+        </div>
+        <span class="prompt-page" id="prompt-page">PAGE 01</span>
+      </div>
+      <p class="panel-intro">翻頁時會同步換成對應提示詞。你可以直接修改內容，再複製到圖片生成工具。</p>
+      <label class="prompt-label" for="prompt-text">可編輯提示詞</label>
+      <textarea class="prompt-text" id="prompt-text" spellcheck="false"></textarea>
+      <div class="prompt-actions">
+        <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+        <button class="copy-button" id="copy-prompt" type="button">複製提示詞</button>
+      </div>
+      <div class="prompt-formula">
+        <h3>提示詞拆解</h3>
+        <div class="formula-tags" aria-label="提示詞包含的元素">
+          <span>主題與內容</span><span>手繪風格</span><span>繁體中文</span><span>3:4 版面</span><span>清楚層次</span>
+        </div>
+      </div>
+    </aside>
   </main>
-  <footer>
-    <div style="font-size:13px;margin-bottom:6px">行程勾選</div>
-    <div id="checklist"></div>
-    <div class="controls">
-      <button id="btn-prev" class="ghost" type="button">上一頁</button>
-      <button id="btn-reset" class="ghost" type="button">重置勾選</button>
-      <button id="btn-next" type="button">下一頁</button>
+
+  <dialog class="packing-dialog" id="packing-dialog" aria-labelledby="packing-dialog-title">
+    <div class="packing-dialog-shell">
+      <header class="packing-dialog-head">
+        <div>
+          <p class="panel-kicker">PACKING LIST BUILDER</p>
+          <h2 id="packing-dialog-title">整理我的行李</h2>
+          <p>從分類項目庫挑選常用物品，也能新增自己的項目；右側清單可直接拖曳排序。</p>
+        </div>
+        <button class="dialog-close" id="close-packing-dialog" type="button">完成</button>
+      </header>
+      <div class="packing-dialog-body">
+        <section class="packing-library" aria-labelledby="library-title">
+          <div class="packing-section-title">
+            <h3 id="library-title">常用項目庫</h3>
+            <span id="library-count">47 個選項</span>
+          </div>
+          <div class="category-tabs" id="category-tabs" aria-label="行李分類"></div>
+          <div class="library-list" id="library-list"></div>
+          <form class="custom-item-form" id="custom-item-form">
+            <label class="screen-reader-only" for="custom-item-input">新增自訂行李項目</label>
+            <input class="custom-item-input" id="custom-item-input" type="text" maxlength="30" placeholder="新增自己的必需品">
+            <button class="custom-item-submit" type="submit">加入</button>
+          </form>
+        </section>
+        <section class="my-packing-list" aria-labelledby="my-packing-title">
+          <div class="packing-section-title">
+            <h3 id="my-packing-title">我的行李</h3>
+            <span id="packing-manager-summary">0 項</span>
+          </div>
+          <p class="screen-reader-only" id="packing-announcement" aria-live="polite"></p>
+          <ul class="packing-sortable" id="packing-sortable"></ul>
+        </section>
+      </div>
     </div>
-  </footer>
+  </dialog>
+  <p class="screen-reader-only" id="page-announcement" aria-live="polite"></p>
 </div>
+
 <script>
-(function(){
-  const NS = 'travel-v1';
-  const PAGES = [
-    {
-      title:'出發前準備',
-      body:'<ul><li>確認交通票券</li><li>準備支付現金與證件</li><li>填寫本指南勾選清單</li></ul><p>建議出發前一天完成清單。</p>'
-    },
-    {
-      title:'抵達臺南',
-      body:'<p>從高鐵站搭乘公車或計程車至市區。建議慢慢探索，先找個咖啡店休息。</p>'
-    },
-    {
-      title:'臺南舊城',
-      body:'<p>閩南風建築保留許多歷史店家，可散步於民權路、成功路一帶。</p><ul><li>逛百年市井</li><li>找一家老咖啡店</li></ul>'
-    },
-    {
-      title:'夜市一廳',
-      body:'<p>南瑪紐夜市以小吃與遊戲聞名，可嘗鮮、買伴手禮。</p><ul><li>牛肉湯</li><li>蝦捲</li><li>芋頭牛奶</li></ul>'
-    },
-    {
-      title:'兵衛祠與藝術',
-      body:'<p>近河岸的文化空間，適合閒適走走。查看當日展覽排程。</p>'
-    },
-    {
-      title:'最後一餐',
-      body:'<p>返回市區前，找一家在地餐館享用晚餐。可回顧今天走過的路。</p>'
-    },
-    {
-      title:'返程',
-      body:'<p>收拾行李，確認遺留物品，搭車返程。帶著行程筆記回家。</p><ul><li>確認行李</li><li>回收車票</li></ul>'
-    }
+(function () {
+  const NS = 'travel-v3';
+  const PROMPTS = [
+    '請幫我製作一本臺南兩天一夜旅行手冊的封面。主標題是「臺南慢旅手帖」，副標題是「兩天一夜・散步與小吃」。畫面包含臺南老街、傳統廟宇屋頂、單車與旅行小物，以細膩水彩加色鉛筆的手繪風格呈現。使用暖米白紙張、磚紅、鼠尾草綠與霧藍配色，留白充足、溫暖復古。中文請使用繁體中文，直式 3:4 版面。',
+    '請幫我製作臺南旅行手冊的「旅程總覽」內頁。內容分成 Day 1 孔廟與神農街、Day 2 安平與運河，以及 Taste 臺南小吃三個區塊，頁尾加上「慢旅提醒」的小段落。加入火車站、紅牆老樹、老街燈籠、河道與小地圖插畫。整體像手帳拼貼，以細膩水彩和色鉛筆繪製，暖米白紙張、磚紅與鼠尾草綠配色。資訊層級清楚，中文使用繁體中文，直式 3:4。',
+    '請依照以下行程製作一頁手繪插圖版旅行手冊：標題「DAY 1 老城的早晨與夜色」。時間軸包含 08:30 臺南火車站、10:00 孔廟文化園區、13:30 林百貨與中西區、17:30 神農街、19:00 國華街晚餐。每個段落搭配小型地標或食物插圖，資訊完整但不擁擠。以水彩加色鉛筆的旅行手帳風格呈現，繁體中文，暖米白底，直式 3:4。',
+    '請製作臺南旅行手冊的第二天行程頁，標題是「DAY 2 巷弄、海風與午後」。內容包含安平古堡、樹屋巷弄、運河咖啡館與日落返程，附上建議停留時間和步行提醒。使用四格小卡式排版，搭配安平紅磚、老宅、劍獅、河道與明信片插畫。風格為細膩水彩和色鉛筆手繪，溫暖復古，繁體中文，直式 3:4。',
+    '請製作一頁「一口一口認識臺南」的手繪美食指南。包含牛肉湯、蝦捲、擔仔麵、豆花四種食物，每項附上一句簡短介紹。食物要有細緻可口的水彩插畫，排版像旅行手帳與小型菜單，色彩溫暖自然、留白清爽。中文使用繁體中文，直式 3:4。',
+    '請製作一頁臺南旅行手冊的行前清單，標題是「輕裝出發」。內容分成證件與金錢、3C 與充電、衣物與鞋子、盥洗與保養、健康與藥品、旅途小物六大分類，並提示讀者可從 47 個常用選項挑選、新增自訂項目及拖曳排序。使用可勾選方框、旅行小物插畫與手寫感標題，水彩加色鉛筆風格，繁體中文，直式 3:4。',
+    '請製作臺南旅行手冊的結尾頁，主標題是「下次再見，臺南」，小字寫「把沒吃到的那一間店、沒走進去的那條巷子，留給下一次旅行。」加入一幅柔和的臺南旅行回憶拼貼：老街、車票、明信片、相機與夕陽。整體像旅程結束時的溫暖手帳，水彩加色鉛筆、暖米白紙張、繁體中文，直式 3:4。'
   ];
-  function saveChecklist(items){ try{ localStorage.setItem(NS+':checklist', JSON.stringify(items)); }catch(e){} }
-  function loadChecklist(){ try{ const raw=localStorage.getItem(NS+':checklist'); if(raw){ const p=JSON.parse(raw); if(Array.isArray(p)) return p; } }catch(e){} return null; }
-  let current = 0;
-  function renderPages(){
-    const host = document.getElementById('pages');
-    host.innerHTML = '';
-    PAGES.forEach((p,i)=>{
-      const div = document.createElement('div');
-      div.className = 'page' + (i===current ? ' active' : '');
-      div.innerHTML = `<h2>${p.title}</h2>${p.body}`;
-      host.appendChild(div);
+  const PACKING_CATEGORIES = [
+    { id: 'all', label: '全部' },
+    { id: 'essentials', label: '必備' },
+    { id: 'tech', label: '3C' },
+    { id: 'clothing', label: '衣物' },
+    { id: 'toiletries', label: '盥洗' },
+    { id: 'health', label: '健康' },
+    { id: 'extras', label: '其他' }
+  ];
+  const PACKING_LIBRARY = [
+    { id: 'id-card', label: '身分證', category: 'essentials' },
+    { id: 'passport', label: '護照', category: 'essentials' },
+    { id: 'tickets', label: '交通票券', category: 'essentials' },
+    { id: 'hotel-confirmation', label: '住宿確認', category: 'essentials' },
+    { id: 'cash', label: '現金', category: 'essentials' },
+    { id: 'credit-card', label: '信用卡', category: 'essentials' },
+    { id: 'drivers-license', label: '駕照', category: 'essentials' },
+    { id: 'insurance', label: '旅遊保險資料', category: 'essentials' },
+    { id: 'phone', label: '手機', category: 'tech' },
+    { id: 'charging-cable', label: '充電線', category: 'tech' },
+    { id: 'power-bank', label: '行動電源', category: 'tech' },
+    { id: 'earphones', label: '耳機', category: 'tech' },
+    { id: 'camera', label: '相機', category: 'tech' },
+    { id: 'memory-card', label: '記憶卡', category: 'tech' },
+    { id: 'travel-adapter', label: '萬國轉接頭', category: 'tech' },
+    { id: 'sim-card', label: 'SIM 卡／Wi-Fi', category: 'tech' },
+    { id: 'tops', label: '上衣', category: 'clothing' },
+    { id: 'bottoms', label: '下身衣物', category: 'clothing' },
+    { id: 'underwear', label: '內衣褲', category: 'clothing' },
+    { id: 'socks', label: '襪子', category: 'clothing' },
+    { id: 'pajamas', label: '睡衣', category: 'clothing' },
+    { id: 'jacket', label: '薄外套', category: 'clothing' },
+    { id: 'hat', label: '帽子', category: 'clothing' },
+    { id: 'walking-shoes', label: '舒適好走的鞋', category: 'clothing' },
+    { id: 'swimsuit', label: '泳衣', category: 'clothing' },
+    { id: 'toothbrush', label: '牙刷牙膏', category: 'toiletries' },
+    { id: 'cleanser', label: '洗面乳', category: 'toiletries' },
+    { id: 'skincare', label: '保養品', category: 'toiletries' },
+    { id: 'sunscreen', label: '防曬乳', category: 'toiletries' },
+    { id: 'razor', label: '刮鬍刀', category: 'toiletries' },
+    { id: 'towel', label: '毛巾', category: 'toiletries' },
+    { id: 'contacts', label: '隱形眼鏡用品', category: 'toiletries' },
+    { id: 'period-products', label: '生理用品', category: 'toiletries' },
+    { id: 'personal-meds', label: '個人藥品', category: 'health' },
+    { id: 'painkiller', label: '止痛藥', category: 'health' },
+    { id: 'stomach-meds', label: '腸胃藥', category: 'health' },
+    { id: 'bandages', label: 'OK 繃', category: 'health' },
+    { id: 'repellent', label: '防蚊液', category: 'health' },
+    { id: 'masks', label: '口罩', category: 'health' },
+    { id: 'wipes', label: '酒精／濕紙巾', category: 'health' },
+    { id: 'umbrella', label: '輕便雨具', category: 'extras' },
+    { id: 'water-bottle', label: '環保水瓶', category: 'extras' },
+    { id: 'shopping-bag', label: '環保購物袋', category: 'extras' },
+    { id: 'luggage-lock', label: '行李鎖', category: 'extras' },
+    { id: 'notebook', label: '旅行筆記本', category: 'extras' },
+    { id: 'book', label: '書／閱讀器', category: 'extras' },
+    { id: 'snacks', label: '零食', category: 'extras' }
+  ];
+  const DEFAULT_PACKING_IDS = [
+    'id-card', 'tickets', 'cash', 'phone', 'charging-cable', 'power-bank',
+    'underwear', 'socks', 'jacket', 'toothbrush', 'sunscreen', 'personal-meds', 'umbrella'
+  ];
+  const LEGACY_ITEM_ALIASES = {
+    '證件與車票': 'id-card',
+    '記得護照／證件': 'passport'
+  };
+  const promptDrafts = PROMPTS.slice();
+
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const progress = document.getElementById('progress');
+  const progressBar = document.getElementById('progress-bar');
+  const pageInfo = document.getElementById('page-info');
+  const promptPage = document.getElementById('prompt-page');
+  const promptText = document.getElementById('prompt-text');
+  const copyStatus = document.getElementById('copy-status');
+  const announcement = document.getElementById('page-announcement');
+  const prevButton = document.getElementById('btn-prev');
+  const nextButton = document.getElementById('btn-next');
+  const prevZone = document.getElementById('prev-zone');
+  const nextZone = document.getElementById('next-zone');
+  const main = document.getElementById('main');
+  const packingDialog = document.getElementById('packing-dialog');
+  const packingSortable = document.getElementById('packing-sortable');
+  const packingAnnouncement = document.getElementById('packing-announcement');
+  let current = -1;
+  let activePackingCategory = 'all';
+  let packingItems = [];
+  let pointerStartX = null;
+  let pointerStartY = null;
+  let pointerStartedOnPageEdge = false;
+  let dragPage = null;
+  let previewPage = null;
+
+  function createDefaultPackingItems() {
+    return DEFAULT_PACKING_IDS.map(function (id) {
+      const item = PACKING_LIBRARY.find(function (candidate) { return candidate.id === id; });
+      return { id: item.id, label: item.label, category: item.category, done: false, custom: false };
     });
-    document.getElementById('progress').textContent = (current+1) + ' / ' + PAGES.length;
-    document.getElementById('page-info').textContent = '第 ' + (current+1) + ' 頁，共 ' + PAGES.length + ' 頁';
   }
-  function renderChecklist(){
+
+  function normalizePackingItems(raw) {
+    if (!Array.isArray(raw)) return null;
+    const seen = new Set();
+    return raw
+      .filter(function (item) {
+        return item && typeof item.label === 'string' && item.label.trim() && item.label.trim() !== '查看天氣';
+      })
+      .map(function (item, index) {
+        const legacyId = LEGACY_ITEM_ALIASES[item.label.trim()];
+        const master = PACKING_LIBRARY.find(function (candidate) {
+          return candidate.id === item.id || candidate.id === legacyId || candidate.label === item.label.trim();
+        });
+        const id = master ? master.id : (item.id || ('custom-' + index + '-' + item.label.trim()));
+        return {
+          id: id,
+          label: master ? master.label : item.label.trim(),
+          category: master ? master.category : (item.category || 'custom'),
+          done: Boolean(item.done),
+          custom: !master
+        };
+      })
+      .filter(function (item) {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
+  }
+
+  function readChecklist() {
+    try {
+      const raw = localStorage.getItem(NS + ':checklist');
+      if (raw !== null) {
+        const saved = normalizePackingItems(JSON.parse(raw));
+        if (saved) return saved;
+      }
+    } catch (error) {}
+    try {
+      const previous = localStorage.getItem('travel-v2:checklist');
+      if (previous !== null) {
+        const migrated = normalizePackingItems(JSON.parse(previous)) || [];
+        const defaults = createDefaultPackingItems();
+        defaults.forEach(function (item) {
+          if (!migrated.some(function (candidate) { return candidate.id === item.id; })) migrated.push(item);
+        });
+        saveChecklist(migrated);
+        return migrated;
+      }
+    } catch (error) {}
+    try {
+      const legacy = JSON.parse(localStorage.getItem('travel-v1:checklist'));
+      if (Array.isArray(legacy)) {
+        const migrated = normalizePackingItems(legacy) || [];
+        const defaults = createDefaultPackingItems();
+        defaults.forEach(function (item) {
+          if (!migrated.some(function (candidate) { return candidate.id === item.id; })) migrated.push(item);
+        });
+        if (migrated) {
+          saveChecklist(migrated);
+          return migrated;
+        }
+      }
+    } catch (error) {}
+    return createDefaultPackingItems();
+  }
+
+  function saveChecklist(items) {
+    try { localStorage.setItem(NS + ':checklist', JSON.stringify(items)); } catch (error) {}
+  }
+
+  function renderChecklist() {
     const host = document.getElementById('checklist');
-    const items = loadChecklist() || [];
     host.innerHTML = '';
-    items.forEach((labeled,i)=>{
+    packingItems.slice(0, 6).forEach(function (item) {
       const label = document.createElement('label');
       label.className = 'checklist-label';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.checked = labeled.done;
-      cb.addEventListener('change', ()=>{
-        items[i].done = cb.checked;
-        saveChecklist(items);
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = Boolean(item.done);
+      checkbox.addEventListener('change', function () {
+        const target = packingItems.find(function (candidate) { return candidate.id === item.id; });
+        if (target) target.done = checkbox.checked;
+        saveChecklist(packingItems);
+        updatePackingSummaries();
       });
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(labeled.label));
+      const text = document.createElement('span');
+      text.textContent = item.label;
+      label.appendChild(checkbox);
+      label.appendChild(text);
       host.appendChild(label);
     });
+    const more = document.getElementById('checklist-more');
+    const hiddenCount = Math.max(0, packingItems.length - 6);
+    more.textContent = hiddenCount ? '還有 ' + hiddenCount + ' 項，開啟完整清單' : '開啟完整清單';
+    more.classList.toggle('visible', packingItems.length > 0);
+    updatePackingSummaries();
   }
-  function addChecklistPreview(){
-    const host = document.getElementById('checklist');
-    const existing = Array.from(host.children).length;
-    if(existing < 5){
-      const items = loadChecklist() || [];
-      const fresh = [
-        {label:'記得護照／證件', done:false},
-        {label:'查看天氣', done:false},
-        {label:'帶快門oo', done:false}
-      ];
-      const target = fresh.find(f=>!items.some(i=>i.label===f.label));
-      if(target){
-        items.push(target);
-        saveChecklist(items);
+
+  function updatePackingSummaries() {
+    const doneCount = packingItems.filter(function (item) { return item.done; }).length;
+    document.getElementById('checklist-summary').textContent = doneCount + ' / ' + packingItems.length + ' 已打包';
+    document.getElementById('packing-manager-summary').textContent = doneCount + ' / ' + packingItems.length + ' 已打包';
+  }
+
+  function renderCategoryTabs() {
+    const host = document.getElementById('category-tabs');
+    host.innerHTML = '';
+    PACKING_CATEGORIES.forEach(function (category) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'category-tab' + (category.id === activePackingCategory ? ' active' : '');
+      button.textContent = category.label;
+      button.setAttribute('aria-pressed', category.id === activePackingCategory ? 'true' : 'false');
+      button.addEventListener('click', function () {
+        activePackingCategory = category.id;
+        renderCategoryTabs();
+        renderLibrary();
+      });
+      host.appendChild(button);
+    });
+  }
+
+  function renderLibrary() {
+    const host = document.getElementById('library-list');
+    const visibleItems = PACKING_LIBRARY.filter(function (item) {
+      return activePackingCategory === 'all' || item.category === activePackingCategory;
+    });
+    host.innerHTML = '';
+    visibleItems.forEach(function (item) {
+      const included = packingItems.some(function (candidate) { return candidate.id === item.id; });
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'library-item';
+      button.setAttribute('aria-pressed', included ? 'true' : 'false');
+      const label = document.createElement('span');
+      label.textContent = item.label;
+      const action = document.createElement('b');
+      action.textContent = included ? '已加入' : '加入';
+      button.appendChild(label);
+      button.appendChild(action);
+      button.addEventListener('click', function () {
+        if (included) {
+          packingItems = packingItems.filter(function (candidate) { return candidate.id !== item.id; });
+        } else {
+          packingItems.push({ id: item.id, label: item.label, category: item.category, done: false, custom: false });
+        }
+        saveChecklist(packingItems);
+        renderLibrary();
+        renderPackingList();
         renderChecklist();
-      }
+      });
+      host.appendChild(button);
+    });
+  }
+
+  function movePackingItem(id, direction, focusAction) {
+    const index = packingItems.findIndex(function (item) { return item.id === id; });
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= packingItems.length) return;
+    const moved = packingItems.splice(index, 1)[0];
+    packingItems.splice(nextIndex, 0, moved);
+    saveChecklist(packingItems);
+    renderPackingList();
+    renderChecklist();
+    packingAnnouncement.textContent = moved.label + ' 已移至第 ' + (nextIndex + 1) + ' 項';
+    requestAnimationFrame(function () {
+      const movedRow = Array.from(packingSortable.querySelectorAll('.packing-row')).find(function (candidate) {
+        return candidate.dataset.id === id;
+      });
+      const action = movedRow && Array.from(movedRow.querySelectorAll('.row-action')).find(function (button) {
+        return button.textContent === focusAction;
+      });
+      if (action && !action.disabled) action.focus();
+      else if (movedRow) movedRow.querySelector('.drag-handle').focus();
+    });
+  }
+
+  function syncPackingOrderFromDom() {
+    const ids = Array.from(packingSortable.querySelectorAll('.packing-row')).map(function (row) { return row.dataset.id; });
+    const byId = new Map(packingItems.map(function (item) { return [item.id, item]; }));
+    packingItems = ids.map(function (id) { return byId.get(id); }).filter(Boolean);
+    saveChecklist(packingItems);
+    renderChecklist();
+    updatePackingSummaries();
+  }
+
+  function attachDragBehavior(row, handle) {
+    let dragging = false;
+    function finishDrag(event) {
+      if (!dragging) return;
+      dragging = false;
+      row.classList.remove('dragging');
+      document.removeEventListener('pointermove', moveDrag);
+      document.removeEventListener('pointerup', finishDrag);
+      document.removeEventListener('pointercancel', finishDrag);
+      syncPackingOrderFromDom();
+      const position = packingItems.findIndex(function (item) { return item.id === row.dataset.id; });
+      const movedItem = packingItems[position];
+      if (movedItem) packingAnnouncement.textContent = movedItem.label + ' 已移至第 ' + (position + 1) + ' 項';
+      renderPackingList();
     }
+    function moveDrag(event) {
+      if (!dragging) return;
+      if (event.cancelable) event.preventDefault();
+      const candidates = Array.from(packingSortable.querySelectorAll('.packing-row')).filter(function (candidate) {
+        return candidate !== row;
+      });
+      const targetRow = candidates.find(function (candidate) {
+        const rect = candidate.getBoundingClientRect();
+        return event.clientY < rect.top + rect.height / 2;
+      });
+      if (targetRow) targetRow.before(row);
+      else packingSortable.appendChild(row);
+    }
+    handle.addEventListener('pointerdown', function (event) {
+      if (event.cancelable) event.preventDefault();
+      dragging = true;
+      row.classList.add('dragging');
+      document.addEventListener('pointermove', moveDrag, { passive: false });
+      document.addEventListener('pointerup', finishDrag);
+      document.addEventListener('pointercancel', finishDrag);
+    });
   }
-  function showPage(i){
-    current = Math.max(0, Math.min(PAGES.length-1, i));
-    const pages = document.querySelectorAll('.page');
-    pages.forEach((el,idx)=> el.classList.toggle('active', idx===current));
-    document.getElementById('progress').textContent = (current+1) + ' / ' + PAGES.length;
-    document.getElementById('page-info').textContent = '第 ' + (current+1) + '頁，共 ' + PAGES.length + '頁';
+
+  function renderPackingList() {
+    packingSortable.innerHTML = '';
+    if (!packingItems.length) {
+      const empty = document.createElement('li');
+      empty.className = 'packing-empty';
+      empty.textContent = '目前還沒有項目。從左側常用項目庫加入，或新增自己的必需品。';
+      packingSortable.appendChild(empty);
+      updatePackingSummaries();
+      return;
+    }
+    packingItems.forEach(function (item, index) {
+      const row = document.createElement('li');
+      row.className = 'packing-row';
+      row.dataset.id = item.id;
+      const handle = document.createElement('button');
+      handle.type = 'button';
+      handle.className = 'drag-handle';
+      handle.textContent = '拖曳';
+      handle.setAttribute('aria-label', '拖曳排序：' + item.label);
+      const label = document.createElement('label');
+      label.className = 'packing-row-label';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = Boolean(item.done);
+      checkbox.addEventListener('change', function () {
+        item.done = checkbox.checked;
+        saveChecklist(packingItems);
+        renderChecklist();
+        updatePackingSummaries();
+      });
+      const labelText = document.createElement('span');
+      labelText.textContent = item.label;
+      label.appendChild(checkbox);
+      label.appendChild(labelText);
+      const actions = document.createElement('div');
+      actions.className = 'row-actions';
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'row-action';
+      up.textContent = '上移';
+      up.disabled = index === 0;
+      up.addEventListener('click', function () { movePackingItem(item.id, -1, '上移'); });
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'row-action';
+      down.textContent = '下移';
+      down.disabled = index === packingItems.length - 1;
+      down.addEventListener('click', function () { movePackingItem(item.id, 1, '下移'); });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'row-action';
+      remove.textContent = '移除';
+      remove.addEventListener('click', function () {
+        packingItems = packingItems.filter(function (candidate) { return candidate.id !== item.id; });
+        saveChecklist(packingItems);
+        renderLibrary();
+        renderPackingList();
+        renderChecklist();
+      });
+      actions.appendChild(up);
+      actions.appendChild(down);
+      actions.appendChild(remove);
+      row.appendChild(handle);
+      row.appendChild(label);
+      row.appendChild(actions);
+      packingSortable.appendChild(row);
+      attachDragBehavior(row, handle);
+    });
+    updatePackingSummaries();
   }
-  function next(){ showPage(current+1); }
-  function prev(){ showPage(current-1); }
-  document.getElementById('btn-next').addEventListener('click', next);
-  document.getElementById('btn-prev').addEventListener('click', prev);
-  document.getElementById('btn-reset').addEventListener('click', ()=>{
-    const items = (loadChecklist() || []).map(item=>({...item, done:false}));
-    saveChecklist(items);
+
+  function renderPackingManager() {
+    document.getElementById('library-count').textContent = PACKING_LIBRARY.length + ' 個選項';
+    renderCategoryTabs();
+    renderLibrary();
+    renderPackingList();
+  }
+
+  function showPage(nextIndex, announce) {
+    const bounded = Math.max(0, Math.min(pages.length - 1, nextIndex));
+    if (bounded === current && pages[bounded].classList.contains('active')) return;
+    current = bounded;
+    pages.forEach(function (page, index) {
+      page.classList.toggle('active', index === current);
+      page.classList.toggle('turned', index < current);
+      page.setAttribute('aria-hidden', index === current ? 'false' : 'true');
+    });
+    const humanPage = current + 1;
+    progress.textContent = humanPage + ' / ' + pages.length;
+    progressBar.style.width = ((humanPage / pages.length) * 100) + '%';
+    pageInfo.textContent = '第 ' + humanPage + ' 頁，共 ' + pages.length + ' 頁';
+    promptPage.textContent = 'PAGE ' + String(humanPage).padStart(2, '0');
+    promptText.value = promptDrafts[current];
+    copyStatus.textContent = '';
+    prevButton.disabled = current === 0;
+    prevZone.disabled = current === 0;
+    nextButton.disabled = current === pages.length - 1;
+    nextZone.disabled = current === pages.length - 1;
+    if (announce) announcement.textContent = '已翻到第 ' + humanPage + ' 頁：' + pages[current].dataset.title;
+  }
+
+  function next() { showPage(current + 1, true); }
+  function prev() { showPage(current - 1, true); }
+
+  async function copyPrompt() {
+    const value = promptText.value;
+    let copied = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(value);
+        copied = true;
+      }
+    } catch (error) {}
+    if (!copied) {
+      promptText.focus();
+      promptText.select();
+      try { copied = document.execCommand('copy'); } catch (error) {}
+    }
+    copyStatus.textContent = copied ? '已複製，可以貼上使用' : '已選取提示詞，請手動複製';
+  }
+
+  prevButton.addEventListener('click', prev);
+  nextButton.addEventListener('click', next);
+  prevZone.addEventListener('click', prev);
+  nextZone.addEventListener('click', next);
+  document.getElementById('copy-prompt').addEventListener('click', copyPrompt);
+  promptText.addEventListener('input', function () {
+    if (current >= 0) promptDrafts[current] = promptText.value;
+    copyStatus.textContent = '';
+  });
+  document.getElementById('btn-reset').addEventListener('click', function () {
+    packingItems.forEach(function (item) { item.done = false; });
+    saveChecklist(packingItems);
+    renderChecklist();
+    if (packingDialog.open) renderPackingList();
+  });
+  document.getElementById('btn-manage-checklist').addEventListener('click', function () {
+    renderPackingManager();
+    packingDialog.showModal();
+  });
+  document.getElementById('checklist-more').addEventListener('click', function () {
+    renderPackingManager();
+    packingDialog.showModal();
+  });
+  document.getElementById('close-packing-dialog').addEventListener('click', function () {
+    packingDialog.close();
     renderChecklist();
   });
-  let pointerStartX = null;
-  document.getElementById('main').addEventListener('pointerdown', e=>{ pointerStartX = e.clientX; });
-  document.getElementById('main').addEventListener('pointerup', e=>{
-    if(pointerStartX === null) return;
-    const dx = e.clientX - pointerStartX;
+  packingDialog.addEventListener('click', function (event) {
+    if (event.target === packingDialog) packingDialog.close();
+  });
+  document.getElementById('custom-item-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const input = document.getElementById('custom-item-input');
+    const label = input.value.trim();
+    if (!label) return;
+    const normalizedLabel = label.toLocaleLowerCase();
+    const duplicate = packingItems.some(function (item) { return item.label.toLocaleLowerCase() === normalizedLabel; });
+    if (duplicate) {
+      input.setCustomValidity('這個項目已經在我的行李中');
+      input.reportValidity();
+      return;
+    }
+    const libraryMatch = PACKING_LIBRARY.find(function (item) {
+      return item.label.toLocaleLowerCase() === normalizedLabel;
+    });
+    input.setCustomValidity('');
+    packingItems.push(libraryMatch
+      ? { id: libraryMatch.id, label: libraryMatch.label, category: libraryMatch.category, done: false, custom: false }
+      : { id: 'custom-' + Date.now(), label: label, category: 'custom', done: false, custom: true });
+    input.value = '';
+    saveChecklist(packingItems);
+    renderLibrary();
+    renderPackingList();
+    renderChecklist();
+  });
+  document.getElementById('custom-item-input').addEventListener('input', function (event) {
+    event.currentTarget.setCustomValidity('');
+  });
+
+  function clearPageDragStyles() {
+    pages.forEach(function (page) {
+      page.style.removeProperty('transform');
+      page.style.removeProperty('opacity');
+      page.style.removeProperty('z-index');
+      page.classList.remove('drag-preview');
+    });
+    dragPage = null;
+    previewPage = null;
+  }
+
+  main.addEventListener('pointerdown', function (event) {
+    if (event.button !== undefined && event.button !== 0) return;
+    pointerStartedOnPageEdge = event.target instanceof Element && Boolean(event.target.closest('.page-turn'));
+    if (pointerStartedOnPageEdge) {
+      pointerStartX = null;
+      pointerStartY = null;
+      return;
+    }
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    dragPage = pages[current];
+    previewPage = current > 0 ? pages[current - 1] : null;
+    if (main.setPointerCapture) {
+      try { main.setPointerCapture(event.pointerId); } catch (error) {}
+    }
+  });
+
+  main.addEventListener('pointermove', function (event) {
+    if (pointerStartX === null || pointerStartY === null || pointerStartedOnPageEdge) return;
+    const dx = event.clientX - pointerStartX;
+    const dy = event.clientY - pointerStartY;
+    if (Math.abs(dx) < 8 || Math.abs(dx) <= Math.abs(dy)) return;
+    if (event.cancelable) event.preventDefault();
+    main.classList.add('is-dragging');
+    const travel = Math.min(1, Math.abs(dx) / Math.max(1, main.clientWidth * .55));
+    if (dx < 0 && current < pages.length - 1) {
+      dragPage.style.transform = 'translateX(' + (dx * .3) + 'px) rotateY(' + Math.max(-24, dx / 7) + 'deg)';
+      dragPage.style.opacity = String(1 - travel * .32);
+    } else if (dx > 0 && current > 0 && previewPage) {
+      previewPage.classList.add('drag-preview');
+      previewPage.style.transform = 'translateX(' + (-62 + travel * 62) + '%) rotateY(' + (-105 + travel * 105) + 'deg)';
+      previewPage.style.opacity = String(travel);
+      previewPage.style.zIndex = '30';
+      dragPage.style.transform = 'translateX(' + (dx * .06) + 'px)';
+    } else if (dragPage) {
+      dragPage.style.transform = 'translateX(' + (dx * .05) + 'px)';
+    }
+  });
+
+  main.addEventListener('pointerup', function (event) {
+    if (pointerStartX === null || pointerStartY === null) return;
+    const dx = event.clientX - pointerStartX;
+    const dy = event.clientY - pointerStartY;
     pointerStartX = null;
-    if(dx < -50) next();
-    else if(dx > 50) prev();
+    pointerStartY = null;
+    if (main.releasePointerCapture && main.hasPointerCapture && main.hasPointerCapture(event.pointerId)) {
+      try { main.releasePointerCapture(event.pointerId); } catch (error) {}
+    }
+    main.classList.remove('is-dragging');
+    const shouldTurn = Math.abs(dx) > 58 && Math.abs(dx) > Math.abs(dy);
+    if (shouldTurn && dx < 0 && current < pages.length - 1) next();
+    else if (shouldTurn && dx > 0 && current > 0) prev();
+    requestAnimationFrame(clearPageDragStyles);
   });
-  document.getElementById('next-zone').addEventListener('click', (e)=>{ e.preventDefault(); next(); });
-  document.getElementById('prev-zone').addEventListener('click', (e)=>{ e.preventDefault(); prev(); });
-  document.getElementById('next-zone').addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); next(); }});
-  document.getElementById('prev-zone').addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); prev(); }});
-  document.addEventListener('keydown', (e)=>{
-    if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
-    else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+
+  main.addEventListener('pointercancel', function (event) {
+    pointerStartX = null;
+    pointerStartY = null;
+    pointerStartedOnPageEdge = false;
+    main.classList.remove('is-dragging');
+    if (main.releasePointerCapture && main.hasPointerCapture && main.hasPointerCapture(event.pointerId)) {
+      try { main.releasePointerCapture(event.pointerId); } catch (error) {}
+    }
+    requestAnimationFrame(clearPageDragStyles);
   });
-  renderPages();
+
+  document.addEventListener('keydown', function (event) {
+    const isTyping = event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA'].includes(event.target.tagName);
+    if (isTyping || packingDialog.open) return;
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      next();
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      prev();
+    }
+  });
+
+  packingItems = readChecklist();
   renderChecklist();
-  addChecklistPreview();
+  showPage(0, false);
 })();
 </script>
 </body>

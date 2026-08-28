@@ -2,6 +2,26 @@
   "product": "vocabulary-trainer",
   "behaviors": [
     {
+      "id": "quiz-choices",
+      "selector": "#answer-grid",
+      "expect": "Render four Traditional Chinese answer choices for the current word"
+    },
+    {
+      "id": "streak-xp",
+      "selector": "#streak-count",
+      "expect": "Track game streak and XP after each answer"
+    },
+    {
+      "id": "answer-feedback",
+      "selector": "#answer-feedback",
+      "expect": "Show immediate correct or incorrect feedback before continuing"
+    },
+    {
+      "id": "settings-dialog",
+      "selector": "#settings-panel",
+      "expect": "Keep filters, pronunciation, notes, custom words, and licenses in one settings panel"
+    },
+    {
       "id": "add-term",
       "selector": "#btn-add",
       "expect": "Add button exists; adding term/meaning inserts a card"
@@ -23,13 +43,53 @@
     },
     {
       "id": "learned-toggle",
-      "selector": ".card .learned-btn",
+      "selector": "#btn-learned",
       "expect": "Toggle learned status per card"
     },
     {
       "id": "persistence",
       "selector": "#card-count",
       "expect": "Card count persisted across reload"
+    },
+    {
+      "id": "exam-filter",
+      "selector": "#exam-filter",
+      "expect": "Filter the complete source data by IELTS, TOEFL, TOEIC, or general English"
+    },
+    {
+      "id": "weighted-practice",
+      "selector": "#weight-badge",
+      "expect": "Display a transparent learning weight while preserving original source ranks"
+    },
+    {
+      "id": "pronunciation",
+      "selector": "#btn-speak",
+      "expect": "Generate the current word locally with Kokoro and fall back to the browser Web Speech API"
+    },
+    {
+      "id": "pronunciation-engine",
+      "selector": "#speech-engine",
+      "expect": "Choose between free local Kokoro synthesis and the device voice"
+    },
+    {
+      "id": "model-progress",
+      "selector": "#model-progress",
+      "expect": "Show download progress and allow the in-memory model to be released"
+    },
+    {
+      "id": "voice-selection",
+      "selector": "#voice-select",
+      "expect": "List English voices exposed by the device and display the actual selected voice"
+    },
+    {
+      "id": "pwa-installation",
+      "selector": "link[rel='manifest']",
+      "expect": "Expose an installable standalone PWA with an offline app shell"
+    },
+    {
+      "id": "license-disclosure",
+      "selector": "#licenses",
+      "expect": "Show source attribution, licenses, and independent-product disclaimer"
     }
   ]
 }

@@ -30,6 +30,31 @@
       "id": "print",
       "selector": "#btn-print",
       "expect": "Print button exists"
+    },
+    {
+      "id": "role-switch",
+      "selector": "#role-host[role='tab']",
+      "expect": "Host and player entry points are available from the product navigation"
+    },
+    {
+      "id": "host-room",
+      "selector": "#btn-create-room",
+      "expect": "Host can create a private room"
+    },
+    {
+      "id": "host-approval",
+      "selector": "#host-offer-input",
+      "expect": "Host can review a friend's join request before allowing entry"
+    },
+    {
+      "id": "player-ready",
+      "selector": "#btn-player-ready",
+      "expect": "Approved player can declare readiness"
+    },
+    {
+      "id": "start-gate",
+      "selector": "#btn-start-game[disabled]",
+      "expect": "Game starts disabled until every approved player is connected and ready"
     }
   ]
 }

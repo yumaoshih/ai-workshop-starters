@@ -1,6 +1,6 @@
 {
   "product": "water-tracker",
-  "version": "1.0.0",
+  "version": "2.3.0",
   "behaviors": [
     {
       "id": "goal-config",
@@ -10,7 +10,7 @@
     },
     {
       "id": "add-intake",
-      "description": "點擊新增飲水",
+      "description": "依選擇的飲品與容量新增補水記錄",
       "selector": "button[data-action=add]",
       "expected": "點擊後總量遞增"
     },
@@ -31,6 +31,42 @@
       "description": "明顯的重置按鈕存在",
       "selector": "button[data-action=reset]",
       "expected": "按鈕存在"
+    },
+    {
+      "id": "drink-selection",
+      "description": "可選擇不同飲品",
+      "selector": "#drinkList",
+      "expected": "包含水、茶、咖啡等選項"
+    },
+    {
+      "id": "hydration-conversion",
+      "description": "顯示飲用容量與有效補水量換算",
+      "selector": "#effectivePreview",
+      "expected": "依飲品係數顯示換算後毫升數"
+    },
+    {
+      "id": "animal-progress",
+      "description": "補水夥伴依有效補水比例由下往上顯色",
+      "selector": "#alpacaShell",
+      "expected": "補水進度以動物填色呈現"
+    },
+    {
+      "id": "character-selection",
+      "description": "可從四種動物中選擇補水夥伴",
+      "selector": "#characterGrid",
+      "expected": "包含奶泡、高高、珍珠與阿松"
+    },
+    {
+      "id": "layered-drink-progress",
+      "description": "不同飲品依有效補水量分層填入角色",
+      "selector": "#characterLayers",
+      "expected": "每筆飲品保留自己的顏色並依記錄順序向上堆疊"
+    },
+    {
+      "id": "completion-reveal",
+      "description": "有效補水達標時顯示動物全彩真面目",
+      "selector": "#characterComplete",
+      "expected": "達到每日目標 100% 時顯示所選角色的全彩圖片"
     }
   ]
 }

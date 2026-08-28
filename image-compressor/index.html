@@ -3,556 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>圖片壓縮工具</title>
+<meta name="theme-color" content="#f5f3ec">
+<title>圖片瘦身站｜轉檔與壓縮</title>
 <style>
   :root{
-    --bg:#070b10;
-    --panel:#11171f;
-    --panel2:#172029;
-    --ink:#e6edf3;
-    --muted:#8ea3b4;
-    --accent:#4fd1c5;
-    --accent-dim:#1e6e65;
-    --ring:#22303d;
-    --warn:#f2c86b;
-    --danger:#e57a6b;
+    color-scheme:light;
+    --paper:#f5f3ec;--surface:#fffefa;--surface-soft:#edf5f2;--ink:#211650;
+    --muted:#77728d;--line:#d8d3de;--aqua:#19b7c6;--aqua-dark:#087f88;
+    --aqua-soft:#d8f5f2;--green:#82cf61;--yellow:#ffd42a;--shadow:0 20px 60px rgba(33,22,80,.12);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
-    background: radial-gradient(120% 100% at 50% 0%, #12202b 0%, #04070a 100%);
-    color:var(--ink);
-    min-height:100dvh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:16px;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .app{
-    width:min(390px,100%);
-    background:linear-gradient(180deg, #122029 0%, #0a131a 100%);
-    border:1px solid #1f3340;
-    border-radius:30px;
-    padding:20px 18px 22px;
-    box-shadow:0 18px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-  }
-  .eyebrow{
-    font-size:12px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--muted);
-    margin-bottom:4px;
-  }
-  .title{
-    font-size:22px;
-    font-weight:600;
-    margin:0 0 14px;
-    text-align:center;
-  }
-  .drop-zone{
-    border:2px dashed #22303d;
-    border-radius:16px;
-    padding:24px 16px;
-    text-align:center;
-    cursor:pointer;
-    transition:border-color 0.2s, background 0.2s;
-    background:var(--panel);
-    position:relative;
-  }
-  .drop-zone:hover{border-color:var(--accent-dim);background:var(--panel2)}
-  .drop-zone.dragover{border-color:var(--accent);background:#102629}
-  .drop-zone input[type=file]{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    opacity:0;
-    cursor:pointer;
-  }
-  .drop-icon{
-    font-size:34px;
-    line-height:1;
-    margin-bottom:6px;
-    color:var(--muted);
-    filter:drop-shadow(0 0 6px rgba(79,209,197,0.2));
-  }
-  .drop-label{
-    font-size:14px;
-    color:var(--ink);
-  }
-  .drop-hint{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:4px;
-  }
-  .controls{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin:14px 0 14px;
-    background:var(--panel);
-    border:1px solid #1f3340;
-    border-radius:14px;
-    padding:10px 12px;
-  }
-  .controls label{
-    font-size:13px;
-    color:var(--muted);
-    white-space:nowrap;
-  }
-  .controls input[type=range]{
-    flex:1;
-    accent-color:var(--accent);
-    min-width:0;
-  }
-  .controls .value{
-    font-size:13px;
-    color:var(--ink);
-    font-variant-numeric:tabular-nums;
-    min-width:36px;
-    text-align:right;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-bottom:14px;
-  }
-  .card{
-    background:var(--panel);
-    border:1px solid #1f3340;
-    border-radius:12px;
-    padding:8px;
-  }
-  .card .file-name{
-    font-size:12px;
-    color:var(--muted);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    margin-bottom:4px;
-  }
-  .card .size-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:11px;
-    color:var(--muted);
-    font-variant-numeric:tabular-nums;
-    margin-bottom:4px;
-  }
-  .card .size-row .orig{color:var(--warn)}
-  .card .size-row .out{color:var(--accent)}
-  .card .thumb{
-    width:100%;
-    aspect-ratio:1;
-    object-fit:cover;
-    border-radius:6px;
-    background:#0a1218;
-  }
-  .card .actions{
-    display:flex;
-    gap:6px;
-    margin-top:6px;
-  }
-  .card .actions button{
-    flex:1;
-    appearance:none;
-    border:1px solid #1f3340;
-    background:var(--panel2);
-    color:var(--ink);
-    padding:6px 8px;
-    border-radius:8px;
-    font-size:12px;
-    font-weight:500;
-    cursor:pointer;
-    transition:background 0.2s;
-  }
-  .card .actions button:hover{background:#1d2a33}
-  .card .actions button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-  .card .actions button.download{
-    background:linear-gradient(180deg,#103a35,#0c2c28);
-    border-color:#1f5e55;
-    color:var(--accent);
-  }
-  .card .actions button.download:hover{background:linear-gradient(180deg,#174a44,#103631)}
-  .empty{
-    text-align:center;
-    font-size:13px;
-    color:var(--muted);
-    padding:20px 0;
-    border:1px dashed #22303d;
-    border-radius:12px;
-    background:var(--panel);
-  }
-  .actions-bar{
-    display:flex;
-    gap:10px;
-    margin-bottom:12px;
-  }
-  .btn{
-    flex:1;
-    appearance:none;
-    border:1px solid #1f3340;
-    background:var(--panel);
-    color:var(--ink);
-    padding:10px 12px;
-    border-radius:12px;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-    transition:background 0.2s;
-  }
-  .btn:hover{background:var(--panel2)}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .btn.primary{
-    background:linear-gradient(180deg,#103a35,#0c2c28);
-    border-color:#1f5e55;
-    color:var(--accent);
-  }
-  .btn.primary:hover{background:linear-gradient(180deg,#174a44,#103631)}
-  .clear-btn{
-    background:transparent;
-    border:1px dashed #22303d;
-    color:var(--muted);
-    padding:10px 14px;
-    border-radius:12px;
-    font-size:13px;
-    cursor:pointer;
-    transition:color 0.2s, border-color 0.2s;
-  }
-  .clear-btn:hover{color:var(--ink);border-color:var(--muted)}
-  .clear-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .hint{
-    font-size:12px;
-    color:var(--muted);
-    text-align:center;
-    line-height:1.5;
-  }
-  .sr-only{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
-  }
+  html,body{margin:0;min-height:100%;background:#eae7ee}
+  body{min-height:100dvh;display:flex;justify-content:center;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-tap-highlight-color:transparent}
+  button,input,select{font:inherit}button{color:inherit}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.46;box-shadow:none!important}[hidden]{display:none!important}
+  .app{width:min(1120px,100%);min-height:100dvh;background:var(--paper);box-shadow:var(--shadow)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px clamp(20px,4vw,48px) 18px;border-bottom:2px solid rgba(33,22,80,.1)}
+  .brand{min-width:0}.eyebrow{margin:0 0 5px;color:var(--aqua-dark);font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+  h1{margin:0;font-size:clamp(24px,4vw,34px);line-height:1.05;font-weight:950;letter-spacing:.01em}
+  .privacy-pill{flex:0 0 auto;padding:9px 13px;border:2px solid var(--ink);border-radius:999px;background:var(--aqua-soft);font-size:12px;font-weight:900}
+  .workspace{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:24px;padding:26px clamp(20px,4vw,48px) 44px}
+  .settings{display:flex;flex-direction:column;gap:16px}
+  .drop-zone{position:relative;min-height:224px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;border:3px dashed var(--ink);border-radius:28px;background:var(--surface);text-align:center;cursor:pointer;transition:transform .15s ease,background .15s ease,box-shadow .15s ease}
+  .drop-zone:hover,.drop-zone.dragover{transform:translateY(-2px);background:var(--aqua-soft);box-shadow:6px 7px 0 var(--ink)}
+  .drop-zone input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+  .drop-mark{display:grid;place-items:center;width:58px;height:58px;margin-bottom:17px;border:3px solid var(--ink);border-radius:18px;background:var(--yellow);box-shadow:4px 5px 0 var(--ink);font-size:13px;font-weight:950;letter-spacing:.08em}
+  .drop-label{font-size:20px;font-weight:950}.drop-hint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.6;font-weight:650}
+  .tool-panel{padding:18px;border:2px solid var(--ink);border-radius:24px;background:var(--surface);box-shadow:5px 6px 0 rgba(33,22,80,.12)}
+  .panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:13px}.panel-head h2{margin:0;font-size:15px;font-weight:950}.panel-head span{color:var(--muted);font-size:11px;font-weight:700}
+  .format-options{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.format-option{position:relative}.format-option input{position:absolute;opacity:0;pointer-events:none}
+  .format-option label{min-height:46px;display:grid;place-items:center;padding:8px 4px;border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--muted);font-size:11px;font-weight:900;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+  .format-option input:checked+label{border:2px solid var(--ink);background:var(--green);color:var(--ink);transform:translateY(-1px)}.format-option input:focus-visible+label{outline:3px solid var(--yellow);outline-offset:3px}
+  .quality-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.quality-value{min-width:58px;text-align:right;color:var(--aqua-dark);font-size:26px;font-weight:950;font-variant-numeric:tabular-nums}.quality-value small{font-size:12px}
+  input[type=range]{width:100%;accent-color:var(--aqua);cursor:pointer}.quality-scale{display:flex;justify-content:space-between;margin-top:5px;color:var(--muted);font-size:10px;font-weight:700}.quality-note{margin:9px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+  .primary-button,.secondary-button,.download-all{appearance:none;min-height:54px;border:3px solid var(--ink);border-radius:999px;padding:12px 18px;font-weight:950;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
+  .primary-button{width:100%;background:var(--green);box-shadow:0 5px 0 var(--ink);font-size:16px}.secondary-button{background:var(--surface);box-shadow:0 4px 0 rgba(33,22,80,.18);font-size:13px}.download-all{background:var(--aqua);box-shadow:0 4px 0 var(--ink);font-size:13px}
+  .primary-button:active,.secondary-button:active,.download-all:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.shortcut{text-align:center;color:var(--muted);font-size:10px;font-weight:650}
+  .results{min-width:0}.summary-card{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;overflow:hidden;margin-bottom:17px;border:2px solid var(--ink);border-radius:24px;background:var(--ink)}
+  .metric{min-width:0;padding:16px;background:var(--surface);text-align:center}.metric span{display:block;margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.04em}.metric strong{display:block;overflow:hidden;color:var(--ink);font-size:clamp(19px,3vw,28px);font-weight:950;font-variant-numeric:tabular-nums;text-overflow:ellipsis;white-space:nowrap}.metric.highlight strong{color:var(--aqua-dark)}
+  .results-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}.results-head h2{margin:0;font-size:18px;font-weight:950}.results-actions{display:flex;gap:8px}
+  .empty{min-height:440px;display:grid;place-items:center;padding:32px;border:2px solid var(--line);border-radius:28px;background:rgba(255,254,250,.64);text-align:center}.empty strong{display:block;margin-bottom:9px;font-size:22px;font-weight:950}.empty p{max-width:320px;margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+  .grid{display:grid;gap:12px}.card{display:grid;grid-template-columns:112px minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px;border:2px solid var(--ink);border-radius:22px;background:var(--surface);box-shadow:4px 5px 0 rgba(33,22,80,.1)}
+  .thumb-wrap{position:relative;width:112px;height:92px;overflow:hidden;border:1px solid var(--line);border-radius:15px;background:var(--surface-soft)}.thumb{display:block;width:100%;height:100%;object-fit:cover}.file-state{position:absolute;left:7px;bottom:7px;padding:4px 7px;border-radius:999px;background:rgba(255,254,250,.94);color:var(--aqua-dark);font-size:9px;font-weight:950}
+  .file-info{min-width:0}.file-name{overflow:hidden;margin:0 0 7px;font-size:15px;font-weight:950;text-overflow:ellipsis;white-space:nowrap}.file-meta{display:flex;flex-wrap:wrap;gap:6px 12px;color:var(--muted);font-size:10px;font-weight:700}
+  .size-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:11px;font-size:12px;font-variant-numeric:tabular-nums}.orig{color:var(--muted);text-decoration:line-through}.out{color:var(--aqua-dark);font-weight:950}.saving{padding:4px 7px;border-radius:999px;background:var(--aqua-soft);color:var(--aqua-dark);font-size:10px;font-weight:950}
+  .card-actions{display:grid;gap:7px;min-width:88px}.card-actions button{appearance:none;min-height:38px;border:2px solid var(--ink);border-radius:999px;padding:8px 12px;background:var(--surface);font-size:11px;font-weight:900;cursor:pointer}.card-actions .download{background:var(--yellow)}.card-actions .remove{border-color:var(--line);color:var(--muted)}
+  .processing{animation:pulse 1s ease-in-out infinite alternate}@keyframes pulse{to{opacity:.55}}.footer-note{padding:0 clamp(20px,4vw,48px) 28px;text-align:center;color:var(--muted);font-size:11px;line-height:1.6}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:760px){html,body{background:var(--paper)}.app{box-shadow:none}.topbar{padding:20px 18px 16px}.privacy-pill{padding:8px 10px;font-size:10px}.workspace{grid-template-columns:1fr;padding:18px 16px 34px}.drop-zone{min-height:180px}.settings{gap:13px}.results{margin-top:5px}.empty{min-height:250px}.card{grid-template-columns:88px minmax(0,1fr);gap:12px}.thumb-wrap{width:88px;height:88px}.card-actions{grid-column:1/-1;grid-template-columns:1fr 1fr}}
+  @media(max-width:390px){.topbar{align-items:flex-start}.privacy-pill{max-width:104px;text-align:center}.format-options{grid-template-columns:1fr 1fr}.summary-card{grid-template-columns:1fr 1fr}.summary-card .metric:last-child{grid-column:1/-1}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-  <main class="app" role="application" aria-label="圖片壓縮工具">
-    <p class="eyebrow">瀏覽器本機處理 · 多檔案</p>
-    <h1 class="title">圖片壓縮工具</h1>
-
-    <div class="drop-zone" id="dropZone">
-      <input id="fileInput" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif" aria-label="選取要壓縮的圖片">
-      <div class="drop-icon">🖼︎</div>
-      <div class="drop-label">點擊或拖放圖片</div>
-      <div class="drop-hint">支援 PNG、JPEG、WebP</div>
+  <main class="app" role="application" aria-label="圖片轉檔與壓縮工具">
+    <header class="topbar">
+      <div class="brand"><p class="eyebrow">04 / Local Image Lab</p><h1>圖片瘦身站</h1></div>
+      <div class="privacy-pill">圖片不離開瀏覽器</div>
+    </header>
+    <div class="workspace">
+      <aside class="settings" aria-label="轉檔設定">
+        <div class="drop-zone" id="dropZone">
+          <input id="fileInput" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif" aria-label="選取要轉檔或壓縮的圖片">
+          <div class="drop-mark" aria-hidden="true">ADD</div><div class="drop-label">加入圖片</div>
+          <div class="drop-hint">點擊選取或拖放到這裡<br>支援 PNG、JPEG、WebP、GIF</div>
+        </div>
+        <section class="tool-panel" aria-labelledby="formatHeading">
+          <div class="panel-head"><h2 id="formatHeading">輸出格式</h2><span>可批次轉換</span></div>
+          <div class="format-options">
+            <div class="format-option"><input id="formatOriginal" name="format" type="radio" value="original"><label for="formatOriginal">原格式</label></div>
+            <div class="format-option"><input id="formatJpeg" name="format" type="radio" value="jpeg" checked><label for="formatJpeg">JPEG</label></div>
+            <div class="format-option"><input id="formatPng" name="format" type="radio" value="png"><label for="formatPng">PNG</label></div>
+            <div class="format-option"><input id="formatWebp" name="format" type="radio" value="webp"><label for="formatWebp">WebP</label></div>
+          </div>
+        </section>
+        <section class="tool-panel" aria-labelledby="qualityHeading">
+          <div class="panel-head"><h2 id="qualityHeading">壓縮品質</h2><span id="qualityMode">適合日常分享</span></div>
+          <div class="quality-row"><input id="qualityRange" type="range" min="10" max="100" step="1" value="80" aria-describedby="qualityHelp"><output class="quality-value" id="qualityValue" for="qualityRange">80<small>%</small></output></div>
+          <div class="quality-scale"><span>檔案較小</span><span>畫質較高</span></div>
+          <p class="quality-note" id="qualityHelp">JPEG 與 WebP 會套用品質設定；PNG 為無損輸出，檔案不一定會變小。</p>
+        </section>
+        <button class="primary-button" type="button" data-action="compress" id="compressBtn" disabled>開始轉檔與瘦身</button>
+        <div class="shortcut">快捷鍵 C 開始處理 · X 清除工作區</div>
+      </aside>
+      <section class="results" aria-labelledby="resultsHeading">
+        <div class="summary-card" aria-label="處理摘要">
+          <div class="metric"><span>圖片數量</span><strong id="fileCount">0</strong></div>
+          <div class="metric"><span>原始容量</span><strong id="originalTotal">0 B</strong></div>
+          <div class="metric highlight"><span>預計／實際省下</span><strong id="savedTotal">—</strong></div>
+        </div>
+        <div class="results-head"><h2 id="resultsHeading">處理清單</h2><div class="results-actions"><button class="download-all" id="downloadAllBtn" type="button" hidden>全部下載</button><button class="secondary-button" data-action="clear" id="clearBtn" type="button" hidden>清除所有</button></div></div>
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="emptyState"><div><strong>把圖片放進來吧</strong><p>可一次加入多張圖片，再統一選擇格式與品質。完成後會顯示每張圖片省下多少空間。</p></div></div>
+      </section>
     </div>
-
-    <div class="controls">
-      <label for="qualityRange">壓縮品質</label>
-      <input id="qualityRange" type="range" min="10" max="100" step="1" value="80" aria-describedby="qualityHelp">
-      <span class="value" id="qualityValue">80</span>
-    </div>
-    <p id="qualityHelp" class="sr-only">JPEG 壓縮品質 10–100，越高檔案越大</p>
-
-    <div class="grid" id="grid">
-      <!-- 動態填入 -->
-    </div>
-    <div class="empty" id="emptyState">尚未加入圖片</div>
-
-    <div class="actions-bar">
-      <button class="btn primary" type="button" data-action="compress" id="compressBtn">全部壓縮</button>
-      <button class="clear-btn" type="button" data-action="clear" id="clearBtn">清除所有</button>
-    </div>
-
-    <p class="hint">所有處理皆在瀏覽器本機完成，不會上傳任何圖片。</p>
+    <p class="footer-note">所有轉檔與壓縮都在本機完成，不會上傳圖片。GIF 轉檔時僅保留第一個畫面。</p>
     <div class="sr-only" id="announce" aria-live="polite"></div>
   </main>
-
 <script>
 (function(){
-  const NS = 'image-compressor:v1';
-  const STATES_KEY = NS + ':files';
+  const NS='image-compressor:v2',SETTINGS_KEY=NS+':settings';
+  const MIME={jpeg:'image/jpeg',png:'image/png',webp:'image/webp'},EXT={jpeg:'jpg',png:'png',webp:'webp'};
+  const $=selector=>document.querySelector(selector),$$=selector=>Array.from(document.querySelectorAll(selector));
+  const fileInput=$('#fileInput'),dropZone=$('#dropZone'),qualityRange=$('#qualityRange'),qualityValue=$('#qualityValue'),qualityMode=$('#qualityMode'),grid=$('#grid'),emptyState=$('#emptyState'),compressBtn=$('#compressBtn'),clearBtn=$('#clearBtn'),downloadAllBtn=$('#downloadAllBtn'),fileCount=$('#fileCount'),originalTotal=$('#originalTotal'),savedTotal=$('#savedTotal'),announce=$('#announce');
+  let files=[],nextId=1,processing=false;
 
-  const $ = (s) => document.querySelector(s);
-  const fileInput = $('#fileInput');
-  const dropZone = $('#dropZone');
-  const qualityRange = $('#qualityRange');
-  const qualityValue = $('#qualityValue');
-  const grid = $('#grid');
-  const emptyState = $('#emptyState');
-  const compressBtn = $('#compressBtn');
-  const clearBtn = $('#clearBtn');
-  const announce = $('#announce');
+  function formatSize(bytes){if(!Number.isFinite(bytes)||bytes<=0)return'0 B';const units=['B','KB','MB','GB'],index=Math.min(Math.floor(Math.log(bytes)/Math.log(1024)),units.length-1),value=bytes/Math.pow(1024,index);return value.toFixed(index===0?0:value>=10?0:1)+' '+units[index]}
+  function selectedFormat(){return document.querySelector('input[name="format"]:checked').value}
+  function qualityDescription(value){if(selectedFormat()==='png')return'PNG 無損輸出';if(value<=45)return'強力瘦身';if(value<=75)return'均衡省空間';if(value<=90)return'適合日常分享';return'優先保留細節'}
+  function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify({format:selectedFormat(),quality:Number(qualityRange.value)}))}catch(error){}}
+  function loadSettings(){try{const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');if(saved&&['original','jpeg','png','webp'].includes(saved.format)){const radio=document.querySelector('input[name="format"][value="'+saved.format+'"]');if(radio)radio.checked=true}if(saved&&Number.isFinite(saved.quality))qualityRange.value=String(Math.max(10,Math.min(100,saved.quality)))}catch(error){}updateQualityUI()}
+  function updateQualityUI(){const value=Number(qualityRange.value);qualityValue.innerHTML=value+'<small>%</small>';qualityMode.textContent=qualityDescription(value);qualityRange.disabled=selectedFormat()==='png'}
+  function outputFormatFor(entry,requested=selectedFormat()){if(requested!=='original')return requested;if(entry.type==='image/png')return'png';if(entry.type==='image/webp')return'webp';return'jpeg'}
+  function fileExtension(name){const match=name.match(/\.([^.]+)$/);return match?match[1].toUpperCase():'IMAGE'}
+  function outputName(entry){const base=entry.name.replace(/\.[^.]+$/,'')||'image';return base+'-slim.'+EXT[entry.outputFormat||outputFormatFor(entry)]}
+  function releaseOutput(entry){if(entry.outputUrl)URL.revokeObjectURL(entry.outputUrl);entry.outputUrl='';entry.outputBlob=null;entry.outputSize=0;entry.outputFormat=''}
+  function markOutputsStale(){files.forEach(releaseOutput);render()}
+  function summary(){const originalBytes=files.reduce((sum,entry)=>sum+entry.originalSize,0),completed=files.filter(entry=>entry.outputBlob),outputBytes=completed.reduce((sum,entry)=>sum+entry.outputSize,0);fileCount.textContent=String(files.length);originalTotal.textContent=formatSize(originalBytes);if(!completed.length){savedTotal.textContent='—'}else{const comparedOriginal=completed.reduce((sum,entry)=>sum+entry.originalSize,0),saved=comparedOriginal-outputBytes,percent=comparedOriginal?Math.round(Math.abs(saved)/comparedOriginal*100):0;savedTotal.textContent=saved>=0?percent+'%':'增加 '+percent+'%'}downloadAllBtn.hidden=completed.length===0}
 
-  let files = []; // { id, file, name, type, originalSize, compressedSize, dataUrl }
-  let nextId = 1;
-
-  function formatSize(bytes){
-    if(!bytes || bytes === 0) return '0 B';
-    const units = ['B','KB','MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const val = (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1);
-    return val + ' ' + units[i];
+  function render(){
+    grid.innerHTML='';emptyState.hidden=files.length>0;clearBtn.hidden=files.length===0;compressBtn.disabled=files.length===0||processing;compressBtn.textContent=processing?'正在處理圖片…':'開始轉檔與瘦身';compressBtn.classList.toggle('processing',processing);$$('input[name="format"]').forEach(input=>input.disabled=processing);qualityRange.disabled=processing||selectedFormat()==='png';
+    files.forEach(entry=>{
+      const card=document.createElement('article');card.className='card';
+      const thumbWrap=document.createElement('div');thumbWrap.className='thumb-wrap';const img=document.createElement('img');img.className='thumb';img.src=entry.outputUrl||entry.previewUrl;img.alt=entry.name+' 預覽';const state=document.createElement('span');state.className='file-state';state.textContent=entry.outputBlob?'完成':'待處理';thumbWrap.append(img,state);
+      const info=document.createElement('div');info.className='file-info';const name=document.createElement('h3');name.className='file-name';name.textContent=entry.name;const meta=document.createElement('div');meta.className='file-meta';const formatMeta=document.createElement('span'),dimensionMeta=document.createElement('span');formatMeta.textContent=fileExtension(entry.name);dimensionMeta.textContent=(entry.width||'—')+' × '+(entry.height||'—')+' px';meta.append(formatMeta,dimensionMeta);const sizes=document.createElement('div');sizes.className='size-row';const original=document.createElement('span');original.className='orig';original.textContent='原尺寸 '+formatSize(entry.originalSize);sizes.appendChild(original);
+      if(entry.outputBlob){const output=document.createElement('span');output.className='out';output.textContent='壓縮 '+formatSize(entry.outputSize);const saved=entry.originalSize-entry.outputSize,percent=entry.originalSize?Math.round(Math.abs(saved)/entry.originalSize*100):0,badge=document.createElement('span');badge.className='saving';badge.textContent=saved>=0?'省下 '+percent+'%':'增加 '+percent+'%';sizes.append(output,badge)}info.append(name,meta,sizes);
+      const actions=document.createElement('div');actions.className='card-actions';if(entry.outputBlob){const download=document.createElement('button');download.type='button';download.className='download';download.dataset.action='download';download.textContent='下載 '+EXT[entry.outputFormat].toUpperCase();download.addEventListener('click',()=>downloadFile(entry));actions.appendChild(download)}const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.dataset.action='remove';remove.textContent='移除';remove.addEventListener('click',()=>removeFile(entry.id));actions.appendChild(remove);
+      card.append(thumbWrap,info,actions);grid.appendChild(card)
+    });summary()
   }
 
-  function loadStates(){
-    try{
-      const raw = localStorage.getItem(STATES_KEY);
-      if(raw){
-        const state = JSON.parse(raw);
-        if(Array.isArray(state)){
-          // 不能恢復 File 物件，僅恢復 meta
-          state.forEach(s => {
-            files.push({
-              id: s.id,
-              file: null,
-              name: s.name,
-              type: s.type,
-              originalSize: s.originalSize,
-              compressedSize: s.compressedSize,
-              dataUrl: s.dataUrl || null,
-              loaded: false
-            });
-            if(s.id >= nextId) nextId = s.id + 1;
-          });
-          renderGrid();
-        }
-      }
-    }catch(e){}
-  }
+  function loadImageDimensions(entry){return new Promise(resolve=>{const image=new Image();image.onload=()=>{entry.width=image.naturalWidth;entry.height=image.naturalHeight;resolve()};image.onerror=()=>resolve();image.src=entry.previewUrl})}
+  async function addFiles(newFiles){const accepted=newFiles.filter(file=>file.type.startsWith('image/'));if(!accepted.length){announce.textContent='沒有找到可處理的圖片';return}const added=accepted.map(file=>{const entry={id:nextId++,file,name:file.name,type:file.type,originalSize:file.size,previewUrl:URL.createObjectURL(file),outputUrl:'',outputBlob:null,outputSize:0,outputFormat:'',width:0,height:0};files.push(entry);return loadImageDimensions(entry)});render();await Promise.all(added);render();announce.textContent='已加入 '+accepted.length+' 張圖片'}
+  function canvasBlob(canvas,mime,quality){return new Promise((resolve,reject)=>{canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('無法建立輸出圖片')),mime,quality)})}
+  async function processEntry(entry,requestedFormat,requestedQuality){const image=new Image();image.src=entry.previewUrl;await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('圖片無法讀取'))});const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const context=canvas.getContext('2d'),outputFormat=outputFormatFor(entry,requestedFormat);if(outputFormat==='jpeg'){context.fillStyle='#ffffff';context.fillRect(0,0,canvas.width,canvas.height)}context.drawImage(image,0,0);const quality=outputFormat==='png'?undefined:requestedQuality/100,blob=await canvasBlob(canvas,MIME[outputFormat],quality);releaseOutput(entry);entry.outputBlob=blob;entry.outputSize=blob.size;entry.outputFormat=outputFormat;entry.outputUrl=URL.createObjectURL(blob)}
+  async function compressAll(){if(processing||!files.length)return;processing=true;const requestedFormat=selectedFormat(),requestedQuality=Number(qualityRange.value);render();let success=0;for(const entry of files){try{await processEntry(entry,requestedFormat,requestedQuality);success+=1}catch(error){releaseOutput(entry)}render()}processing=false;render();announce.textContent=success===files.length?'已完成 '+success+' 張圖片':'完成 '+success+' 張，部分圖片無法處理'}
+  function triggerDownload(entry){if(!entry.outputUrl)return;const anchor=document.createElement('a');anchor.href=entry.outputUrl;anchor.download=outputName(entry);document.body.appendChild(anchor);anchor.click();anchor.remove()}
+  function downloadFile(entry){triggerDownload(entry);announce.textContent='已下載 '+outputName(entry)}
+  function downloadAll(){const completed=files.filter(entry=>entry.outputBlob);completed.forEach((entry,index)=>window.setTimeout(()=>triggerDownload(entry),index*160));announce.textContent='正在下載 '+completed.length+' 張圖片'}
+  function removeFile(id){const entry=files.find(item=>item.id===id);if(entry){URL.revokeObjectURL(entry.previewUrl);releaseOutput(entry)}files=files.filter(item=>item.id!==id);render();announce.textContent='已移除圖片'}
+  function clearAll(){files.forEach(entry=>{URL.revokeObjectURL(entry.previewUrl);releaseOutput(entry)});files=[];nextId=1;render();announce.textContent='已清除所有圖片'}
 
-  function saveStates(){
-    try{
-      const state = files.map(f => ({
-        id: f.id,
-        name: f.name,
-        type: f.type,
-        originalSize: f.originalSize,
-        compressedSize: f.compressedSize,
-        dataUrl: f.dataUrl || null
-      }));
-      localStorage.setItem(STATES_KEY, JSON.stringify(state));
-    }catch(e){}
-  }
-
-  function renderGrid(){
-    grid.innerHTML = '';
-    if(!files.length){
-      emptyState.style.display = 'block';
-      compressBtn.style.display = 'none';
-      clearBtn.style.display = 'none';
-      return;
-    }
-    emptyState.style.display = 'none';
-    compressBtn.style.display = 'block';
-    clearBtn.style.display = 'block';
-
-    files.forEach(f => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      const nameDiv = document.createElement('div');
-      nameDiv.className = 'file-name';
-      nameDiv.textContent = f.name;
-      card.appendChild(nameDiv);
-
-      const sizeRow = document.createElement('div');
-      sizeRow.className = 'size-row';
-      const orig = document.createElement('span');
-      orig.className = 'orig';
-      orig.textContent = '原尺寸 ' + formatSize(f.originalSize);
-      const out = document.createElement('span');
-      out.className = 'out';
-      out.textContent = '壓縮 ' + formatSize(f.compressedSize || 0);
-      sizeRow.appendChild(orig);
-      sizeRow.appendChild(out);
-      card.appendChild(sizeRow);
-
-      if(f.dataUrl){
-        const img = document.createElement('img');
-        img.className = 'thumb';
-        img.src = f.dataUrl;
-        img.alt = f.name;
-        card.appendChild(img);
-      } else {
-        const placeholder = document.createElement('div');
-        placeholder.style.cssText = 'width:100%;aspect-ratio:1;background:#0a1218;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px';
-        placeholder.textContent = '待處理';
-        card.appendChild(placeholder);
-      }
-
-      const actions = document.createElement('div');
-      actions.className = 'actions';
-      if(f.dataUrl && f.compressedSize > 0){
-        const dlBtn = document.createElement('button');
-        dlBtn.type = 'button';
-        dlBtn.dataset.action = 'download';
-        dlBtn.textContent = '下載';
-        dlBtn.addEventListener('click', () => downloadFile(f));
-        actions.appendChild(dlBtn);
-      }
-      if(f.dataUrl){
-        const viewBtn = document.createElement('button');
-        viewBtn.type = 'button';
-        viewBtn.textContent = '複製圖片';
-        viewBtn.addEventListener('click', () => copyToClipboard(f));
-        actions.appendChild(viewBtn);
-      }
-      card.appendChild(actions);
-      grid.appendChild(card);
-    });
-  }
-
-  function downloadFile(f){
-    if(!f.dataUrl) return;
-    const a = document.createElement('a');
-    a.href = f.dataUrl;
-    a.download = f.name.replace(/\.[^.]+$/, '') + '-compressed.jpg';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    if(announce) announce.textContent = '已下載 ' + a.download;
-  }
-
-  async function copyToClipboard(f){
-    if(!f.dataUrl) return;
-    try{
-      const resp = await fetch(f.dataUrl);
-      const blob = await resp.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob })
-      ]);
-      if(announce) announce.textContent = '已複製 ' + f.name;
-    }catch(e){
-      if(announce) announce.textContent = '複製失敗';
-    }
-  }
-
-  function addFiles(newFiles){
-    const promises = [];
-    newFiles.forEach(file => {
-      if(!file.type.startsWith('image/')) return;
-      const id = nextId++;
-      const entry = {
-        id,
-        file,
-        name: file.name,
-        type: file.type,
-        originalSize: file.size,
-        compressedSize: 0,
-        dataUrl: null,
-        loaded: false
-      };
-      files.push(entry);
-      promises.push(preloadImage(entry));
-    });
-    Promise.all(promises).then(() => {
-      renderGrid();
-      saveStates();
-    });
-  }
-
-  function preloadImage(entry){
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        entry.dataUrl = e.target.result;
-        entry.loaded = true;
-        resolve();
-      };
-      reader.readAsDataURL(entry.file);
-    });
-  }
-
-  async function compressAll(){
-    const quality = Number(qualityRange.value);
-    const toCompress = files.filter(f => f.loaded && f.dataUrl && f.compressedSize === 0);
-    if(!toCompress.length){
-      if(announce) announce.textContent = '沒有可壓縮的新圖片';
-      return;
-    }
-    for(const entry of toCompress){
-      try{
-        const img = new Image();
-        img.src = entry.dataUrl;
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-        });
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality / 100);
-        // 解析大小
-        const base64 = compressedDataUrl.split(',')[1];
-        const bytes = Math.floor((base64.length * 3) / 4) - (compressedDataUrl.includes('base64') ? 0 : 0);
-        entry.compressedSize = bytes;
-        entry.dataUrl = compressedDataUrl;
-      }catch(e){
-        entry.compressedSize = entry.originalSize;
-      }
-    }
-    renderGrid();
-    saveStates();
-    if(announce) announce.textContent = '已壓縮 ' + toCompress.length + ' 張圖片';
-  }
-
-  function clearAll(){
-    files = [];
-    nextId = 1;
-    renderGrid();
-    saveStates();
-    if(announce) announce.textContent = '已清除所有圖片';
-  }
-
-  qualityRange.addEventListener('input', () => {
-    qualityValue.textContent = qualityRange.value;
-  });
-
-  fileInput.addEventListener('change', () => {
-    if(fileInput.files && fileInput.files.length){
-      addFiles(Array.from(fileInput.files));
-    }
-    fileInput.value = '';
-  });
-
-  dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-  });
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('dragover');
-  });
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if(e.dataTransfer.files && e.dataTransfer.files.length){
-      addFiles(Array.from(e.dataTransfer.files));
-    }
-  });
-
-  compressBtn.addEventListener('click', compressAll);
-  clearBtn.addEventListener('click', clearAll);
-
-  // 鍵盤：C 壓縮、X 清除
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'c' || e.key === 'C'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        compressAll();
-        e.preventDefault();
-      }
-    } else if(e.key === 'x' || e.key === 'X'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        clearAll();
-        e.preventDefault();
-      }
-    }
-  });
-
-  loadStates();
-  renderGrid();
+  qualityRange.addEventListener('input',()=>{updateQualityUI();saveSettings();markOutputsStale()});$$('input[name="format"]').forEach(input=>input.addEventListener('change',()=>{updateQualityUI();saveSettings();markOutputsStale()}));fileInput.addEventListener('change',()=>{if(fileInput.files&&fileInput.files.length)addFiles(Array.from(fileInput.files));fileInput.value=''});
+  dropZone.addEventListener('dragover',event=>{event.preventDefault();dropZone.classList.add('dragover')});dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));dropZone.addEventListener('drop',event=>{event.preventDefault();dropZone.classList.remove('dragover');if(event.dataTransfer.files&&event.dataTransfer.files.length)addFiles(Array.from(event.dataTransfer.files))});compressBtn.addEventListener('click',compressAll);clearBtn.addEventListener('click',clearAll);downloadAllBtn.addEventListener('click',downloadAll);
+  document.addEventListener('keydown',event=>{if(event.ctrlKey||event.metaKey||event.altKey||event.target.matches('input,select,textarea'))return;if(event.key.toLowerCase()==='c'){compressAll();event.preventDefault()}if(event.key.toLowerCase()==='x'&&files.length){clearAll();event.preventDefault()}});
+  window.addEventListener('beforeunload',()=>files.forEach(entry=>{URL.revokeObjectURL(entry.previewUrl);releaseOutput(entry)}));loadSettings();render()
 })();
 </script>
 </body>

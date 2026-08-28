@@ -3,409 +3,1030 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>每日飲水記錄</title>
+<meta name="theme-color" content="#f7fbfa">
+<title>補水夥伴</title>
 <style>
   :root{
-    --bg:#06141f;
-    --panel:#0d2536;
-    --panel2:#0f2c40;
-    --ink:#e6f2f7;
-    --muted:#8fb4c6;
-    --accent:#39e0d6;
-    --accent-dim:#1f8a82;
-    --ring:#1c4a60;
-    --warn:#f4c97a;
+    color-scheme:light;
+    --page:#edf5f3;
+    --surface:#ffffff;
+    --surface-soft:#f4f8f7;
+    --ink:#16363a;
+    --muted:#7f9699;
+    --line:#dce9e7;
+    --aqua:#10b8ca;
+    --aqua-deep:#087e84;
+    --aqua-pale:#daf5f3;
+    --alpaca-empty:#e5eceb;
+    --danger:#a65354;
+    --shadow:0 24px 70px rgba(26,79,78,.12);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  html{background:var(--page)}
+  html,body{margin:0;min-height:100%}
+  button,input{font:inherit}
+  button{-webkit-tap-highlight-color:transparent}
   body{
-    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
-    background: linear-gradient(160deg, #082433 0%, #05121c 100%);
-    color:var(--ink);
     min-height:100dvh;
     display:flex;
-    flex-direction:column;
-    align-items:center;
     justify-content:center;
-    padding:16px;
-    -webkit-tap-highlight-color:transparent;
+    background:var(--page);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",sans-serif;
   }
   .app{
-    width:min(390px,100%);
-    background:linear-gradient(180deg, #0e2838, #081c27);
-    border:1px solid #1c4054;
-    border-radius:28px;
-    padding:20px 18px 24px;
-    box-shadow:0 18px 46px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03);
+    width:min(100vw,480px);
+    min-height:100dvh;
+    background:var(--surface);
+    overflow:hidden;
+    position:relative;
   }
-  .eyebrow{
-    font-size:12px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--muted);
-    margin-bottom:4px;
-  }
-  .title{
-    font-size:22px;
-    font-weight:600;
-    margin:0 0 16px;
-  }
-  .goal-row{
+  .topbar{
     display:flex;
     align-items:center;
-    gap:10px;
-    margin-bottom:18px;
-    background:var(--panel2);
-    border:1px solid #1c4054;
-    border-radius:14px;
-    padding:10px 14px;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 20px 8px;
   }
-  .goal-row label{
-    font-size:14px;
+  .day-pill{
+    display:inline-flex;
+    align-items:baseline;
+    gap:5px;
+    min-height:46px;
+    padding:9px 16px;
+    border-radius:24px;
+    background:var(--aqua);
+    color:#fff;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .day-pill strong{font-size:23px;line-height:1}
+  .day-pill span{font-size:15px}
+  .goal-control{
+    display:grid;
+    grid-template-columns:auto 54px auto;
+    align-items:center;
+    gap:6px;
+    min-height:46px;
+    padding:8px 12px;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+  }
+  .goal-control label,.goal-control span{
     color:var(--muted);
+    font-size:12px;
+    font-weight:700;
   }
-  .goal-row input{
-    flex:1;
+  .goal-control input{
+    width:54px;
+    min-width:0;
+    padding:0;
+    border:0;
+    outline:0;
     background:transparent;
-    border:none;
     color:var(--ink);
     font-size:15px;
-    font-weight:600;
-    padding:4px 0;
-    outline:none;
-    width:60px;
+    font-weight:800;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
   }
-  .goal-row input:focus-visible{
-    box-shadow:0 0 0 2px var(--accent);
-    border-radius:4px;
+  .goal-control:focus-within{
+    border-color:var(--aqua);
+    box-shadow:0 0 0 3px var(--aqua-pale);
   }
-  .goal-row .unit{
-    font-size:13px;
+  .summary{text-align:center;padding:10px 20px 0}
+  .summary-kicker{
+    margin:0 0 2px;
     color:var(--muted);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.08em;
   }
-  .stage{
+  .total-row{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:5px;
+    color:var(--aqua);
+  }
+  .total-large{
+    font-size:clamp(52px,15vw,72px);
+    line-height:.98;
+    font-weight:800;
+    letter-spacing:-.055em;
+    font-variant-numeric:tabular-nums;
+  }
+  .total-unit{margin-bottom:7px;font-size:24px;font-weight:800}
+  .progress-copy{
+    margin:7px 0 0;
+    color:#a1b0b2;
+    font-size:17px;
+    font-weight:750;
+  }
+  .progress-copy strong{color:var(--ink)}
+  .alpaca-stage{
+    height:clamp(400px,52dvh,500px);
+    min-height:400px;
+    padding:10px 46px 4px;
     position:relative;
-    width:180px;
-    height:180px;
-    margin:0 auto 18px;
   }
-  .drop{
+  .alpaca-shell{
+    --character-mask:url("assets/alpaca-mask.png");
+    position:relative;
+    width:100%;
+    height:100%;
+    transform-origin:50% 90%;
+  }
+  .alpaca-base,.alpaca-layer{
     position:absolute;
     inset:0;
-    border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #194e6b, #0a2738 80%);
-    border:1px solid #1c4a64;
-    box-shadow:inset 0 0 30px rgba(57,224,214,0.15);
+    background:var(--alpaca-empty);
+    -webkit-mask-image:var(--character-mask);
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    mask-image:var(--character-mask);
+    mask-position:center;
+    mask-size:contain;
+    mask-repeat:no-repeat;
   }
-  .drop-inner{
-    position:absolute;
-    inset:18%;
-    border-radius:50%;
-    background:radial-gradient(circle at 40% 30%, #7fdfe9 0%, #2a9fb8 60%, #155e76 100%);
-    box-shadow:0 8px 24px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.15);
-    transition:transform 0.25s ease;
+  .alpaca-base,.alpaca-layers{transition:opacity .45s ease}
+  .alpaca-layers{position:absolute;inset:0}
+  .alpaca-layer{
+    background:var(--layer-color);
+    clip-path:inset(var(--layer-top,100%) 0 var(--layer-bottom,0%) 0);
+    transition:clip-path .75s cubic-bezier(.2,.75,.2,1);
   }
-  .drop-fill{
-    position:absolute;
-    left:8%;
-    right:8%;
-    bottom:12%;
-    border-radius:0 0 50% 50% / 0 0 100% 100%;
-    background:linear-gradient(180deg, #5ec2d6, #2a8fa8);
-    transition:height 0.4s ease;
-  }
-  .total-ring{
+  .character-complete{
     position:absolute;
     inset:0;
-    border-radius:50%;
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:contain;
+    opacity:0;
+    transform:scale(.94);
     pointer-events:none;
+    transition:opacity .55s ease,transform .65s cubic-bezier(.2,.75,.2,1);
   }
-  .total-ring circle{
-    fill:none;
-    stroke:var(--accent);
-    stroke-width:6;
-    stroke-dasharray:339.292;
-    stroke-dashoffset:339.292;
-    transform:rotate(-90deg);
-    transform-origin:center;
-    filter:drop-shadow(0 0 8px rgba(57,224,214,0.35));
+  .alpaca-shell.is-complete .alpaca-base,
+  .alpaca-shell.is-complete .alpaca-layers{opacity:0}
+  .alpaca-shell.is-complete .character-complete{
+    opacity:1;
+    transform:scale(1);
   }
-  .center-label{
+  .alpaca-shell.celebrate{animation:alpaca-pop .55s ease}
+  @keyframes alpaca-pop{
+    0%,100%{transform:translateY(0) scale(1)}
+    45%{transform:translateY(-9px) scale(1.025)}
+  }
+  .character-trigger{
     position:absolute;
-    inset:0;
+    top:12px;
+    right:16px;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-height:42px;
+    padding:5px 11px 5px 6px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:rgba(255,255,255,.94);
+    color:var(--ink);
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 8px 22px rgba(26,79,78,.08);
+    backdrop-filter:blur(12px);
+  }
+  .character-trigger img{
+    width:30px;
+    height:30px;
+    object-fit:contain;
+    display:block;
+  }
+  .latest-entry{
+    position:absolute;
+    left:50%;
+    bottom:2px;
+    transform:translateX(-50%);
+    max-width:calc(100% - 40px);
+    margin:0;
+    padding:7px 12px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.92);
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .tracker-panel{
+    padding:18px 18px max(24px,env(safe-area-inset-bottom));
+    border-radius:30px 30px 0 0;
+    background:var(--surface-soft);
+  }
+  .section-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:11px;
+  }
+  .section-head h2{margin:0;font-size:16px;font-weight:800}
+  .section-head p{margin:0;color:var(--muted);font-size:11px;font-weight:650}
+  .drink-list{
+    display:flex;
+    gap:9px;
+    overflow-x:auto;
+    padding:2px 1px 10px;
+    margin:0 -1px;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x;
+    cursor:grab;
+  }
+  .drink-list.is-dragging{scroll-snap-type:none;cursor:grabbing}
+  .drink-list::-webkit-scrollbar{display:none}
+  .drink-list:focus-visible{outline:3px solid var(--aqua-pale);outline-offset:3px;border-radius:18px}
+  .drink-card{
+    flex:0 0 82px;
+    min-height:84px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    text-align:center;
-  }
-  .total-large{
-    font-size:40px;
-    font-variant-numeric:tabular-nums;
-    font-weight:700;
-    line-height:1;
+    gap:7px;
+    padding:10px 7px;
+    border:1px solid transparent;
+    border-radius:20px;
+    background:var(--surface);
     color:var(--ink);
+    cursor:pointer;
+    scroll-snap-align:start;
+    user-select:none;
+    transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
   }
-  .total-unit{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:4px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
+  .drink-card:active{transform:scale(.97)}
+  .drink-card[aria-pressed="true"]{
+    border-color:var(--drink-color);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--drink-color) 14%,transparent);
   }
-  .actions{
-    display:flex;
-    gap:10px;
-    margin:18px 0 14px;
+  .drink-card:focus-visible,.amount-chip:focus-visible,.primary-action:focus-visible,.text-action:focus-visible,
+  .character-trigger:focus-visible,.character-option:focus-visible,.picker-close:focus-visible{
+    outline:3px solid var(--aqua-pale);
+    outline-offset:2px;
   }
-  .btn{
-    flex:1;
-    appearance:none;
-    border:1px solid #1c4054;
-    background:var(--panel);
-    color:var(--ink);
-    padding:14px 10px;
+  .drink-art{width:42px;height:42px;object-fit:contain;display:block;-webkit-user-drag:none}
+  .drink-name{font-size:13px;font-weight:800;white-space:nowrap}
+  .drink-factor{color:var(--muted);font-size:10px;font-weight:700}
+  .amount-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr) 1.2fr;
+    gap:8px;
+    margin-top:10px;
+  }
+  .amount-chip,.custom-amount{
+    min-height:43px;
+    border:1px solid var(--line);
     border-radius:14px;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:background 0.2s, transform 0.1s;
+    background:var(--surface);
+    color:var(--ink);
   }
-  .btn:hover{background:var(--panel2)}
-  .btn:active{transform:translateY(1px)}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .btn.primary{
-    background:linear-gradient(180deg,#104542,#0c332f);
-    border-color:#1f6e66;
-    color:var(--accent);
+  .amount-chip{padding:8px 5px;font-size:13px;font-weight:800;cursor:pointer}
+  .amount-chip[aria-pressed="true"]{
+    border-color:var(--aqua);
+    background:var(--aqua-pale);
+    color:var(--aqua-deep);
   }
-  .btn.primary:hover{background:linear-gradient(180deg,#175852,#0e3d38)}
-  .btn.danger{
-    border-color:#5a3330;
-    color:#f0b1a6;
-    background:#2a1719;
-  }
-  .btn.danger:hover{background:#361f21}
-  .info{
-    display:flex;
-    justify-content:space-between;
-    font-size:13px;
-    color:var(--muted);
-    border-top:1px dashed #1c4054;
-    padding-top:12px;
-  }
-  .reset-row{
-    margin-top:14px;
-    text-align:center;
-  }
-  .reset-btn{
+  .custom-amount{display:flex;align-items:center;gap:3px;padding:7px 9px}
+  .custom-amount input{
+    min-width:0;
+    width:100%;
+    padding:0;
+    border:0;
+    outline:0;
     background:transparent;
-    border:1px dashed #1c4054;
-    color:var(--muted);
-    padding:8px 16px;
-    border-radius:12px;
+    color:var(--ink);
     font-size:13px;
+    font-weight:800;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+  .custom-amount span{color:var(--muted);font-size:11px;font-weight:700}
+  .custom-amount:focus-within{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-pale)}
+  .conversion-card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-top:11px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:var(--surface);
+  }
+  .conversion-card p{margin:0}
+  .conversion-label{color:var(--muted);font-size:11px;font-weight:700}
+  .conversion-formula{margin-top:3px!important;font-size:14px;font-weight:800}
+  .effective-preview{color:var(--aqua-deep);font-size:22px;font-weight:850;white-space:nowrap}
+  .primary-action{
+    width:100%;
+    min-height:54px;
+    margin-top:11px;
+    border:0;
+    border-radius:18px;
+    background:var(--aqua);
+    color:#fff;
+    font-size:16px;
+    font-weight:850;
     cursor:pointer;
-    transition:color 0.2s, border-color 0.2s;
+    box-shadow:0 10px 24px rgba(16,184,202,.23);
+    transition:transform .12s ease,background .2s ease;
   }
-  .reset-btn:hover{color:var(--ink);border-color:var(--muted)}
-  .reset-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .hint{
-    font-size:12px;
+  .primary-action:active{transform:translateY(1px) scale(.995)}
+  .primary-action:hover{background:#0aa9b9}
+  .primary-action:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .history{margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+  .history-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .history-head h3{margin:0;font-size:13px;font-weight:800}
+  .history-actions{display:flex;gap:12px}
+  .text-action{
+    padding:3px 0;
+    border:0;
+    background:transparent;
     color:var(--muted);
-    margin-top:12px;
-    text-align:center;
-    line-height:1.5;
+    font-size:11px;
+    font-weight:750;
+    cursor:pointer;
   }
+  .text-action.danger{color:var(--danger)}
+  .text-action:disabled{opacity:.4;cursor:not-allowed}
+  .history-list{list-style:none;display:grid;gap:7px;margin:9px 0 0;padding:0}
+  .history-item,.empty-history{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    color:var(--muted);
+    font-size:11px;
+  }
+  .history-item strong{color:var(--ink);font-size:12px}
+  .history-item span:last-child{font-variant-numeric:tabular-nums}
+  .estimation-note{
+    margin:12px 2px 0;
+    color:var(--muted);
+    font-size:10px;
+    line-height:1.55;
+    text-align:center;
+  }
+  .character-picker{
+    position:fixed;
+    inset:0;
+    z-index:30;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .character-picker.is-open{
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .picker-backdrop{
+    position:absolute;
+    inset:0;
+    border:0;
+    background:rgba(15,43,46,.32);
+    opacity:0;
+    cursor:pointer;
+    transition:opacity .22s ease;
+  }
+  .character-picker.is-open .picker-backdrop{opacity:1}
+  .picker-sheet{
+    position:relative;
+    width:min(100%,480px);
+    padding:10px 18px max(24px,env(safe-area-inset-bottom));
+    border-radius:30px 30px 0 0;
+    background:var(--surface);
+    box-shadow:0 -18px 50px rgba(26,79,78,.18);
+    transform:translateY(105%);
+    transition:transform .28s cubic-bezier(.2,.75,.2,1);
+  }
+  .character-picker.is-open .picker-sheet{transform:translateY(0)}
+  .picker-handle{
+    width:38px;
+    height:4px;
+    margin:0 auto 11px;
+    border-radius:3px;
+    background:var(--line);
+  }
+  .picker-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .picker-head h2{margin:0;font-size:18px;font-weight:850}
+  .picker-head p{margin:3px 0 0;color:var(--muted);font-size:11px;font-weight:650}
+  .picker-close{
+    min-width:52px;
+    min-height:38px;
+    padding:8px 12px;
+    border:0;
+    border-radius:14px;
+    background:var(--surface-soft);
+    color:var(--aqua-deep);
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .character-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:16px;
+  }
+  .character-option{
+    min-width:0;
+    min-height:142px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:12px 8px 10px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:var(--surface-soft);
+    color:var(--ink);
+    cursor:pointer;
+    transition:transform .15s ease,border-color .15s ease,background .15s ease,box-shadow .15s ease;
+  }
+  .character-option:active{transform:scale(.98)}
+  .character-option[aria-pressed="true"]{
+    border-color:var(--aqua);
+    background:var(--aqua-pale);
+    box-shadow:0 0 0 3px rgba(16,184,202,.11);
+  }
+  .character-option img{
+    width:88px;
+    height:88px;
+    display:block;
+    object-fit:contain;
+  }
+  .character-option span{font-size:13px;font-weight:850}
   .sr-only{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+  @media (min-width:560px){
+    body{padding:24px}
+    .app{
+      min-height:min(900px,calc(100dvh - 48px));
+      border:1px solid var(--line);
+      border-radius:34px;
+      box-shadow:var(--shadow);
+    }
+    .picker-sheet{margin-bottom:24px;border-radius:30px}
+  }
+  @media (max-height:760px){
+    .alpaca-stage{height:335px;min-height:335px;padding-top:6px}
+    .total-large{font-size:52px}
+    .tracker-panel{padding-top:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
   }
 </style>
 </head>
 <body>
-  <main class="app" role="application" aria-label="每日飲水記錄">
-    <p class="eyebrow">每日追蹤 · 同日儲存</p>
-    <h1 class="title">每日飲水記錄</h1>
-
-    <div class="goal-row">
-      <label for="goalInput">目標</label>
-      <input id="goalInput" type="number" min="1" max="10000" step="1" value="2000" aria-describedby="goalHelp">
-      <span class="unit">ml</span>
-    </div>
-    <p id="goalHelp" class="sr-only">每日飲水目標毫升數</p>
-
-    <div class="stage" aria-hidden="true">
-      <div class="drop">
-        <div class="drop-inner">
-          <div class="drop-fill" id="dropFill"></div>
+  <main class="app" role="application" aria-label="補水夥伴">
+    <header class="topbar">
+      <div class="day-pill" aria-label="今天是連續記錄第 1 天"><strong>1</strong><span>天</span></div>
+      <div class="goal-control">
+        <label for="goalInput">目標</label>
+        <input id="goalInput" type="number" min="250" max="10000" step="50" value="2000" inputmode="numeric" aria-describedby="goalHelp">
+        <span>ml</span>
+      </div>
+      <p id="goalHelp" class="sr-only">設定每日有效補水目標，單位為毫升</p>
+    </header>
+    <section class="summary" aria-labelledby="summaryTitle">
+      <p class="summary-kicker" id="summaryTitle">今日有效補水</p>
+      <div class="total-row">
+        <span class="total-large total" id="totalLarge">0</span>
+        <span class="total-unit">ml</span>
+      </div>
+      <p class="progress-copy"><span id="progressFraction">0 / 2,000 ml</span> · <strong id="progressPercent">0%</strong></p>
+    </section>
+    <section class="alpaca-stage" aria-label="補水進度圖">
+      <button class="character-trigger" type="button" id="characterPickerBtn" aria-haspopup="dialog" aria-expanded="false">
+        <img id="currentCharacterThumb" src="assets/character-alpaca-v1.png" alt="">
+        <span id="currentCharacterName">奶泡</span>
+      </button>
+      <div class="alpaca-shell" id="alpacaShell" aria-hidden="true">
+        <div class="alpaca-base"></div>
+        <div class="alpaca-layers" id="characterLayers"></div>
+        <img class="character-complete" id="characterComplete" src="assets/character-alpaca-complete-v2.png" alt="">
+      </div>
+      <p class="latest-entry" id="latestEntry">選擇飲品，開始今天的補水記錄</p>
+    </section>
+    <section class="tracker-panel" aria-labelledby="drinkHeading">
+      <div class="section-head">
+        <h2 id="drinkHeading">喝了什麼？</h2>
+        <p>左右滑動查看更多</p>
+      </div>
+      <div class="drink-list" id="drinkList" tabindex="0" aria-label="飲品選擇，可左右滑動查看更多"></div>
+      <div class="amount-row" aria-label="飲用容量">
+        <button class="amount-chip" type="button" data-amount="250" aria-pressed="false">250</button>
+        <button class="amount-chip" type="button" data-amount="350" aria-pressed="false">350</button>
+        <button class="amount-chip" type="button" data-amount="500" aria-pressed="true">500</button>
+        <label class="custom-amount" for="amountInput">
+          <input id="amountInput" type="number" min="1" max="5000" step="10" value="500" inputmode="numeric" aria-label="自訂容量">
+          <span>ml</span>
+        </label>
+      </div>
+      <div class="conversion-card" aria-live="polite">
+        <div>
+          <p class="conversion-label">有效補水換算</p>
+          <p class="conversion-formula" id="conversionFormula">500 ml × 100%</p>
         </div>
+        <strong class="effective-preview" id="effectivePreview">500 ml</strong>
       </div>
-      <svg class="total-ring" viewBox="0 0 120 120" width="100%" height="100%">
-        <circle id="progressCircle" cx="60" cy="60" r="54"/>
-      </svg>
-      <div class="center-label">
-        <div class="total-large" id="totalLarge">0</div>
-        <div class="total-unit">ml</div>
+      <button class="primary-action" type="button" data-action="add" id="addBtn">記錄 500 ml 水</button>
+      <div class="history">
+        <div class="history-head">
+          <h3>今日記錄</h3>
+          <div class="history-actions">
+            <button class="text-action" type="button" data-action="remove" id="removeBtn">撤銷上一筆</button>
+            <button class="text-action danger" type="button" data-action="reset" id="resetBtn">清空今日</button>
+          </div>
+        </div>
+        <ul class="history-list" id="historyList"></ul>
       </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn primary" type="button" data-action="add" id="addBtn">＋ 新增 200ml</button>
-      <button class="btn danger" type="button" data-action="remove" id="removeBtn">− 減少 200ml</button>
-    </div>
-
-    <div class="info">
-      <span>已飲 <span class="total" id="totalText">0</span> ml</span>
-      <span>目標 <span id="goalText">2000</span> ml</span>
-    </div>
-
-    <div class="reset-row">
-      <button class="reset-btn" type="button" data-action="reset" id="resetBtn">重新開始新的紀錄</button>
-    </div>
-    <p class="hint">每日自動儲存。點擊「重新開始新的紀錄」可清空當日數據。</p>
-    <div class="sr-only" id="announce" aria-live="polite"></div>
+      <p class="estimation-note">飲品係數是方便日常追蹤的估算，不是人體吸收的精密測量。一般份量的茶與咖啡仍能計入日常液體攝取；有特殊疾病或限水需求時，請依醫療人員建議。</p>
+      <span class="sr-only" id="totalText">0</span>
+      <div class="sr-only" id="announce" aria-live="polite"></div>
+    </section>
   </main>
-
+  <div class="character-picker" id="characterPicker" aria-hidden="true">
+    <button class="picker-backdrop" type="button" data-action="close-character" aria-label="關閉角色選單"></button>
+    <section class="picker-sheet" role="dialog" aria-modal="true" aria-labelledby="characterHeading">
+      <div class="picker-handle" aria-hidden="true"></div>
+      <div class="picker-head">
+        <div>
+          <h2 id="characterHeading">選擇補水夥伴</h2>
+          <p>每一口，都會讓夥伴慢慢亮起來。</p>
+        </div>
+        <button class="picker-close" type="button" data-action="close-character">完成</button>
+      </div>
+      <div class="character-grid" id="characterGrid"></div>
+    </section>
+  </div>
 <script>
 (function(){
   const NS = 'water-tracker:v1';
   const DATE_KEY = NS + ':date';
   const GOAL_KEY = NS + ':goal';
-
-  const $ = (s) => document.querySelector(s);
+  const CHARACTER_KEY = NS + ':character';
+  const CHARACTERS = [
+    { id:'alpaca', name:'奶泡', thumb:'assets/character-alpaca-complete-v2.png', mask:'assets/alpaca-mask.png', complete:'assets/character-alpaca-complete-v2.png', ratio:.6304 },
+    { id:'giraffe', name:'高高', thumb:'assets/character-giraffe-complete-v3.png', mask:'assets/character-giraffe-mask-v1.png', complete:'assets/character-giraffe-complete-v3.png', ratio:.5779 },
+    { id:'owl', name:'珍珠', thumb:'assets/character-owl-hd-v2.png', mask:'assets/character-owl-hd-mask-v1.png', complete:'assets/character-owl-hd-v2.png', ratio:1.0375 },
+    { id:'squirrel', name:'阿松', thumb:'assets/character-squirrel-hd-v2.png', mask:'assets/character-squirrel-hd-mask-v1.png', complete:'assets/character-squirrel-hd-v2.png', ratio:.8733 }
+  ];
+  const DRINKS = [
+    { id:'water', name:'水', factor:1, color:'#10b8ca', icon:'assets/drink-water.png' },
+    { id:'sparkling', name:'氣泡水', factor:1, color:'#62c9d6', icon:'assets/drink-sparkling.png' },
+    { id:'black-tea', name:'紅茶', factor:.9, color:'#9b6647', icon:'assets/drink-black-tea.png' },
+    { id:'green-tea', name:'綠茶', factor:.9, color:'#83b83e', icon:'assets/drink-green-tea.png' },
+    { id:'coffee', name:'咖啡', factor:.8, color:'#745142', icon:'assets/drink-coffee.png' },
+    { id:'milk', name:'牛奶', factor:.9, color:'#d3b66f', icon:'assets/drink-milk.png' },
+    { id:'juice', name:'果汁', factor:.85, color:'#ee9c47', icon:'assets/drink-juice.png' }
+  ];
+  const $ = (selector) => document.querySelector(selector);
+  const drinkList = $('#drinkList');
+  const amountInput = $('#amountInput');
   const goalInput = $('#goalInput');
   const totalLarge = $('#totalLarge');
   const totalText = $('#totalText');
-  const goalText = $('#goalText');
-  const dropFill = $('#dropFill');
-  const progressCircle = $('#progressCircle');
-  const announce = $('#announce');
+  const progressFraction = $('#progressFraction');
+  const progressPercent = $('#progressPercent');
+  const conversionFormula = $('#conversionFormula');
+  const effectivePreview = $('#effectivePreview');
   const addBtn = $('#addBtn');
   const removeBtn = $('#removeBtn');
   const resetBtn = $('#resetBtn');
-
-  const CIRCUMFERENCE = 2 * Math.PI * 54;
-
-  let total = 0;
+  const historyList = $('#historyList');
+  const alpacaShell = $('#alpacaShell');
+  const characterLayers = $('#characterLayers');
+  const characterComplete = $('#characterComplete');
+  const latestEntry = $('#latestEntry');
+  const announce = $('#announce');
+  const characterPicker = $('#characterPicker');
+  const characterPickerBtn = $('#characterPickerBtn');
+  const characterGrid = $('#characterGrid');
+  const currentCharacterThumb = $('#currentCharacterThumb');
+  const currentCharacterName = $('#currentCharacterName');
+  let selectedDrinkId = 'water';
+  let selectedCharacterId = 'alpaca';
+  let amount = 500;
   let goal = 2000;
-
+  let entries = [];
   function todayStr(){
     const d = new Date();
     const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
+    const m = String(d.getMonth() + 1).padStart(2,'0');
     const day = String(d.getDate()).padStart(2,'0');
     return y + '-' + m + '-' + day;
   }
-
+  function selectedDrink(){
+    return DRINKS.find((drink) => drink.id === selectedDrinkId) || DRINKS[0];
+  }
+  function selectedCharacter(){
+    return CHARACTERS.find((character) => character.id === selectedCharacterId) || CHARACTERS[0];
+  }
+  function effectiveFor(rawAmount, drink){return Math.round(rawAmount * drink.factor)}
+  function effectiveTotal(){return entries.reduce((sum, entry) => sum + entry.effective, 0)}
+  function actualTotal(){return entries.reduce((sum, entry) => sum + entry.amount, 0)}
+  function safeNumber(value, fallback){
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
   function load(){
     try{
-      const date = todayStr();
+      const savedGoal = safeNumber(localStorage.getItem(GOAL_KEY), goal);
+      if(savedGoal >= 250 && savedGoal <= 10000) goal = savedGoal;
+      const savedCharacter = localStorage.getItem(CHARACTER_KEY);
+      if(CHARACTERS.some((character) => character.id === savedCharacter)) selectedCharacterId = savedCharacter;
       const raw = localStorage.getItem(DATE_KEY);
       if(raw){
         const data = JSON.parse(raw);
-        if(data.date === date){
-          total = typeof data.total === 'number' ? data.total : 0;
-        } else {
-          total = 0;
+        if(data.date === todayStr()){
+          if(Array.isArray(data.entries)){
+            entries = data.entries.filter((entry) =>
+              entry && typeof entry.amount === 'number' && typeof entry.effective === 'number'
+            );
+          }else if(typeof data.total === 'number' && data.total > 0){
+            entries = [{
+              id:'legacy-' + Date.now(),
+              drinkId:'water',
+              drinkName:'水',
+              amount:data.total,
+              effective:data.total,
+              factor:1,
+              color:'#10b8ca',
+              time:''
+            }];
+          }
         }
       }
-      const g = localStorage.getItem(GOAL_KEY);
-      if(g){
-        const parsed = Number(g);
-        if(!isNaN(parsed) && parsed > 0){
-          goal = parsed;
-        }
-      }
-      goalInput.value = goal;
-    }catch(e){ total = 0; }
-  }
-
-  function saveTotal(){
-    try{
-      localStorage.setItem(DATE_KEY, JSON.stringify({ date: todayStr(), total }));
-    }catch(e){}
-  }
-
-  function saveGoal(){
-    try{
-      localStorage.setItem(GOAL_KEY, String(goal));
-    }catch(e){}
-  }
-
-  function formatNum(n){
-    return String(Math.round(n));
-  }
-
-  function updateDisplay(){
-    totalLarge.textContent = formatNum(total);
-    totalText.textContent = formatNum(total);
-    goalText.textContent = formatNum(goal);
-    // 進度
-    const pct = Math.min(1, total / goal);
-    const offset = CIRCUMFERENCE * (1 - pct);
-    progressCircle.setAttribute('stroke-dashoffset', offset.toFixed(2));
-    // 罐子高度
-    const fillH = Math.min(74, Math.max(4, 74 * pct));
-    dropFill.style.height = fillH + '%';
-    // 文字提示
-    if(announce) announce.textContent = '已飲 ' + formatNum(total) + ' 毫升，目標 ' + formatNum(goal) + ' 毫升';
-  }
-
-  function add(amount){
-    if(amount <= 0) return;
-    total += amount;
-    if(total > goal * 5) total = goal * 5; // 防止失控
-    saveTotal();
-    updateDisplay();
-    if(announce) announce.textContent = '已新增 ' + amount + ' 毫升，目前共 ' + formatNum(total) + ' 毫升';
-  }
-
-  function remove(amount){
-    if(amount <= 0) return;
-    total = Math.max(0, total - amount);
-    saveTotal();
-    updateDisplay();
-    if(announce) announce.textContent = '已減少 ' + amount + ' 毫升，目前共 ' + formatNum(total) + ' 毫升';
-  }
-
-  function reset(){
-    total = 0;
-    saveTotal();
-    updateDisplay();
-    if(announce) announce.textContent = '已清空當日飲水數據';
-  }
-
-  goalInput.addEventListener('change', () => {
-    const v = Number(goalInput.value);
-    if(isNaN(v) || v < 1){ goalInput.value = goal; return; }
-    goal = v;
-    saveGoal();
-    updateDisplay();
-    if(announce) announce.textContent = '目標已設定為 ' + formatNum(goal) + ' 毫升';
-  });
-
-  addBtn.addEventListener('click', () => add(200));
-  removeBtn.addEventListener('click', () => remove(200));
-  resetBtn.addEventListener('click', reset);
-
-  // 鍵盤支援
-  document.addEventListener('keydown', (e) => {
-    if(e.key === '+' && !e.ctrlKey && !e.metaKey && !e.altKey){
-      add(200);
-      e.preventDefault();
-    } else if(e.key === '-' && !e.ctrlKey && !e.metaKey && !e.altKey){
-      remove(200);
-      e.preventDefault();
-    } else if(e.key === 'r' || e.key === 'R'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        reset();
-        e.preventDefault();
-      }
+    }catch(error){
+      entries = [];
     }
+    goalInput.value = String(goal);
+  }
+  function save(){
+    try{
+      localStorage.setItem(DATE_KEY, JSON.stringify({
+        date:todayStr(),
+        total:effectiveTotal(),
+        actualTotal:actualTotal(),
+        entries
+      }));
+      localStorage.setItem(GOAL_KEY, String(goal));
+      localStorage.setItem(CHARACTER_KEY, selectedCharacterId);
+    }catch(error){
+      announce.textContent = '瀏覽器無法儲存目前紀錄';
+    }
+  }
+  function formatNumber(value){return Math.round(value).toLocaleString('zh-Hant-TW')}
+  function formatPercent(value){
+    return Number(value.toFixed(1)).toLocaleString('zh-Hant-TW') + '%';
+  }
+  function formatTime(date){
+    return new Intl.DateTimeFormat('zh-Hant-TW',{
+      hour:'2-digit',minute:'2-digit',hour12:false
+    }).format(date);
+  }
+  function renderDrinkList(){
+    drinkList.innerHTML = '';
+    DRINKS.forEach((drink) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'drink-card';
+      button.dataset.drink = drink.id;
+      button.setAttribute('aria-pressed',String(drink.id === selectedDrinkId));
+      button.style.setProperty('--drink-color',drink.color);
+      const artwork = document.createElement('img');
+      artwork.className = 'drink-art';
+      artwork.src = drink.icon;
+      artwork.alt = '';
+      artwork.width = 42;
+      artwork.height = 42;
+      artwork.draggable = false;
+      const name = document.createElement('span');
+      name.className = 'drink-name';
+      name.textContent = drink.name;
+      const factor = document.createElement('span');
+      factor.className = 'drink-factor';
+      factor.textContent = Math.round(drink.factor * 100) + '% 補水';
+      button.append(artwork,name,factor);
+      button.addEventListener('click',() => {
+        selectedDrinkId = drink.id;
+        drinkList.querySelectorAll('.drink-card').forEach((card) => {
+          card.setAttribute('aria-pressed',String(card.dataset.drink === selectedDrinkId));
+        });
+        renderConversion();
+      });
+      drinkList.appendChild(button);
+    });
+  }
+  function setupDrinkRail(){
+    let drag = null;
+    let suppressClick = false;
+    drinkList.addEventListener('pointerdown',(event) => {
+      if(event.pointerType === 'touch' || event.button !== 0) return;
+      drag = {
+        pointerId:event.pointerId,
+        startX:event.clientX,
+        startScrollLeft:drinkList.scrollLeft
+      };
+      suppressClick = false;
+      drinkList.setPointerCapture(event.pointerId);
+    });
+    drinkList.addEventListener('pointermove',(event) => {
+      if(!drag || event.pointerId !== drag.pointerId) return;
+      const distance = event.clientX - drag.startX;
+      if(Math.abs(distance) < 4) return;
+      suppressClick = true;
+      drinkList.classList.add('is-dragging');
+      drinkList.scrollLeft = drag.startScrollLeft - distance;
+      event.preventDefault();
+    });
+    const finishDrag = (event) => {
+      if(!drag || event.pointerId !== drag.pointerId) return;
+      if(drinkList.hasPointerCapture(event.pointerId)) drinkList.releasePointerCapture(event.pointerId);
+      drag = null;
+      drinkList.classList.remove('is-dragging');
+      window.setTimeout(() => {suppressClick = false},0);
+    };
+    drinkList.addEventListener('pointerup',finishDrag);
+    drinkList.addEventListener('pointercancel',finishDrag);
+    drinkList.addEventListener('lostpointercapture',finishDrag);
+    drinkList.addEventListener('click',(event) => {
+      if(!suppressClick) return;
+      event.preventDefault();
+      event.stopPropagation();
+    },true);
+    drinkList.addEventListener('keydown',(event) => {
+      if(event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      const direction = event.key === 'ArrowRight' ? 1 : -1;
+      drinkList.scrollBy({left:direction * 91,behavior:'smooth'});
+    });
+  }
+  function applyCharacter(){
+    const character = selectedCharacter();
+    alpacaShell.style.setProperty('--character-mask','url("' + character.mask + '")');
+    characterComplete.src = character.complete;
+    currentCharacterThumb.src = character.thumb;
+    currentCharacterName.textContent = character.name;
+    characterGrid.querySelectorAll('.character-option').forEach((button) => {
+      button.setAttribute('aria-pressed',String(button.dataset.character === selectedCharacterId));
+    });
+    renderCharacterLayers(false);
+  }
+  function fillBoundaryPercent(fillPercent){
+    const normalized = Math.max(0,Math.min(100,fillPercent));
+    const rect = alpacaShell.getBoundingClientRect();
+    const ratio = selectedCharacter().ratio;
+    if(rect.width <= 0 || rect.height <= 0){
+      return 100 - normalized;
+    }
+    const renderedHeight = rect.width / rect.height > ratio ? rect.height : rect.width / ratio;
+    const topSpace = (rect.height - renderedHeight) / 2;
+    const boundary = topSpace + renderedHeight * (1 - normalized / 100);
+    return (boundary / rect.height) * 100;
+  }
+  function renderCharacterLayers(animateLatest){
+    characterLayers.innerHTML = '';
+    let cumulative = 0;
+    entries.forEach((entry,index) => {
+      const beforePercent = goal > 0 ? (cumulative / goal) * 100 : 0;
+      cumulative += entry.effective;
+      const afterPercent = goal > 0 ? (cumulative / goal) * 100 : 0;
+      const visibleBefore = Math.max(0,Math.min(100,beforePercent));
+      const visibleAfter = Math.max(0,Math.min(100,afterPercent));
+      if(visibleAfter <= visibleBefore) return;
+      const beforeBoundary = fillBoundaryPercent(visibleBefore);
+      const afterBoundary = fillBoundaryPercent(visibleAfter);
+      const layer = document.createElement('div');
+      layer.className = 'alpaca-layer';
+      layer.dataset.entryId = entry.id;
+      layer.style.setProperty('--layer-color',entry.color);
+      layer.style.setProperty('--layer-bottom',(100 - beforeBoundary).toFixed(2) + '%');
+      layer.style.setProperty('--layer-top',((animateLatest && index === entries.length - 1) ? beforeBoundary : afterBoundary).toFixed(2) + '%');
+      characterLayers.appendChild(layer);
+      if(animateLatest && index === entries.length - 1){
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          layer.style.setProperty('--layer-top',afterBoundary.toFixed(2) + '%');
+        }));
+      }
+    });
+  }
+  function renderCharacterPicker(){
+    characterGrid.innerHTML = '';
+    CHARACTERS.forEach((character) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'character-option';
+      button.dataset.character = character.id;
+      button.setAttribute('aria-pressed',String(character.id === selectedCharacterId));
+      const artwork = document.createElement('img');
+      artwork.src = character.thumb;
+      artwork.alt = '';
+      const name = document.createElement('span');
+      name.textContent = character.name;
+      button.append(artwork,name);
+      button.addEventListener('click',() => {
+        selectedCharacterId = character.id;
+        applyCharacter();
+        save();
+        announce.textContent = '補水夥伴已切換為' + character.name;
+      });
+      characterGrid.appendChild(button);
+    });
+    applyCharacter();
+  }
+  function openCharacterPicker(){
+    characterPicker.classList.add('is-open');
+    characterPicker.setAttribute('aria-hidden','false');
+    characterPickerBtn.setAttribute('aria-expanded','true');
+    const selected = characterGrid.querySelector('[aria-pressed="true"]');
+    if(selected) selected.focus();
+  }
+  function closeCharacterPicker(){
+    characterPicker.classList.remove('is-open');
+    characterPicker.setAttribute('aria-hidden','true');
+    characterPickerBtn.setAttribute('aria-expanded','false');
+    characterPickerBtn.focus();
+  }
+  function renderConversion(){
+    const drink = selectedDrink();
+    const raw = amountInput.value.trim();
+    const parsed = Number(raw);
+    if(raw === '' || !Number.isFinite(parsed) || parsed < 1){
+      conversionFormula.textContent = '請輸入飲用容量';
+      effectivePreview.textContent = '—';
+      addBtn.textContent = '請先輸入容量';
+      addBtn.disabled = true;
+      return;
+    }
+    amount = Math.min(5000,parsed);
+    if(parsed > 5000) amountInput.value = '5000';
+    addBtn.disabled = false;
+    const effective = effectiveFor(amount,drink);
+    conversionFormula.textContent = formatNumber(amount) + ' ml × ' + Math.round(drink.factor * 100) + '%';
+    effectivePreview.textContent = formatNumber(effective) + ' ml';
+    addBtn.textContent = '記錄 ' + formatNumber(amount) + ' ml ' + drink.name;
+    document.querySelectorAll('.amount-chip').forEach((button) => {
+      button.setAttribute('aria-pressed',String(Number(button.dataset.amount) === amount));
+    });
+  }
+  function renderHistory(){
+    historyList.innerHTML = '';
+    if(entries.length === 0){
+      const empty = document.createElement('li');
+      empty.className = 'empty-history';
+      empty.textContent = '還沒有記錄，先喝一杯吧。';
+      historyList.appendChild(empty);
+      removeBtn.disabled = true;
+      resetBtn.disabled = true;
+      return;
+    }
+    removeBtn.disabled = false;
+    resetBtn.disabled = false;
+    entries.slice(-3).reverse().forEach((entry) => {
+      const item = document.createElement('li');
+      item.className = 'history-item';
+      const label = document.createElement('strong');
+      label.textContent = entry.drinkName + ' ' + formatNumber(entry.amount) + ' ml';
+      const value = document.createElement('span');
+      value.textContent = '計入 ' + formatNumber(entry.effective) + ' ml' + (entry.time ? ' · ' + entry.time : '');
+      item.append(label,value);
+      historyList.appendChild(item);
+    });
+  }
+  function renderProgress(animateLatest){
+    const total = effectiveTotal();
+    const rawPercent = goal > 0 ? (total / goal) * 100 : 0;
+    const fillPercent = Math.min(100,rawPercent);
+    const last = entries[entries.length - 1];
+    totalLarge.textContent = formatNumber(total);
+    totalText.textContent = formatNumber(total);
+    progressFraction.textContent = formatNumber(total) + ' / ' + formatNumber(goal) + ' ml';
+    progressPercent.textContent = formatPercent(rawPercent);
+    renderCharacterLayers(Boolean(animateLatest));
+    alpacaShell.classList.toggle('is-complete',rawPercent >= 100);
+    if(last){
+      latestEntry.textContent = '最近：' + last.drinkName + ' ' + formatNumber(last.amount) + ' ml → 補水 ' + formatNumber(last.effective) + ' ml';
+    }else{
+      latestEntry.textContent = '選擇飲品，開始今天的補水記錄';
+    }
+    renderHistory();
+  }
+  function addEntry(){
+    const drink = selectedDrink();
+    const rawAmount = Math.max(1,Math.min(5000,safeNumber(amountInput.value,amount)));
+    const effective = effectiveFor(rawAmount,drink);
+    entries.push({
+      id:String(Date.now()),
+      drinkId:drink.id,
+      drinkName:drink.name,
+      amount:rawAmount,
+      effective,
+      factor:drink.factor,
+      color:drink.color,
+      time:formatTime(new Date())
+    });
+    save();
+    renderProgress(true);
+    alpacaShell.classList.remove('celebrate');
+    void alpacaShell.offsetWidth;
+    alpacaShell.classList.add('celebrate');
+    announce.textContent = '已記錄 ' + rawAmount + ' 毫升' + drink.name + '，計入有效補水 ' + effective + ' 毫升';
+  }
+  function removeLast(){
+    const removed = entries.pop();
+    if(!removed) return;
+    save();
+    renderProgress();
+    announce.textContent = '已撤銷上一筆 ' + removed.drinkName + ' 記錄';
+  }
+  function resetToday(){
+    entries = [];
+    save();
+    renderProgress();
+    announce.textContent = '已清空今天的補水記錄';
+  }
+  document.querySelectorAll('.amount-chip').forEach((button) => {
+    button.addEventListener('click',() => {
+      amountInput.value = button.dataset.amount;
+      amount = Number(button.dataset.amount);
+      renderConversion();
+    });
   });
-
+  amountInput.addEventListener('input',renderConversion);
+  amountInput.addEventListener('change',() => {
+    if(amountInput.value.trim() === '' || safeNumber(amountInput.value,0) < 1){
+      amountInput.value = String(amount);
+    }
+    renderConversion();
+  });
+  goalInput.addEventListener('change',() => {
+    const nextGoal = safeNumber(goalInput.value,goal);
+    if(nextGoal < 250 || nextGoal > 10000){
+      goalInput.value = String(goal);
+      announce.textContent = '每日目標請設定在 250 到 10,000 毫升之間';
+      return;
+    }
+    goal = Math.round(nextGoal);
+    save();
+    renderProgress();
+    announce.textContent = '每日有效補水目標已設為 ' + goal + ' 毫升';
+  });
+  addBtn.addEventListener('click',addEntry);
+  removeBtn.addEventListener('click',removeLast);
+  resetBtn.addEventListener('click',resetToday);
+  characterPickerBtn.addEventListener('click',openCharacterPicker);
+  characterPicker.querySelectorAll('[data-action="close-character"]').forEach((button) => {
+    button.addEventListener('click',closeCharacterPicker);
+  });
+  document.addEventListener('keydown',(event) => {
+    if(event.key === 'Escape' && characterPicker.classList.contains('is-open')) closeCharacterPicker();
+  });
+  window.addEventListener('resize',() => renderCharacterLayers(false));
   load();
-  updateDisplay();
+  renderDrinkList();
+  setupDrinkRail();
+  renderCharacterPicker();
+  renderConversion();
+  renderProgress();
 })();
 </script>
 </body>

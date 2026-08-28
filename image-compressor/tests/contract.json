@@ -1,6 +1,6 @@
 {
   "product": "image-compressor",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "behaviors": [
     {
       "id": "file-input",
@@ -13,6 +13,12 @@
       "description": "壓縮品質控制存在",
       "selector": "input#qualityRange",
       "expected": "數值選項 10-100"
+    },
+    {
+      "id": "format-control",
+      "description": "可選擇原格式、JPEG、PNG 或 WebP 輸出",
+      "selector": "input[name=format]",
+      "expected": "四種批次輸出格式選項"
     },
     {
       "id": "original-size-display",
@@ -31,6 +37,12 @@
       "description": "個別檔案可下載（動態出現於 card 中 button[data-action=download]）",
       "selector": ".card button[data-action=download]",
       "expected": "處理完成的圖片有下載按鈕"
+    },
+    {
+      "id": "batch-download",
+      "description": "處理完成後可下載全部圖片",
+      "selector": "button#downloadAllBtn",
+      "expected": "至少一張圖片完成後顯示"
     }
   ]
 }

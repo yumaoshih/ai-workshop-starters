@@ -3,431 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>禁食時鐘</title>
+<meta name="theme-color" content="#faf9f5">
+<title>斷食小日子</title>
 <style>
   :root{
-    --bg:#0b0d10;
-    --panel:#161a1f;
-    --ink:#e8edf2;
-    --muted:#8a94a3;
-    --accent:#7ee787;
-    --accent-dim:#3c6b44;
-    --ring:#2a3138;
-    --warn:#f2b86b;
+    --paper:#faf9f5;--ink:#211650;--muted:#77728d;--green:#83cf61;
+    --green-soft:#e8f7dd;--yellow:#ffd42a;--yellow-soft:#fff4bb;
+    --white:#fffefd;--shadow:#d8d2e3;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    font-family: -apple-system, "PingFang TC", "Noto Sans CJK TC", sans-serif;
-    background: radial-gradient(120% 100% at 50% 0%, #14181c 0%, #07090b 100%);
-    color:var(--ink);
-    min-height:100dvh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:16px;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .app{
-    width:min(390px, 100%);
-    background:linear-gradient(180deg, #101418 0%, #0a0c0e 100%);
-    border:1px solid #22282e;
-    border-radius:32px;
-    padding:24px 20px 28px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-  }
-  .eyebrow{
-    font-size:12px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--muted);
-    margin-bottom:6px;
-  }
-  .title{
-    font-size:22px;
-    font-weight:600;
-    margin:0 0 18px;
-    letter-spacing:0.02em;
-  }
-  .stage{
-    position:relative;
-    width:220px;
-    height:220px;
-    margin:0 auto 18px;
-  }
-  .ring-bg{
-    fill:none;
-    stroke:var(--ring);
-    stroke-width:8;
-  }
-  .ring-progress{
-    fill:none;
-    stroke:var(--accent);
-    stroke-width:8;
-    stroke-linecap:round;
-    filter:drop-shadow(0 0 8px rgba(126,231,135,0.4));
-    transition:stroke-dashoffset 0.4s ease;
-  }
-  .center{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-  }
-  .time{
-    font-size:44px;
-    font-variant-numeric:tabular-nums;
-    letter-spacing:0.02em;
-    font-weight:700;
-    color:var(--ink);
-    line-height:1;
-  }
-  .state-label{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:6px;
-    text-transform:uppercase;
-    letter-spacing:0.18em;
-  }
-  .presets{
-    display:flex;
-    gap:10px;
-    margin-bottom:22px;
-  }
-  .preset{
-    flex:1;
-    appearance:none;
-    background:var(--panel);
-    border:1px solid #2c333b;
-    color:var(--ink);
-    padding:12px 8px;
-    border-radius:14px;
-    font-size:14px;
-    font-weight:500;
-    cursor:pointer;
-    transition:background 0.2s, border-color 0.2s;
-  }
-  .preset:hover{background:#1d2329}
-  .preset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .preset[aria-pressed="true"]{background:#18301f;border-color:var(--accent-dim)}
-  .actions{
-    display:flex;
-    gap:10px;
-    margin-bottom:18px;
-  }
-  .btn{
-    flex:1;
-    appearance:none;
-    border:1px solid #2c333b;
-    background:#1a2025;
-    color:var(--ink);
-    padding:14px 10px;
-    border-radius:16px;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:background 0.2s, transform 0.1s;
-  }
-  .btn:hover{background:#232b32}
-  .btn:active{transform:translateY(1px)}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .btn.primary{
-    background:linear-gradient(180deg,#2a3a24,#1c2a18);
-    border-color:#34562e;
-    color:var(--accent);
-  }
-  .btn.primary:hover{background:linear-gradient(180deg,#33472c,#22381d)}
-  .info{
-    display:flex;
-    justify-content:space-between;
-    font-size:13px;
-    color:var(--muted);
-    border-top:1px dashed #262d33;
-    padding-top:14px;
-  }
-  .hint{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:14px;
-    text-align:center;
-    line-height:1.5;
-  }
-  .sr-only{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
-  }
-  @media (max-width:420px){
-    .time{font-size:38px}
-  }
+  html,body{margin:0;min-height:100%;background:#ebe7f0}
+  body{min-height:100dvh;display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-tap-highlight-color:transparent}
+  button{font:inherit}button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.45}[hidden]{display:none!important}
+  .app{position:relative;width:min(430px,100%);height:min(932px,100dvh);min-height:720px;overflow:hidden;background-color:var(--paper);background-image:url("assets/grid-paper-background.png");background-size:cover;background-position:center;box-shadow:0 28px 80px rgba(33,22,80,.22)}
+  .screen{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:calc(20px + env(safe-area-inset-top)) 24px calc(112px + env(safe-area-inset-bottom));opacity:0;transform:translateX(18px);pointer-events:none;transition:opacity .22s ease,transform .22s ease}
+  .screen::-webkit-scrollbar{display:none}.screen.active{opacity:1;transform:translateX(0);pointer-events:auto}.screen.selection-screen,.screen.confirm-screen{padding-bottom:calc(116px + env(safe-area-inset-bottom))}.screen.timer-screen{padding-bottom:calc(122px + env(safe-area-inset-bottom))}
+  .app-header{display:flex;align-items:center;justify-content:space-between;min-height:48px;gap:12px}.brand{margin:0;font-size:18px;font-weight:900;letter-spacing:.08em}.header-title{margin:0;flex:1;text-align:center;font-size:22px;font-weight:900;letter-spacing:.04em}.header-spacer{width:44px}
+  .icon-button,.text-button{appearance:none;border:0;background:transparent;color:var(--ink);cursor:pointer}.icon-button{width:44px;height:44px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--paper);line-height:1}.icon-button img{display:block;width:20px;height:20px;object-fit:cover}.text-button{padding:8px 0;font-size:13px;font-weight:800}
+  .home-screen{display:flex;flex-direction:column}.welcome-art{display:block;width:min(280px,82%);max-height:390px;object-fit:contain;margin:16px auto 6px;filter:drop-shadow(0 7px 0 rgba(33,22,80,.06))}.welcome-copy{text-align:center;margin:auto 0 24px}.welcome-copy h1{margin:0 auto 12px;max-width:360px;font-size:32px;line-height:1.25;font-weight:950;letter-spacing:.02em}.welcome-copy p{margin:0 auto;max-width:330px;color:#4d476a;font-size:15px;line-height:1.7;font-weight:650}
+  .primary-button,.secondary-button,.danger-button{width:100%;min-height:58px;appearance:none;border:3px solid var(--ink);border-radius:999px;padding:14px 22px;color:var(--ink);font-weight:900;font-size:17px;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .15s ease}.primary-button{background:var(--green);box-shadow:0 5px 0 var(--ink)}.secondary-button{background:var(--white);box-shadow:0 4px 0 var(--shadow)}.danger-button{background:#fff1ee;border-color:#b44742;color:#8d302d;box-shadow:0 4px 0 #e9bcb6}.primary-button:active,.secondary-button:active,.danger-button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.home-cta{margin-bottom:16px}.helper-copy{text-align:center;color:var(--muted);font-size:12px;line-height:1.55;margin:12px 18px 0}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 16px}.tab{position:relative;appearance:none;border:0;background:transparent;color:var(--ink);padding:13px 8px;font-size:21px;font-weight:950;cursor:pointer;z-index:0}.tab::after{content:"";position:absolute;left:10%;right:10%;bottom:7px;height:10px;background:transparent;z-index:-1;transform:rotate(-1deg)}.tab[aria-selected="true"]::after{background:var(--green)}.plan-intro{margin:0 0 14px;color:#57506f;font-size:13px;line-height:1.6;text-align:center}
+  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.weekly-grid{grid-template-columns:1fr}.plan-card{position:relative;min-height:152px;appearance:none;border:3px solid var(--ink);border-radius:4px;background:rgba(255,254,253,.8);color:var(--ink);padding:18px 13px 15px;text-align:left;cursor:pointer;box-shadow:4px 5px 0 rgba(33,22,80,.08);transition:transform .15s ease,background .15s ease,box-shadow .15s ease}.plan-card:nth-child(2n){transform:rotate(.6deg)}.plan-card:nth-child(2n+1){transform:rotate(-.5deg)}.plan-card:hover{transform:translateY(-2px) rotate(0)}.plan-card[aria-pressed="true"]{background:var(--yellow-soft);box-shadow:6px 7px 0 var(--green);transform:translateY(-2px) rotate(0)}.plan-card[aria-pressed="true"]::after{content:"已選";position:absolute;right:9px;top:9px;padding:4px 7px;border-radius:999px;background:var(--green);border:2px solid var(--ink);font-size:10px;font-weight:900}.plan-name{display:block;font-size:28px;font-weight:950;letter-spacing:.03em;margin-bottom:10px}.weekly-grid .plan-name{font-size:22px;padding-right:54px}.plan-detail{display:block;font-size:12px;font-weight:800;line-height:1.7}.plan-detail strong{color:#47982c}.plan-note{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.45}.recommend-label{position:absolute;top:-11px;left:14px;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:3px 9px;font-size:10px;font-weight:950}.selection-art{display:block;width:100%;max-height:180px;object-fit:contain;margin:22px auto 6px}
+  .sticky-action{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:12px 24px calc(18px + env(safe-area-inset-bottom));background:rgba(250,249,245,.96);border-top:2px solid rgba(33,22,80,.1)}
+  .confirm-content{text-align:center;padding-top:8px}.confirm-art{display:block;width:min(310px,90%);height:210px;object-fit:contain;margin:4px auto 0}.confirm-kicker{margin:3px 0 6px;color:#5c5671;font-size:13px;font-weight:800}.confirm-title{margin:0;font-size:32px;line-height:1.2;font-weight:950}.plan-summary{margin:20px 0 16px;padding:18px;border:3px solid var(--ink);background:rgba(255,254,253,.82);box-shadow:5px 6px 0 var(--yellow);text-align:left}.summary-row{display:flex;justify-content:space-between;gap:18px;padding:9px 0;border-bottom:1px dashed #a9a3b8;font-size:14px}.summary-row:last-child{border-bottom:0}.summary-row span{color:var(--muted);font-weight:700}.summary-row strong{text-align:right;font-weight:900}.confirm-actions{display:grid;gap:12px;margin-top:22px}
+  .timer-header{align-items:flex-start}.timer-heading{flex:1}.timer-heading p{margin:0 0 2px;color:#5f5875;font-size:12px;font-weight:800}.timer-heading h1{margin:0;font-size:23px;font-weight:950}.status-pill{border:2px solid var(--ink);border-radius:999px;background:var(--green-soft);padding:7px 10px;font-size:11px;font-weight:950}.timer-card{margin:23px 0 16px;padding:24px 18px 20px;border:3px solid var(--ink);background:rgba(255,254,253,.84);box-shadow:7px 8px 0 var(--yellow);text-align:center}.timer-label{margin:0;color:#625b78;font-size:13px;font-weight:850}.timer-value{margin:8px 0 16px;font-size:45px;line-height:1;font-weight:950;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  progress{appearance:none;width:100%;height:17px;overflow:hidden;border:2px solid var(--ink);border-radius:999px;background:var(--white)}progress::-webkit-progress-bar{background:var(--white)}progress::-webkit-progress-value{background:var(--green)}progress::-moz-progress-bar{background:var(--green)}.timer-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.meta-block{padding:10px;border:2px solid #c8c2d2;background:var(--paper)}.meta-block span{display:block;color:var(--muted);font-size:11px;font-weight:750}.meta-block strong{display:block;margin-top:3px;font-size:15px;font-variant-numeric:tabular-nums}.timer-art{display:block;width:min(285px,78%);height:210px;object-fit:contain;margin:4px auto 8px}.timer-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.timer-actions .wide{grid-column:1/-1}.small-action{min-height:50px;appearance:none;border:2px solid var(--ink);border-radius:999px;background:var(--white);color:var(--ink);padding:11px 12px;font-size:14px;font-weight:900;cursor:pointer}.small-action.primary{background:var(--green)}.small-action.coral{background:#fff0ed;color:#8a332f;border-color:#a3423d}
+  .bottom-nav{position:absolute;z-index:18;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);min-height:84px;padding:9px 12px calc(11px + env(safe-area-inset-bottom));background:rgba(255,254,253,.97);border-top:2px solid rgba(33,22,80,.12)}.nav-button{appearance:none;border:0;background:transparent;color:#aaa6b8;padding:9px 3px;border-radius:18px;font-size:12px;font-weight:850;cursor:pointer}.nav-button[aria-current="page"]{color:var(--ink);background:var(--green-soft)}
+  .toast{position:absolute;z-index:40;left:50%;bottom:108px;transform:translate(-50%,18px);max-width:calc(100% - 48px);padding:11px 16px;border:2px solid var(--ink);border-radius:999px;background:var(--ink);color:#fff;font-size:13px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}.modal-backdrop{position:absolute;z-index:50;inset:0;display:grid;place-items:end center;padding:24px;background:rgba(33,22,80,.38)}.modal{width:100%;border:3px solid var(--ink);border-radius:25px;background:var(--paper);padding:24px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:8px 9px 0 var(--ink)}.modal h2{margin:0 0 8px;font-size:23px}.modal p{margin:0 0 20px;color:#5f5874;line-height:1.6;font-size:14px}.modal-actions{display:grid;gap:11px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:520px){html,body{background:var(--paper)}.app{width:100%;height:100dvh;min-height:640px;box-shadow:none}}
+  @media(max-height:760px){.screen{padding-top:calc(12px + env(safe-area-inset-top))}.welcome-art{max-height:280px;width:210px;margin-top:3px}.welcome-copy h1{font-size:27px}.welcome-copy{margin-bottom:15px}.timer-art{height:135px}.timer-card{margin-top:12px;padding-top:18px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-  <main class="app" role="application" aria-label="禁食時鐘">
-    <p class="eyebrow">便利工具 · 非醫療建議</p>
-    <h1 class="title">禁食時鐘</h1>
+<main class="app" id="app" role="application" aria-label="斷食小日子">
+  <section class="screen home-screen active" data-screen="home" aria-labelledby="homeTitle">
+    <header class="app-header"><p class="brand">斷食小日子</p><button class="text-button" type="button" id="continuePlanBtn" hidden>繼續計畫</button></header>
+    <img class="welcome-art" src="assets/welcome-fasting-friends-cutout.png" alt="白熊和小貓一起拿著餐具，準備展開新的斷食計畫">
+    <div class="welcome-copy"><h1 id="homeTitle">從今天開始，<br>吃得更有節奏。</h1><p>選一個適合你的斷食計畫，讓倒數替你記住，專心過好今天。</p></div>
+    <button class="primary-button home-cta" type="button" id="choosePlanBtn">選擇斷食計畫</button>
+    <p class="helper-copy">從溫和的 13–11 到進階的 20–4 都可以自由選擇。此工具提供生活紀錄，不取代醫療建議。</p>
+  </section>
 
-    <div class="stage" aria-hidden="true">
-      <svg viewBox="0 0 100 100" width="100%" height="100%">
-        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-        <circle class="ring-progress" id="ring" cx="50" cy="50" r="42"
-          stroke-dasharray="263.89" stroke-dashoffset="263.89"
-          transform="rotate(-90 50 50)"/>
-      </svg>
-      <div class="center">
-        <div class="time" id="elapsed" aria-live="polite">00:00</div>
-        <div class="state-label" id="stateLabel">待命</div>
+  <section class="screen selection-screen" data-screen="selection" aria-labelledby="selectionTitle" hidden>
+    <header class="app-header"><button class="icon-button" type="button" data-go="home" aria-label="返回首頁"><img src="assets/icon-close.png" alt="" aria-hidden="true"></button><h1 class="header-title" id="selectionTitle">斷食計畫</h1><span class="header-spacer" aria-hidden="true"></span></header>
+    <div class="tabs" role="tablist" aria-label="計畫類型">
+      <button class="tab" type="button" role="tab" data-plan-tab="daily" aria-selected="true" aria-controls="dailyPlans">日計畫</button>
+      <button class="tab" type="button" role="tab" data-plan-tab="weekly" aria-selected="false" aria-controls="weeklyPlans">週計畫</button>
+    </div>
+    <p class="plan-intro" id="planIntro">每天依照固定節奏進食，第一次嘗試可以從 13–11 或 15–9 開始。</p>
+    <div class="plan-grid" id="dailyPlans" role="tabpanel" aria-label="日計畫">
+      <button class="plan-card preset" type="button" data-plan="13-11" data-hours="13" aria-pressed="false"><span class="plan-name">13–11</span><span class="plan-detail"><strong>斷食 13 小時</strong><br>可進食 11 小時</span><span class="plan-note">最溫和，適合剛開始調整晚餐時間。</span></button>
+      <button class="plan-card preset" type="button" data-plan="15-9" data-hours="15" aria-pressed="false"><span class="plan-name">15–9</span><span class="plan-detail"><strong>斷食 15 小時</strong><br>可進食 9 小時</span><span class="plan-note">多一點挑戰，也保留彈性。</span></button>
+      <button class="plan-card preset" type="button" data-plan="16-8" data-hours="16" aria-pressed="true"><span class="recommend-label">推薦入門</span><span class="plan-name">16–8</span><span class="plan-detail"><strong>斷食 16 小時</strong><br>可進食 8 小時</span><span class="plan-note">常見而清楚的日常節奏。</span></button>
+      <button class="plan-card preset" type="button" data-plan="18-6" data-hours="18" aria-pressed="false"><span class="plan-name">18–6</span><span class="plan-detail"><strong>斷食 18 小時</strong><br>可進食 6 小時</span><span class="plan-note">進階計畫，請依身體狀況調整。</span></button>
+      <button class="plan-card preset" type="button" data-plan="20-4" data-hours="20" aria-pressed="false"><span class="plan-name">20–4</span><span class="plan-detail"><strong>斷食 20 小時</strong><br>可進食 4 小時</span><span class="plan-note">高強度，建議先累積經驗。</span></button>
+    </div>
+    <div class="plan-grid weekly-grid" id="weeklyPlans" role="tabpanel" aria-label="週計畫" hidden>
+      <button class="plan-card preset" type="button" data-plan="gentle-week" data-hours="14" aria-pressed="false"><span class="plan-name">溫和起步週</span><span class="plan-detail"><strong>平日 14 小時</strong><br>週末 12 小時</span><span class="plan-note">保留聚餐空間，適合建立第一週習慣。</span></button>
+      <button class="plan-card preset" type="button" data-plan="step-up-week" data-hours="16" aria-pressed="false"><span class="plan-name">漸進挑戰週</span><span class="plan-detail"><strong>13 → 15 → 16 小時</strong><br>每兩天向前一步</span><span class="plan-note">循序增加，不需要第一天就做到最滿。</span></button>
+      <button class="plan-card preset" type="button" data-plan="steady-week" data-hours="16" aria-pressed="false"><span class="plan-name">16–8 穩定週</span><span class="plan-detail"><strong>每天斷食 16 小時</strong><br>固定 8 小時進食窗</span><span class="plan-note">節奏最固定，適合已習慣斷食的人。</span></button>
+    </div>
+    <img class="selection-art" src="assets/plan-celebration-cats-cutout.png" alt="三隻小貓拿著星星旗幟為新計畫加油">
+    <div class="sticky-action"><button class="primary-button" type="button" id="reviewPlanBtn">選擇 16–8</button></div>
+  </section>
+
+  <section class="screen confirm-screen" data-screen="confirm" aria-labelledby="confirmTitle" hidden>
+    <header class="app-header"><button class="icon-button" type="button" data-go="selection" aria-label="返回計畫選擇"><img src="assets/icon-back.png" alt="" aria-hidden="true"></button><h1 class="header-title">確認計畫</h1><span class="header-spacer" aria-hidden="true"></span></header>
+    <div class="confirm-content">
+      <img class="confirm-art" src="assets/plan-celebration-cats-cutout.png" alt="小貓們為即將開始的計畫加油">
+      <p class="confirm-kicker">你的新節奏已經準備好了</p><h2 class="confirm-title" id="confirmTitle">準備開始 16–8</h2>
+      <div class="plan-summary" aria-label="計畫摘要">
+        <div class="summary-row"><span>斷食時間</span><strong id="summaryFast">16 小時</strong></div><div class="summary-row"><span>進食時間</span><strong id="summaryEat">8 小時</strong></div><div class="summary-row"><span>開始時間</span><strong id="summaryStart">現在</strong></div><div class="summary-row"><span>預計完成</span><strong id="summaryEnd">明天</strong></div>
       </div>
+      <p class="helper-copy">計畫進行中仍可暫停或結束。若感到不適，請停止並尋求專業意見。</p>
+      <div class="confirm-actions"><button class="primary-button" type="button" data-action="start" id="startPlanBtn">開始斷食計畫</button><button class="secondary-button" type="button" data-go="selection">再看看其他計畫</button></div>
     </div>
+  </section>
 
-    <fieldset class="presets" aria-label="禁食時長預設">
-      <button class="preset" type="button" data-hours="16" aria-pressed="false">16 小時</button>
-      <button class="preset" type="button" data-hours="18" aria-pressed="false">18 小時</button>
-      <button class="preset" type="button" data-hours="20" aria-pressed="false">20 小時</button>
-    </fieldset>
+  <section class="screen timer-screen" data-screen="timer" aria-labelledby="timerTitle" hidden>
+    <header class="app-header timer-header"><div class="timer-heading"><p>目前計畫</p><h1 id="timerTitle">16–8 斷食</h1></div><span class="status-pill" id="statusPill">斷食中</span></header>
+    <div class="timer-card"><p class="timer-label" id="timerLabel">距離完成還有</p><div class="timer-value" id="remainingClock" aria-live="polite">16:00:00</div><progress id="fastingProgress" value="0" max="100" aria-label="斷食進度">0%</progress><div class="timer-meta"><div class="meta-block"><span>已斷食</span><strong class="elapsed" id="elapsedLabel">00:00</strong></div><div class="meta-block"><span>剩餘</span><strong class="remaining" id="remainingLabel">16:00</strong></div></div></div>
+    <img class="timer-art" src="assets/welcome-fasting-friends-cutout.png" alt="白熊與小貓陪伴計時中的你">
+    <div class="timer-actions"><button class="small-action primary" type="button" data-action="pause" id="pauseBtn">暫停一下</button><button class="small-action primary" type="button" data-action="start" id="resumeBtn" hidden>繼續計時</button><button class="small-action" type="button" data-action="reset" id="resetBtn">重新計時</button><button class="small-action coral wide" type="button" id="askEndBtn">結束這次斷食</button></div>
+  </section>
 
-    <div class="actions">
-      <button class="btn primary" type="button" data-action="start" id="startBtn">開始</button>
-      <button class="btn" type="button" data-action="pause" id="pauseBtn">暫停</button>
-      <button class="btn" type="button" data-action="reset" id="resetBtn">重置</button>
-    </div>
-
-    <div class="info">
-      <span>已經 <span class="elapsed" id="elapsedLabel">00:00</span></span>
-      <span>剩下 <span class="remaining" id="remainingLabel">00:00</span></span>
-    </div>
-
-    <p class="hint">選擇時長 → 點擊「開始」。此工具僅為便利參考，不提供醫療建議。</p>
-    <div class="sr-only" id="announce" aria-live="assertive"></div>
-  </main>
+  <nav class="bottom-nav" id="bottomNav" aria-label="主要功能"><button class="nav-button" type="button" data-nav="fasting" aria-current="page">斷食</button><button class="nav-button" type="button" data-nav="record">記錄</button><button class="nav-button" type="button" data-nav="explore">探索</button><button class="nav-button" type="button" data-nav="profile">我的</button></nav>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="endModal" role="dialog" aria-modal="true" aria-labelledby="endModalTitle" hidden><div class="modal"><h2 id="endModalTitle">要結束這次斷食嗎？</h2><p>結束後會回到首頁，本次計時將停止。你也可以先回去繼續計時。</p><div class="modal-actions"><button class="secondary-button" type="button" id="cancelEndBtn">繼續計時</button><button class="danger-button" type="button" id="confirmEndBtn">結束這次</button></div></div></div>
+  <div class="sr-only" id="announce" aria-live="assertive"></div>
+</main>
 
 <script>
 (function(){
-  const NS = 'fasting-clock:v1';
-  const STORAGE_KEY = NS;
-
-  const $ = (s) => document.querySelector(s);
-  const ring = $('#ring');
-  const elapsedEl = $('#elapsed');
-  const elapsedLabel = $('#elapsedLabel');
-  const remainingLabel = $('#remainingLabel');
-  const stateLabel = $('#stateLabel');
-  const announce = $('#announce');
-  const startBtn = $('#startBtn');
-  const pauseBtn = $('#pauseBtn');
-  const resetBtn = $('#resetBtn');
-  const presetBtns = document.querySelectorAll('.preset');
-
-  const FULL_CIRCLE = 263.89;
-
-  let presetHours = 16;
-  let state = 'idle'; // idle running paused
-  let startTimestamp = 0;    // performance.now() when running started (or resumed)
-  let accumulatedMs = 0;     // total elapsed ms excluding paused intervals
-  let lastTick = 0;
-  let rafId = 0;
-
-  // 加載儲存狀態
-  function loadState(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      const data = JSON.parse(raw);
-      if(data && typeof data.presetHours === 'number'){
-        presetHours = data.presetHours;
-      }
-      if(data && data.state){
-        state = data.state;
-        accumulatedMs = data.accumulatedMs || 0;
-        startTimestamp = data.startTimestamp || 0;
-        // 恢復選中預設
-        presetBtns.forEach(b => {
-          const h = Number(b.dataset.hours);
-          b.setAttribute('aria-pressed', h === presetHours ? 'true' : 'false');
-        });
-        if(state === 'running'){
-          startTimestamp = performance.now() - accumulatedMs;
-          ensureRunningUI();
-        } else if(state === 'paused'){
-          updateDisplay(accumulatedMs);
-          setPausedUI();
-        } else {
-          updateDisplay(0);
-          setIdleUI();
-        }
-      }
-    }catch(e){ /* ignore corrupt storage */ }
-  }
-
-  function saveState(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        presetHours,
-        state,
-        accumulatedMs,
-        startTimestamp
-      }));
-    }catch(e){ /* ignore quota errors */ }
-  }
-
-  function clearStorage(){
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  }
-
-  function setIdleUI(){
-    state = 'idle';
-    stateLabel.textContent = '待命';
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = false;
-    saveState();
-  }
-
-  function setRunningUI(){
-    state = 'running';
-    stateLabel.textContent = '禁食中';
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
-    resetBtn.disabled = false;
-    saveState();
-  }
-
-  function setPausedUI(){
-    state = 'paused';
-    stateLabel.textContent = '暫停';
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = false;
-    saveState();
-  }
-
-  function ensureRunningUI(){
-    // 若正在運行，設置 UI（不重置計時）
-    if(state !== 'running') return;
-    stateLabel.textContent = '禁食中';
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
-    resetBtn.disabled = false;
-  }
-
-  function formatTime(ms){
-    const totalSec = Math.max(0, Math.floor(ms / 1000));
-    const m = Math.floor(totalSec / 60);
-    const s = totalSec % 60;
-    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-  }
-
-  function updateDisplay(elapsedMs){
-    const elapsed = formatTime(elapsedMs);
-    elapsedEl.textContent = elapsed;
-    elapsedLabel.textContent = elapsed;
-    const remainingMs = Math.max(0, presetHours * 3600 * 1000 - elapsedMs);
-    const remaining = formatTime(remainingMs);
-    remainingLabel.textContent = remaining;
-    const progress = Math.min(1, elapsedMs / (presetHours * 3600 * 1000));
-    ring.setAttribute('stroke-dashoffset', (FULL_CIRCLE * (1 - progress)).toFixed(2));
-    // announce 變化（簡簡單單）
-    if(announce) announce.textContent = '已經 ' + elapsed + '，剩下 ' + remaining;
-  }
-
-  function tick(){
-    if(state !== 'running') return;
-    const now = performance.now();
-    const elapsed = now - startTimestamp;
-    updateDisplay(elapsed);
-    rafId = requestAnimationFrame(tick);
-  }
-
-  function start(){
-    if(state === 'running') return;
-    // 若是從暫停恢復，保留 accumulatedMs
-    if(state === 'paused'){
-      // 保持 accumulatedMs 不變，startTimestamp 設為 now - accumulatedMs
-      startTimestamp = performance.now() - accumulatedMs;
-    } else {
-      // 全 new start
-      startTimestamp = performance.now();
-      accumulatedMs = 0;
-    }
-    setRunningUI();
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(tick);
-    announce && (announce.textContent = '開始計時');
-  }
-
-  function pause(){
-    if(state !== 'running') return;
-    accumulatedMs = performance.now() - startTimestamp;
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId = 0;
-    updateDisplay(accumulatedMs);
-    setPausedUI();
-    announce && (announce.textContent = '已暫停');
-  }
-
-  function reset(){
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId = 0;
-    accumulatedMs = 0;
-    startTimestamp = 0;
-    updateDisplay(0);
-    setIdleUI();
-    announce && (announce.textContent = '已重置');
-  }
-
-  // 預設選擇
-  presetBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if(state === 'running') return; // 運行中不能換預設
-      presetBtns.forEach(b => b.setAttribute('aria-pressed','false'));
-      btn.setAttribute('aria-pressed','true');
-      presetHours = Number(btn.dataset.hours);
-      if(state === 'idle' || state === 'paused'){
-        // 重置顯示
-        if(state === 'paused'){
-          accumulatedMs = 0;
-          if(rafId) cancelAnimationFrame(rafId);
-          rafId = 0;
-        } else {
-          accumulatedMs = 0;
-        }
-        updateDisplay(0);
-        if(state === 'idle') setIdleUI();
-        else setPausedUI();
-        saveState();
-      }
-    });
-  });
-
-  startBtn.addEventListener('click', start);
-  pauseBtn.addEventListener('click', pause);
-  resetBtn.addEventListener('click', reset);
-
-  // 鍵盤：Enter/Space 啟動主要按鈕行為已由瀏覽器處理，額外支援 R 重置
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'r' || e.key === 'R'){
-      if(!e.ctrlKey && !e.metaKey && !e.altKey){
-        reset();
-        e.preventDefault();
-      }
-    }
-  });
-
-  // 初始化
-  loadState();
-  if(state === 'idle'){
-    updateDisplay(0);
-    setIdleUI();
-  } else if(state === 'paused'){
-    updateDisplay(accumulatedMs);
-    setPausedUI();
-  } else if(state === 'running'){
-    startTimestamp = performance.now() - accumulatedMs;
-    updateDisplay(accumulatedMs);
-    setRunningUI();
-    rafId = requestAnimationFrame(tick);
-  }
+  'use strict';
+  const STORAGE_KEY='fasting-clock:v1';
+  const plans={
+    '13-11':{id:'13-11',name:'13–11',fast:13,eat:11,type:'daily'},'15-9':{id:'15-9',name:'15–9',fast:15,eat:9,type:'daily'},'16-8':{id:'16-8',name:'16–8',fast:16,eat:8,type:'daily'},'18-6':{id:'18-6',name:'18–6',fast:18,eat:6,type:'daily'},'20-4':{id:'20-4',name:'20–4',fast:20,eat:4,type:'daily'},
+    'gentle-week':{id:'gentle-week',name:'溫和起步週',fast:14,eat:10,type:'weekly'},'step-up-week':{id:'step-up-week',name:'漸進挑戰週',fast:13,eat:11,type:'weekly'},'steady-week':{id:'steady-week',name:'16–8 穩定週',fast:16,eat:8,type:'weekly'}
+  };
+  const state={selectedPlanId:'16-8',selectedTab:'daily',timerState:'idle',accumulatedMs:0,runningSince:0};
+  const screens=Array.from(document.querySelectorAll('[data-screen]')),bottomNav=document.getElementById('bottomNav'),continuePlanBtn=document.getElementById('continuePlanBtn'),reviewPlanBtn=document.getElementById('reviewPlanBtn'),confirmTitle=document.getElementById('confirmTitle'),summaryFast=document.getElementById('summaryFast'),summaryEat=document.getElementById('summaryEat'),summaryStart=document.getElementById('summaryStart'),summaryEnd=document.getElementById('summaryEnd'),timerTitle=document.getElementById('timerTitle'),statusPill=document.getElementById('statusPill'),timerLabel=document.getElementById('timerLabel'),remainingClock=document.getElementById('remainingClock'),progress=document.getElementById('fastingProgress'),elapsedLabel=document.getElementById('elapsedLabel'),remainingLabel=document.getElementById('remainingLabel'),pauseBtn=document.getElementById('pauseBtn'),resumeBtn=document.getElementById('resumeBtn'),endModal=document.getElementById('endModal'),toast=document.getElementById('toast'),announce=document.getElementById('announce');
+  let tickId=0,toastId=0;
+  const currentPlan=()=>plans[state.selectedPlanId]||plans['16-8'];
+  function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:2,selectedPlanId:state.selectedPlanId,selectedTab:state.selectedTab,timerState:state.timerState,accumulatedMs:state.accumulatedMs,runningSince:state.runningSince}))}catch(error){}}
+  function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const data=JSON.parse(raw);if(data.version===2){if(plans[data.selectedPlanId])state.selectedPlanId=data.selectedPlanId;if(['daily','weekly'].includes(data.selectedTab))state.selectedTab=data.selectedTab;if(['idle','running','paused','completed'].includes(data.timerState))state.timerState=data.timerState;state.accumulatedMs=Number(data.accumulatedMs)||0;state.runningSince=Number(data.runningSince)||0}else if(typeof data.presetHours==='number'){const migrated=Object.values(plans).find(plan=>plan.type==='daily'&&plan.fast===data.presetHours);if(migrated)state.selectedPlanId=migrated.id}}catch(error){}}
+  function elapsedMs(){return state.timerState==='running'?state.accumulatedMs+Math.max(0,Date.now()-state.runningSince):state.accumulatedMs}
+  function showScreen(name){screens.forEach(screen=>{const active=screen.dataset.screen===name;screen.hidden=!active;screen.classList.toggle('active',active);screen.setAttribute('aria-hidden',active?'false':'true');if(active)screen.scrollTop=0});bottomNav.hidden=name!=='home'&&name!=='timer';if(name==='confirm')renderConfirmation();if(name==='timer')renderTimer()}
+  function setPlanTab(tab){state.selectedTab=tab;document.querySelectorAll('[data-plan-tab]').forEach(button=>button.setAttribute('aria-selected',button.dataset.planTab===tab?'true':'false'));document.getElementById('dailyPlans').hidden=tab!=='daily';document.getElementById('weeklyPlans').hidden=tab!=='weekly';document.getElementById('planIntro').textContent=tab==='daily'?'每天依照固定節奏進食，第一次嘗試可以從 13–11 或 15–9 開始。':'用一週慢慢建立習慣，今天的斷食時數會依所選週計畫開始。';saveState()}
+  function selectPlan(planId){if(!plans[planId])return;state.selectedPlanId=planId;state.selectedTab=plans[planId].type;document.querySelectorAll('[data-plan]').forEach(button=>button.setAttribute('aria-pressed',button.dataset.plan===planId?'true':'false'));reviewPlanBtn.textContent='選擇 '+plans[planId].name;announce.textContent='已選擇 '+plans[planId].name+' 計畫';saveState()}
+  function formatClock(date){return new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false}).format(date)}
+  function formatEnd(date){const now=new Date(),tomorrow=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);return(date>=tomorrow?'明天 ':'今天 ')+formatClock(date)}
+  function renderConfirmation(){const plan=currentPlan(),now=new Date(),end=new Date(now.getTime()+plan.fast*3600000);confirmTitle.textContent='準備開始 '+plan.name;summaryFast.textContent=plan.fast+' 小時';summaryEat.textContent=plan.eat+' 小時';summaryStart.textContent='現在 '+formatClock(now);summaryEnd.textContent=formatEnd(end)}
+  const two=value=>String(value).padStart(2,'0');
+  function formatHMS(ms){const total=Math.max(0,Math.floor(ms/1000));return two(Math.floor(total/3600))+':'+two(Math.floor((total%3600)/60))+':'+two(total%60)}
+  function formatHM(ms){const total=Math.max(0,Math.floor(ms/60000));return two(Math.floor(total/60))+':'+two(total%60)}
+  function renderTimer(){const plan=currentPlan(),duration=plan.fast*3600000,elapsed=Math.min(duration,elapsedMs()),remaining=Math.max(0,duration-elapsed),percent=duration?Math.min(100,elapsed/duration*100):0;if(remaining===0&&state.timerState==='running'){state.timerState='completed';state.accumulatedMs=duration;state.runningSince=0;saveState();announce.textContent='恭喜完成 '+plan.name+' 斷食計畫';showToast('完成了，今天很有節奏！')}timerTitle.textContent=plan.name+' 斷食';remainingClock.textContent=formatHMS(remaining);progress.value=percent;progress.textContent=Math.round(percent)+'%';elapsedLabel.textContent=formatHM(elapsed);remainingLabel.textContent=formatHM(remaining);const running=state.timerState==='running',paused=state.timerState==='paused',completed=state.timerState==='completed';statusPill.textContent=completed?'已完成':paused?'已暫停':running?'斷食中':'準備中';timerLabel.textContent=completed?'這次斷食已完成':'距離完成還有';pauseBtn.hidden=!running;resumeBtn.hidden=running||completed;resumeBtn.textContent=state.timerState==='idle'?'開始計時':'繼續計時';continuePlanBtn.hidden=state.timerState==='idle'}
+  function startFresh(){state.timerState='running';state.accumulatedMs=0;state.runningSince=Date.now();saveState();showScreen('timer');startTicking();announce.textContent='已開始 '+currentPlan().name+' 斷食計畫'}
+  function resume(){if(state.timerState==='completed')return;state.timerState='running';state.runningSince=Date.now();saveState();renderTimer();startTicking();announce.textContent='已繼續計時'}
+  function pause(){if(state.timerState!=='running')return;state.accumulatedMs=elapsedMs();state.runningSince=0;state.timerState='paused';saveState();stopTicking();renderTimer();showToast('先休息一下，進度已保留')}
+  function reset(){state.timerState='idle';state.accumulatedMs=0;state.runningSince=0;saveState();stopTicking();renderTimer();showToast('計時已重新歸零');announce.textContent='已重置計時'}
+  function finish(){state.timerState='idle';state.accumulatedMs=0;state.runningSince=0;saveState();stopTicking();endModal.hidden=true;continuePlanBtn.hidden=true;showScreen('home');showToast('這次斷食已結束');announce.textContent='這次斷食已結束'}
+  function startTicking(){stopTicking();tickId=window.setInterval(renderTimer,1000)}function stopTicking(){if(tickId)window.clearInterval(tickId);tickId=0}
+  function showToast(message){window.clearTimeout(toastId);toast.textContent=message;toast.classList.add('show');toastId=window.setTimeout(()=>toast.classList.remove('show'),2400)}
+  document.getElementById('choosePlanBtn').addEventListener('click',()=>showScreen('selection'));continuePlanBtn.addEventListener('click',()=>showScreen('timer'));reviewPlanBtn.addEventListener('click',()=>showScreen('confirm'));document.getElementById('startPlanBtn').addEventListener('click',startFresh);pauseBtn.addEventListener('click',pause);resumeBtn.addEventListener('click',resume);document.getElementById('resetBtn').addEventListener('click',reset);
+  document.querySelectorAll('[data-go]').forEach(button=>button.addEventListener('click',()=>showScreen(button.dataset.go)));document.querySelectorAll('[data-plan-tab]').forEach(button=>button.addEventListener('click',()=>setPlanTab(button.dataset.planTab)));document.querySelectorAll('[data-plan]').forEach(button=>button.addEventListener('click',()=>selectPlan(button.dataset.plan)));
+  document.querySelectorAll('[data-nav]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.nav==='fasting')showScreen(state.timerState==='idle'?'home':'timer');else showToast(button.textContent.trim()+'功能準備中')}));
+  document.getElementById('askEndBtn').addEventListener('click',()=>{endModal.hidden=false;document.getElementById('cancelEndBtn').focus()});document.getElementById('cancelEndBtn').addEventListener('click',()=>{endModal.hidden=true;document.getElementById('askEndBtn').focus()});document.getElementById('confirmEndBtn').addEventListener('click',finish);endModal.addEventListener('click',event=>{if(event.target===endModal)endModal.hidden=true});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!endModal.hidden)endModal.hidden=true;if((event.key==='r'||event.key==='R')&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&state.timerState!=='idle'){reset();event.preventDefault()}});
+  loadState();selectPlan(state.selectedPlanId);setPlanTab(state.selectedTab);renderTimer();if(state.timerState==='running'){showScreen('timer');startTicking()}else if(state.timerState==='paused'||state.timerState==='completed'){showScreen('timer')}else showScreen('home');
 })();
 </script>
 </body>

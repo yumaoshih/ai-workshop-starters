@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "Word Lab 高頻單字連勝快答",
+  "short_name": "Word Lab",
+  "description": "用連勝快答遊戲練習完整開放詞表、學習權重與免費離線 AI 英文發音。",
+  "lang": "zh-Hant-TW",
+  "start_url": "./index.html#practice",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fffdf8",
+  "theme_color": "#fffdf8",
+  "icons": [
+    {
+      "src": "icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "開始練習",
+      "short_name": "練習",
+      "url": "./index.html#practice"
+    },
+    {
+      "name": "搜尋字庫",
+      "short_name": "字庫",
+      "url": "./index.html#library"
+    }
+  ]
+}

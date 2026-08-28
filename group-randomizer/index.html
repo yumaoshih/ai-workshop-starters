@@ -2,188 +2,1147 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=390, initial-scale=1">
-<title>分組隨機器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f0e2">
+<title>分隊！一鍵分組器</title>
 <style>
-  :root{
-    --bg:#eef3ef; --card:#fff; --primary:#2f7d5b; --text:#22302a; --border:#d4e0d8;
+  :root {
+    --paper: #f7f0e2;
+    --ink: #17233c;
+    --muted: #657084;
+    --red: #ff624d;
+    --red-dark: #d94433;
+    --yellow: #f7cf4a;
+    --blue: #5c83f7;
+    --green: #50bb82;
+    --white: #fffdf8;
+    --line: 2px solid var(--ink);
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
-  h1{font-size:18px;margin:0 0 10px}
-  .wrap{max-width:390px;margin:0 auto}
-  .field{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-  label{font-size:13px;color:#4f5d52}
-  textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px;resize:vertical;min-height:80px}
-  input[type=number]{width:80px;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px}
-  .btn-row{display:flex;gap:8px;margin-bottom:14px}
-  button.primary{flex:1;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer}
-  button.primary:hover{opacity:.92}
-  button.primary:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .secondary{display:flex;gap:8px;flex:1}
-  .secondary button{flex:1;background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:8px;padding:10px;font-size:13px;cursor:pointer}
-  .secondary button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .groups{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .group{margin-bottom:10px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:#fafcf8}
-  .group:last-child{margin-bottom:0}
-  .group-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-  .group-title{font-size:13px;font-weight:600;color:var(--primary)}
-  .group-count{font-size:12px;color:#4f5d52}
-  .group-names{font-size:14px;line-height:1.45}
-  .empty-message{font-size:13px;color:#4f5d52;padding:8px 0}
-  .reset-row{margin-top:10px;text-align:center}
-  .reset-row button{background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
-  .reset-row button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+
+  * { box-sizing: border-box; }
+  html { min-height: 100%; }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image: radial-gradient(circle at 1px 1px, rgba(23, 35, 60, .12) 1px, transparent 0);
+    background-size: 22px 22px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+
+  button, textarea, input { font: inherit; }
+  button { color: inherit; }
+
+  .page-shell {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 40px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .issue-number {
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    border: var(--line);
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 3px 3px 0 var(--ink);
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    transform: rotate(-5deg);
+  }
+
+  .brand-text { min-width: 0; }
+
+  .eyebrow {
+    margin: 0 0 2px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 950;
+    letter-spacing: -.04em;
+    line-height: 1;
+  }
+
+  .privacy-note {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 11px;
+    border: 1px solid rgba(23, 35, 60, .25);
+    border-radius: 999px;
+    background: rgba(255, 253, 248, .7);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .privacy-note::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(80, 187, 130, .18);
+  }
+
+  .setup-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(310px, .85fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .intro { padding: 10px 4px 0; }
+
+  .intro-kicker {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 6px 10px;
+    border: var(--line);
+    background: var(--blue);
+    box-shadow: 3px 3px 0 var(--ink);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    transform: rotate(-1.5deg);
+  }
+
+  .intro h2 {
+    max-width: 650px;
+    margin: 0;
+    font-size: clamp(42px, 7vw, 78px);
+    font-weight: 950;
+    letter-spacing: -.065em;
+    line-height: .95;
+  }
+
+  .intro h2 .marker {
+    position: relative;
+    display: inline-block;
+    z-index: 0;
+  }
+
+  .intro h2 .marker::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -2%;
+    right: -3%;
+    bottom: .04em;
+    height: .26em;
+    background: var(--yellow);
+    transform: rotate(-2deg);
+  }
+
+  .lead {
+    max-width: 560px;
+    margin: 22px 0 24px;
+    color: #4d586d;
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.7;
+  }
+
+  .ticket-preview {
+    position: relative;
+    min-height: 185px;
+    max-width: 550px;
+    margin-top: 18px;
+  }
+
+  .preview-ticket {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 150px;
+    padding: 13px 18px;
+    border: var(--line);
+    background: var(--white);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-weight: 850;
+  }
+
+  .preview-ticket::before {
+    content: attr(data-no);
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: .08em;
+  }
+
+  .preview-ticket:nth-child(1) { left: 1%; top: 8px; transform: rotate(-5deg); }
+  .preview-ticket:nth-child(2) { left: 31%; top: 52px; transform: rotate(3deg); background: #fff4c8; }
+  .preview-ticket:nth-child(3) { left: 10%; top: 108px; transform: rotate(2deg); background: #eaf0ff; }
+  .preview-ticket:nth-child(4) { left: 51%; top: 118px; transform: rotate(-4deg); background: #e5f8ed; }
+
+  .control-card {
+    position: relative;
+    padding: 24px;
+    border: var(--line);
+    border-radius: 4px;
+    background: var(--white);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .control-card::before {
+    content: "名單登記處";
+    position: absolute;
+    top: -14px;
+    right: 18px;
+    padding: 5px 12px;
+    border: var(--line);
+    background: var(--yellow);
+    font-size: 12px;
+    font-weight: 900;
+    transform: rotate(2deg);
+  }
+
+  .step-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 9px;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .step-label span {
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 12px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 210px;
+    padding: 15px 16px;
+    resize: vertical;
+    border: 2px solid #aab1bd;
+    border-radius: 2px;
+    outline: none;
+    background-color: #fff;
+    background-image: repeating-linear-gradient(transparent 0, transparent 30px, #e5e8ed 31px);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 31px;
+  }
+
+  textarea:focus,
+  input:focus-visible,
+  button:focus-visible {
+    outline: 4px solid rgba(92, 131, 247, .42);
+    outline-offset: 3px;
+  }
+
+  .name-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    min-height: 28px;
+    padding: 9px 2px 14px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .name-summary strong { color: var(--ink); }
+  .duplicate-notice { color: #a84737; }
+
+  .divider {
+    height: 0;
+    margin: 6px 0 18px;
+    border: 0;
+    border-top: 2px dashed #b8b1a5;
+  }
+
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .mode-option { position: relative; }
+  .mode-option input { position: absolute; opacity: 0; pointer-events: none; }
+
+  .mode-option label {
+    display: block;
+    padding: 11px 8px;
+    border: 2px solid #aab1bd;
+    background: #fff;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 850;
+    cursor: pointer;
+  }
+
+  .mode-option input:checked + label {
+    border-color: var(--ink);
+    background: var(--ink);
+    box-shadow: 3px 3px 0 var(--yellow);
+    color: #fff;
+  }
+
+  .mode-option input:focus-visible + label {
+    outline: 4px solid rgba(92, 131, 247, .42);
+    outline-offset: 3px;
+  }
+
+  .number-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 11px 14px;
+    border: 2px solid #aab1bd;
+    background: #fff;
+  }
+
+  .number-field label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .number-field input {
+    width: 80px;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 3px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-size: 24px;
+    font-weight: 950;
+    text-align: center;
+  }
+
+  .number-field input[hidden] { display: none; }
+
+  .draw-button {
+    position: relative;
+    width: 100%;
+    min-height: 64px;
+    padding: 15px 24px;
+    border: var(--line);
+    border-radius: 2px;
+    background: var(--red);
+    box-shadow: 6px 6px 0 var(--ink);
+    color: #fff;
+    font-size: 19px;
+    font-weight: 950;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+  }
+
+  .draw-button:hover { background: #ff735f; transform: translate(-1px, -1px); box-shadow: 7px 7px 0 var(--ink); }
+  .draw-button:active { transform: translate(5px, 5px); box-shadow: 1px 1px 0 var(--ink); }
+
+  .draw-button::after {
+    content: "→";
+    position: absolute;
+    right: 20px;
+    font-size: 25px;
+    line-height: 1;
+  }
+
+  .fair-note {
+    margin: 15px 0 5px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .setup-reset {
+    display: block;
+    margin: 0 auto;
+    padding: 6px 2px 2px;
+    border: 0;
+    border-bottom: 1px solid var(--muted);
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .results-stage {
+    display: none;
+    min-height: calc(100vh - 130px);
+  }
+
+  .results-stage.active { display: block; }
+  .setup-stage[hidden] { display: none; }
+
+  .result-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: end;
+    margin-bottom: 24px;
+  }
+
+  .result-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--red-dark);
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: .14em;
+  }
+
+  .result-kicker::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(255, 98, 77, .18);
+  }
+
+  .result-header h2 {
+    margin: 0 0 7px;
+    font-size: clamp(42px, 7vw, 72px);
+    font-weight: 950;
+    letter-spacing: -.06em;
+    line-height: .95;
+  }
+
+  .result-meta {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 750;
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 9px;
+  }
+
+  .action-button {
+    min-height: 42px;
+    padding: 9px 14px;
+    border: var(--line);
+    background: var(--white);
+    box-shadow: 3px 3px 0 var(--ink);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+
+  .action-button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .action-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .action-button.highlight { background: var(--yellow); }
+
+  #copy-status {
+    min-height: 20px;
+    margin: 4px 0 8px;
+    color: var(--red-dark);
+    font-size: 12px;
+    font-weight: 850;
+    text-align: right;
+  }
+
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .group {
+    position: relative;
+    min-height: 215px;
+    overflow: hidden;
+    padding: 22px;
+    border: var(--line);
+    background: var(--group-bg, #fff);
+    box-shadow: 6px 6px 0 var(--ink);
+    opacity: 0;
+    transform: translateY(-18px) rotate(var(--tilt, 0deg));
+    animation: ticket-drop .46s cubic-bezier(.2, .8, .2, 1) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .group::after {
+    content: attr(data-letter);
+    position: absolute;
+    right: -4px;
+    bottom: -28px;
+    color: rgba(23, 35, 60, .08);
+    font-size: 150px;
+    font-weight: 950;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .group:nth-child(4n+1) { --group-bg: #fff0ed; --group-color: var(--red); --tilt: -.35deg; }
+  .group:nth-child(4n+2) { --group-bg: #edf2ff; --group-color: var(--blue); --tilt: .3deg; }
+  .group:nth-child(4n+3) { --group-bg: #fff6cf; --group-color: #d39b00; --tilt: .2deg; }
+  .group:nth-child(4n) { --group-bg: #eaf8f0; --group-color: #27875a; --tilt: -.25deg; }
+
+  .group-head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px dashed rgba(23, 35, 60, .38);
+  }
+
+  .team-id { display: flex; align-items: center; gap: 11px; }
+
+  .team-letter {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: var(--line);
+    border-radius: 50%;
+    background: var(--group-color);
+    box-shadow: 3px 3px 0 var(--ink);
+    color: #fff;
+    font-size: 23px;
+    font-weight: 950;
+  }
+
+  .group-title {
+    display: block;
+    padding-top: 2px;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 950;
+    letter-spacing: -.03em;
+  }
+
+  .group-subtitle {
+    display: block;
+    margin-top: 1px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: .12em;
+  }
+
+  .group-count {
+    margin-top: 4px;
+    padding: 5px 8px;
+    border: 1px solid rgba(23, 35, 60, .38);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .6);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .group-names {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    min-height: 42px;
+  }
+
+  .name-ticket {
+    display: inline-block;
+    padding: 8px 11px;
+    border: 1.5px solid var(--ink);
+    background: var(--white);
+    box-shadow: 2px 2px 0 var(--ink);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .sr-separator {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .empty-team { color: var(--muted); font-size: 13px; font-weight: 750; }
+
+  .empty-message {
+    grid-column: 1 / -1;
+    padding: 28px;
+    border: 2px dashed var(--ink);
+    background: rgba(255, 253, 248, .72);
+    color: var(--muted);
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .result-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 2px solid rgba(23, 35, 60, .22);
+  }
+
+  .verification {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .verification::before {
+    content: "✓";
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    border: var(--line);
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-weight: 950;
+  }
+
+  .reset-link {
+    padding: 8px 2px;
+    border: 0;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  @keyframes ticket-drop {
+    0% { opacity: 0; transform: translateY(-18px) rotate(var(--tilt, 0deg)) scale(.97); }
+    68% { opacity: 1; transform: translateY(3px) rotate(var(--tilt, 0deg)) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) rotate(var(--tilt, 0deg)) scale(1); }
+  }
+
+  @media (max-width: 780px) {
+    .page-shell { width: min(100% - 24px, 560px); padding-top: 18px; }
+    .topbar { margin-bottom: 22px; }
+    .privacy-note { display: none; }
+    .setup-layout { display: block; }
+    .intro { padding: 0; }
+    .intro h2 { font-size: clamp(44px, 14vw, 66px); }
+    .lead { margin: 18px 0 20px; font-size: 15px; }
+    .ticket-preview { display: none; }
+    .control-card { padding: 20px; box-shadow: 5px 5px 0 var(--ink); }
+    textarea { min-height: 175px; }
+    .result-header { display: block; }
+    .result-actions { justify-content: flex-start; margin-top: 20px; }
+    #copy-status { text-align: left; }
+    .groups { grid-template-columns: 1fr; }
+    .group { min-height: 190px; padding: 18px; box-shadow: 5px 5px 0 var(--ink); }
+    .result-footer { align-items: flex-start; flex-direction: column; }
+  }
+
+  @media (max-width: 410px) {
+    .brand { gap: 9px; }
+    .issue-number { width: 43px; height: 43px; flex-basis: 43px; font-size: 13px; }
+    h1 { font-size: 21px; }
+    .intro h2 { font-size: 46px; }
+    .control-card { padding: 18px 15px; }
+    .mode-option label { font-size: 12px; }
+    .action-button { flex: 1 1 calc(50% - 9px); }
+    .group-head { gap: 9px; }
+    .team-letter { width: 41px; height: 41px; font-size: 20px; }
+    .group-title { font-size: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page-shell { width: 100%; padding: 0; }
+    .topbar, .result-actions, #copy-status, .result-footer { display: none; }
+    .result-header { grid-template-columns: 1fr; }
+    .groups { grid-template-columns: repeat(2, 1fr); }
+    .group { break-inside: avoid; box-shadow: none; opacity: 1; animation: none; }
+  }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <h1>分組隨機器</h1>
-  <div class="field">
-    <label for="names-input">人員名單（每行一名）</label>
-    <textarea id="names-input" placeholder="小さな太郎&#10;花子&#10;次郎&#10;三郎">小さな太郎
-花子
-次郎
-三郎
-四郎
-五郎
-六郎
-七郎
-八郎
-九郎</textarea>
-  </div>
-  <div class="field">
-    <label for="group-count-input">分組數</label>
-    <input id="group-count-input" type="number" min="1" max="20" value="3">
-  </div>
-  <div class="btn-row">
-    <button id="btn-randomize" class="primary" type="button">隨機分組</button>
-    <div class="secondary">
-      <button id="btn-copy" type="button">複製結果</button>
-      <button id="btn-shuffle" type="button">再抽一次</button>
+<main class="page-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="issue-number" aria-hidden="true">009</div>
+      <div class="brand-text">
+        <p class="eyebrow">GROUP DRAW</p>
+        <h1>分隊！一鍵分組器</h1>
+      </div>
     </div>
-  </div>
-  <div id="copy-status" role="status" aria-live="polite" style="min-height:20px;font-size:12px;color:var(--primary)"></div>
-  <div class="groups" id="groups-output"></div>
-  <div class="reset-row">
-    <button id="btn-reset" type="button">重置輸入</button>
-  </div>
-</main>
-<script>
-(function(){
-  const NS = 'group-rand-v1';
-  const DEFAULT_NAMES = [
-    '小さな太郎','花子','次郎','三郎','四郎','五郎','六郎','七郎','八郎','九郎'
-  ].join('\n');
-  function save(data){ try{ localStorage.setItem(NS+':state', JSON.stringify(data)); }catch(e){} }
-  function load(){ try{ const raw=localStorage.getItem(NS+':state'); if(raw){ const p=JSON.parse(raw); if(p && typeof p==='object') return p; } }catch(e){} return null; }
-  let state = load() || { names: DEFAULT_NAMES, groupCount: 3 };
-  const inputNames = document.getElementById('names-input');
-  const inputCount = document.getElementById('group-count-input');
-  const host = document.getElementById('groups-output');
+    <div class="privacy-note">名單只留在這台裝置</div>
+  </header>
 
-  function renderInputs(){
-    inputNames.value = state.names;
-    inputCount.value = state.groupCount;
-  }
-  function parseNames(text){
-    return text.split('\n')
-      .map(s=>s.trim())
-      .filter(s=>s.length>0)
-      .map(s=>s)
-      .reduce((acc,n)=>{ if(!acc.includes(n)) acc.push(n); return acc; }, []);
-  }
-  function shuffle(arr){
-    const a = arr.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]] = [a[j],a[i]];
+  <section id="setup-stage" class="setup-stage" aria-labelledby="setup-title">
+    <div class="setup-layout">
+      <div class="intro">
+        <span class="intro-kicker">公平入隊，不漏掉任何人</span>
+        <h2 id="setup-title">今天，<br>跟誰<span class="marker">一組？</span></h2>
+        <p class="lead">貼上名單、決定隊伍數量，剩下交給我們。每個人只會出現一次，各隊人數最多只差一人。</p>
+        <div class="ticket-preview" aria-hidden="true">
+          <div class="preview-ticket" data-no="01">王小明</div>
+          <div class="preview-ticket" data-no="02">林小美</div>
+          <div class="preview-ticket" data-no="03">陳大同</div>
+          <div class="preview-ticket" data-no="04">張雅婷</div>
+        </div>
+      </div>
+
+      <div class="control-card">
+        <p class="step-label"><span>1</span><label for="names-input">貼上參加名單</label></p>
+        <textarea id="names-input" spellcheck="false" placeholder="每行輸入一個名字"></textarea>
+        <div id="name-summary" class="name-summary" aria-live="polite"></div>
+
+        <hr class="divider">
+        <p class="step-label"><span>2</span>決定怎麼分</p>
+        <div class="mode-tabs" role="radiogroup" aria-label="分組方式">
+          <div class="mode-option">
+            <input id="mode-groups" name="group-mode" type="radio" value="groups" checked>
+            <label for="mode-groups">分成幾組</label>
+          </div>
+          <div class="mode-option">
+            <input id="mode-size" name="group-mode" type="radio" value="size">
+            <label for="mode-size">每組幾人</label>
+          </div>
+        </div>
+
+        <div class="number-field">
+          <label id="number-label" for="group-count-input">隊伍數量</label>
+          <input id="group-count-input" type="number" min="1" max="20" value="3" inputmode="numeric">
+          <input id="group-size-input" type="number" min="1" max="100" value="4" inputmode="numeric" hidden>
+        </div>
+
+        <button id="btn-randomize" class="draw-button" type="button">開始分隊！</button>
+        <p class="fair-note">使用 Fisher–Yates 隨機洗牌，再平均分配到各隊。</p>
+        <button id="btn-reset-setup" class="setup-reset" type="button">恢復範例名單</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results-stage" class="results-stage" aria-labelledby="results-title">
+    <div class="result-header">
+      <div>
+        <div class="result-kicker">DRAW COMPLETE</div>
+        <h2 id="results-title">分組完成！</h2>
+        <p id="result-meta" class="result-meta"></p>
+      </div>
+      <div>
+        <div class="result-actions" aria-label="結果操作">
+          <button id="btn-edit" class="action-button" type="button">← 修改名單</button>
+          <button id="btn-shuffle" class="action-button highlight" type="button">再抽一次</button>
+          <button id="btn-copy" class="action-button" type="button">複製結果</button>
+          <button id="btn-print" class="action-button" type="button">列印名單</button>
+          <button id="btn-fullscreen" class="action-button" type="button">全螢幕公布</button>
+        </div>
+        <div id="copy-status" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="groups" id="groups-output" aria-live="polite"></div>
+
+    <footer class="result-footer">
+      <div id="verification" class="verification">所有人都已公平入隊</div>
+      <button id="btn-reset" class="reset-link" type="button">重置全部資料</button>
+    </footer>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'group-rand-v2:state';
+  const LEGACY_KEY = 'group-rand-v1:state';
+  const DEFAULT_NAMES = [
+    '王小明', '林小美', '陳大同', '張雅婷', '李冠宇',
+    '黃詩涵', '吳柏翰', '劉怡君', '蔡承恩', '楊佳穎',
+    '周子晴', '許家豪'
+  ].join('\n');
+
+  const elements = {
+    setup: document.getElementById('setup-stage'),
+    results: document.getElementById('results-stage'),
+    names: document.getElementById('names-input'),
+    groupCount: document.getElementById('group-count-input'),
+    groupSize: document.getElementById('group-size-input'),
+    modeGroups: document.getElementById('mode-groups'),
+    modeSize: document.getElementById('mode-size'),
+    numberLabel: document.getElementById('number-label'),
+    summary: document.getElementById('name-summary'),
+    output: document.getElementById('groups-output'),
+    resultMeta: document.getElementById('result-meta'),
+    verification: document.getElementById('verification'),
+    copyStatus: document.getElementById('copy-status')
+  };
+
+  let lastGroups = [];
+  let state = loadState();
+
+  function loadState() {
+    for (const key of [STORAGE_KEY, LEGACY_KEY]) {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(key));
+        if (parsed && typeof parsed === 'object') {
+          return {
+            names: typeof parsed.names === 'string' ? parsed.names : DEFAULT_NAMES,
+            groupCount: clampNumber(parsed.groupCount, 1, 20, 3),
+            groupSize: clampNumber(parsed.groupSize, 1, 100, 4),
+            mode: parsed.mode === 'size' ? 'size' : 'groups'
+          };
+        }
+      } catch (error) {
+        // An unavailable or malformed localStorage entry should not block local use.
+      }
     }
-    return a;
+    return { names: DEFAULT_NAMES, groupCount: 3, groupSize: 4, mode: 'groups' };
   }
-  function assignGroups(names, groups){
-    const out = [];
-    for(let i=0;i<groups;i++) out.push([]);
-    const shuffled = shuffle(names);
-    shuffled.forEach((name,i)=>{
-      out[i % groups].push(name);
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      // The grouping tool remains fully usable when storage is unavailable.
+    }
+  }
+
+  function clampNumber(value, min, max, fallback) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.max(min, Math.min(max, parsed));
+  }
+
+  function parseNames(text) {
+    const seen = new Set();
+    const unique = [];
+    let duplicates = 0;
+
+    text.split(/\r?\n/).forEach(line => {
+      const name = line.trim();
+      if (!name) return;
+      if (seen.has(name)) {
+        duplicates += 1;
+        return;
+      }
+      seen.add(name);
+      unique.push(name);
     });
-    // fix: distribute so sizes differ <=1
-    const total = names.length;
-    const base = Math.floor(total / groups);
-    const rem = total % groups;
-    const fixed = [];
-    let idx = 0;
-    for(let g=0; g<groups; g++){
-      const size = base + (g < rem ? 1 : 0);
-      const chunk = shuffled.slice(idx, idx+size);
-      fixed.push(chunk);
-      idx += size;
-    }
-    return fixed;
+
+    return { unique, duplicates };
   }
-  function renderGroups(groups){
-    host.innerHTML = '';
-    if(groups.length===0 || groups.every(g=>g.length===0)){
-      host.innerHTML = '<div class="empty-message">尚未分組或沒有名字。</div>';
+
+  function shuffle(names) {
+    const shuffled = names.slice();
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+    }
+    return shuffled;
+  }
+
+  function assignGroups(names, groupCount) {
+    const shuffled = shuffle(names);
+    const groups = [];
+    const baseSize = Math.floor(shuffled.length / groupCount);
+    const remainder = shuffled.length % groupCount;
+    let cursor = 0;
+
+    for (let index = 0; index < groupCount; index += 1) {
+      const size = baseSize + (index < remainder ? 1 : 0);
+      groups.push(shuffled.slice(cursor, cursor + size));
+      cursor += size;
+    }
+    return groups;
+  }
+
+  function getMode() {
+    return elements.modeSize.checked ? 'size' : 'groups';
+  }
+
+  function getRequestedGroupCount(nameCount) {
+    if (getMode() === 'size') {
+      const size = clampNumber(elements.groupSize.value, 1, 100, 4);
+      return Math.max(1, Math.min(20, Math.ceil(nameCount / size)));
+    }
+    return clampNumber(elements.groupCount.value, 1, 20, 3);
+  }
+
+  function updateSummary() {
+    const parsed = parseNames(elements.names.value);
+    const duplicateText = parsed.duplicates > 0
+      ? `<span class="duplicate-notice">已略過 ${parsed.duplicates} 個重複名字</span>`
+      : '<span>沒有重複名字</span>';
+    elements.summary.innerHTML = `<strong>共 ${parsed.unique.length} 人</strong>${duplicateText}`;
+  }
+
+  function syncModeUI() {
+    const usingSize = getMode() === 'size';
+    elements.groupCount.hidden = usingSize;
+    elements.groupSize.hidden = !usingSize;
+    elements.numberLabel.htmlFor = usingSize ? 'group-size-input' : 'group-count-input';
+    elements.numberLabel.textContent = usingSize ? '每隊人數' : '隊伍數量';
+  }
+
+  function showSetup() {
+    elements.setup.hidden = false;
+    elements.results.classList.remove('active');
+    elements.copyStatus.textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.setTimeout(() => elements.names.focus(), 180);
+  }
+
+  function showResults() {
+    elements.setup.hidden = true;
+    elements.results.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function appendNameTickets(host, names) {
+    if (names.length === 0) {
+      const empty = document.createElement('span');
+      empty.className = 'empty-team';
+      empty.textContent = '本隊目前沒有人';
+      host.appendChild(empty);
       return;
     }
-    groups.forEach((g,gi)=>{
-      const card = document.createElement('div');
+
+    names.forEach((name, index) => {
+      const ticket = document.createElement('span');
+      ticket.className = 'name-ticket';
+      ticket.textContent = name;
+      host.appendChild(ticket);
+      if (index < names.length - 1) {
+        const separator = document.createElement('span');
+        separator.className = 'sr-separator';
+        separator.setAttribute('aria-hidden', 'true');
+        separator.textContent = '、';
+        host.appendChild(separator);
+      }
+    });
+  }
+
+  function renderGroups(groups) {
+    elements.output.replaceChildren();
+
+    if (groups.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-message';
+      empty.textContent = '請先輸入至少一個名字。';
+      elements.output.appendChild(empty);
+      return;
+    }
+
+    groups.forEach((names, index) => {
+      const letter = String.fromCharCode(65 + index);
+      const card = document.createElement('section');
       card.className = 'group';
+      card.tabIndex = 0;
+      card.dataset.letter = letter;
+      card.style.setProperty('--delay', `${Math.min(index * 90, 720)}ms`);
+      card.setAttribute('aria-label', `${letter} 隊，${names.length} 人`);
+
       const head = document.createElement('div');
       head.className = 'group-head';
-      head.innerHTML = `<span class="group-title">第 ${gi+1} 組</span><span class="group-count">${g.length} 人</span>`;
-      const namesDiv = document.createElement('div');
-      namesDiv.className = 'group-names';
-      namesDiv.textContent = g.join('、');
-      card.appendChild(head);
-      card.appendChild(namesDiv);
-      host.appendChild(card);
+      head.innerHTML = `
+        <div class="team-id">
+          <span class="team-letter" aria-hidden="true">${letter}</span>
+          <span>
+            <span class="group-title">第 ${index + 1} 組</span>
+            <span class="group-subtitle">TEAM ${letter}</span>
+          </span>
+        </div>
+        <span class="group-count">${names.length} 人</span>
+      `;
+
+      const nameList = document.createElement('div');
+      nameList.className = 'group-names';
+      appendNameTickets(nameList, names);
+      card.append(head, nameList);
+      elements.output.appendChild(card);
     });
   }
-  function renderAll(){
-    renderInputs();
-    const names = parseNames(state.names);
-    const groups = Math.max(1, Math.min(20, parseInt(state.groupCount,10) || 1));
-    const assignment = assignGroups(names, groups);
-    renderGroups(assignment);
+
+  function randomize() {
+    const parsed = parseNames(elements.names.value);
+    if (parsed.unique.length === 0) {
+      elements.names.setCustomValidity('請先輸入至少一個名字');
+      elements.names.reportValidity();
+      elements.names.focus();
+      return;
+    }
+    elements.names.setCustomValidity('');
+
+    const groupCount = getRequestedGroupCount(parsed.unique.length);
+    state = {
+      names: elements.names.value,
+      groupCount: clampNumber(elements.groupCount.value, 1, 20, 3),
+      groupSize: clampNumber(elements.groupSize.value, 1, 100, 4),
+      mode: getMode()
+    };
+    saveState();
+
+    lastGroups = assignGroups(parsed.unique, groupCount);
+    renderGroups(lastGroups);
+    elements.resultMeta.textContent = `${parsed.unique.length} 人 · ${groupCount} 組 · 每人只出現一次`;
+    elements.verification.textContent = parsed.duplicates > 0
+      ? `全員入隊，已略過 ${parsed.duplicates} 個重複名字`
+      : '所有人都已公平入隊';
+    elements.copyStatus.textContent = '';
+    showResults();
   }
-  document.getElementById('btn-randomize').addEventListener('click', ()=>{
-    state.names = inputNames.value;
-    const gc = parseInt(inputCount.value,10);
-    state.groupCount = (gc && gc>=1 && gc<=20) ? gc : 3;
-    save(state);
-    renderAll();
+
+  function copyFallback(text) {
+    const field = document.createElement('textarea');
+    field.value = text;
+    field.setAttribute('readonly', '');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (error) { copied = false; }
+    field.remove();
+    return copied;
+  }
+
+  async function copyResults() {
+    if (lastGroups.length === 0) return;
+    const text = lastGroups
+      .map((names, index) => `${String.fromCharCode(65 + index)} 隊（${names.length} 人）：${names.join('、') || '無'}`)
+      .join('\n');
+
+    let copied = false;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (error) {
+        copied = copyFallback(text);
+      }
+    } else {
+      copied = copyFallback(text);
+    }
+    elements.copyStatus.textContent = copied ? '已複製' : '無法自動複製，請手動選取結果';
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      } else if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      elements.copyStatus.textContent = '瀏覽器目前不允許全螢幕模式';
+    }
+  }
+
+  function resetAll() {
+    state = { names: DEFAULT_NAMES, groupCount: 3, groupSize: 4, mode: 'groups' };
+    lastGroups = [];
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_KEY);
+    } catch (error) {
+      // Reset still applies to the current session if storage is unavailable.
+    }
+    hydrateInputs();
+    elements.output.replaceChildren();
+    showSetup();
+  }
+
+  function hydrateInputs() {
+    elements.names.value = state.names;
+    elements.groupCount.value = state.groupCount;
+    elements.groupSize.value = state.groupSize;
+    elements.modeGroups.checked = state.mode !== 'size';
+    elements.modeSize.checked = state.mode === 'size';
+    syncModeUI();
+    updateSummary();
+  }
+
+  elements.names.addEventListener('input', updateSummary);
+  elements.modeGroups.addEventListener('change', syncModeUI);
+  elements.modeSize.addEventListener('change', syncModeUI);
+  document.getElementById('btn-randomize').addEventListener('click', randomize);
+  document.getElementById('btn-shuffle').addEventListener('click', randomize);
+  document.getElementById('btn-edit').addEventListener('click', showSetup);
+  document.getElementById('btn-copy').addEventListener('click', copyResults);
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+  document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+  document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-reset-setup').addEventListener('click', resetAll);
+
+  document.addEventListener('fullscreenchange', () => {
+    document.getElementById('btn-fullscreen').textContent = document.fullscreenElement
+      ? '離開全螢幕'
+      : '全螢幕公布';
   });
-  document.getElementById('btn-shuffle').addEventListener('click', ()=>{
-    document.getElementById('btn-randomize').click();
-  });
-  document.getElementById('btn-copy').addEventListener('click', ()=>{
-    const groups = [];
-    [...host.querySelectorAll('.group')].forEach(card=>{
-      const namesDiv = card.querySelector('.group-names');
-      if(namesDiv) groups.push(namesDiv.textContent);
-    });
-    if(groups.length===0) return;
-    const text = groups.map((g,i)=>`第 ${i+1} 組：${g}`).join('\n');
-    try{
-      navigator.clipboard && navigator.clipboard.writeText(text);
-    }catch(e){}
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand('copy'); }catch(e){}
-    ta.remove();
-    document.getElementById('copy-status').textContent = '已複製';
-  });
-  document.getElementById('btn-reset').addEventListener('click', ()=>{
-    state = { names: DEFAULT_NAMES, groupCount: 3 };
-    save(state);
-    renderAll();
-  });
-  renderAll();
+
+  hydrateInputs();
 })();
 </script>
 </body>

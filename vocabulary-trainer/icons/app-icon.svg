@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">高頻英文單字練習 App 圖示</title>
+  <rect width="512" height="512" rx="112" fill="#176b52"/>
+  <rect x="52" y="52" width="408" height="408" rx="82" fill="#f4f1e8"/>
+  <path d="M52 344 204 460H134c-45 0-82-37-82-82Z" fill="#c9eadc"/>
+  <path d="M460 168 308 52h70c45 0 82 37 82 82Z" fill="#f1d36d"/>
+  <text x="95" y="150" fill="#176b52" font-family="ui-monospace,monospace" font-size="34" font-weight="800" letter-spacing="5">06</text>
+  <text x="92" y="337" fill="#17211d" font-family="Georgia,serif" font-size="226" font-weight="700">A</text>
+  <rect x="300" y="224" width="116" height="30" fill="#176b52"/>
+  <rect x="300" y="274" width="84" height="30" fill="#176b52" opacity=".78"/>
+  <rect x="300" y="324" width="54" height="30" fill="#176b52" opacity=".52"/>
+</svg>

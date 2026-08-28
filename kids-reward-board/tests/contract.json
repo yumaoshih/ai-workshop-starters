@@ -23,8 +23,8 @@
     },
     {
       "id": "block-negative",
-      "selector": "#points-display",
-      "expect": "Balance never goes below zero"
+      "selector": "#btn-subtract-points",
+      "expect": "Subtract is disabled at zero and balance never goes negative"
     },
     {
       "id": "block-unaffordable",
@@ -34,7 +34,27 @@
     {
       "id": "persistence",
       "selector": "#balance",
-      "expect": "Balance & rewards persist across reload"
+      "expect": "Name, balance, rewards, target, and theme persist across reload"
+    },
+    {
+      "id": "theme-picker",
+      "selector": "#btn-open-theme",
+      "expect": "Theme picker opens and changes only the visual theme"
+    },
+    {
+      "id": "three-themes",
+      "selector": "[data-theme-option]",
+      "expect": "Adventure, sticker, and shop themes are available"
+    },
+    {
+      "id": "target-reward",
+      "selector": "#goal-progress",
+      "expect": "A reward can be selected as the next goal with visible progress"
+    },
+    {
+      "id": "edit-rewards",
+      "selector": "#btn-edit-rewards",
+      "expect": "Rewards can be added, edited, and removed locally"
     },
     {
       "id": "reset",

@@ -1,151 +1,1472 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
+<!doctype html>
+<html lang="zh-Hant" data-theme="adventure">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=390, initial-scale=1">
-<title>孩子積分板</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fbf7ea">
+<title>小小集點王</title>
 <style>
-  :root{
-    --bg:#fdf6ec; --card:#fff; --positive:#2f8f5b; --negative:#c0392b;
-    --gold:#b8860b; --text:#2a2520; --border:#e6dac8;
+  :root {
+    --page-bg: #fbf7ea;
+    --surface: #fffdf7;
+    --surface-subtle: #f6efd9;
+    --text-primary: #19375f;
+    --text-muted: #675f50;
+    --accent-primary: #23805b;
+    --accent-contrast: #ffffff;
+    --accent-secondary: #f2ae13;
+    --success: #23805b;
+    --danger: #a94435;
+    --border: #dbcda9;
+    --focus: #195ec8;
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --shadow-soft: 0 12px 28px rgba(74, 55, 25, .10);
+    --display-font: "Kaiti TC", "STKaiti", "DFKai-SB", "PingFang TC", sans-serif;
+    --body-font: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
-  h1{font-size:18px;margin:0 0 12px}
-  .wrap{max-width:390px;margin:0 auto}
-  .field{display:flex;gap:8px;margin-bottom:12px}
-  .field input{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px}
-  .balance-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-  .balance-label{font-size:13px;color:#6b5d4f}
-  .balance{font-size:28px;font-weight:700}
-  .spend-row{display:flex;gap:10px}
-  .spend-btn{flex:1;border:none;border-radius:10px;padding:14px;font-size:15px;color:#fff;cursor:pointer;opacity:0.95}
-  .spend-btn:hover{opacity:1}
-  .spend-btn:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .btn-positive{background:var(--positive)}
-  .btn-negative{background:var(--negative)}
-  .rewards{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .reward-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border)}
-  .reward-item:last-child{border-bottom:none}
-  .reward-info{flex:1;min-width:0}
-  .reward-name{font-size:14px;font-weight:600}
-  .reward-cost{font-size:12px;color:#6b5d4f;margin-top:2px}
-  .reward-bar{height:4px;background:#f0e6d6;border-radius:999px;margin-top:4px;overflow:hidden}
-  .reward-bar i{display:block;height:100%;background:var(--gold);width:0%;transition:width .2s}
-  .redeem-btn{border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;white-space:nowrap}
-  .redeem-btn:disabled{opacity:.38;cursor:not-allowed}
-  .redeem-btn:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .reset-row{margin-top:12px;text-align:center}
-  .reset-row button{background:transparent;color:var(--negative);border:1px solid var(--negative);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
-  .reset-row button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
+
+  [data-theme="sticker"] {
+    --page-bg: #dff2fb;
+    --surface: #fffdf7;
+    --surface-subtle: #c9e8f7;
+    --text-primary: #0e4195;
+    --text-muted: #476887;
+    --accent-primary: #155bbb;
+    --accent-contrast: #ffffff;
+    --accent-secondary: #ef654d;
+    --success: #197660;
+    --danger: #c74938;
+    --border: #9bcde6;
+    --focus: #cf3f2c;
+    --radius-sm: 14px;
+    --radius-md: 22px;
+    --radius-lg: 30px;
+    --shadow-soft: 0 10px 0 rgba(21, 91, 187, .08);
+    --display-font: "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+
+  [data-theme="shop"] {
+    --page-bg: #f5ead4;
+    --surface: #fff9ed;
+    --surface-subtle: #ead7b5;
+    --text-primary: #084e34;
+    --text-muted: #695c48;
+    --accent-primary: #087244;
+    --accent-contrast: #fffaf0;
+    --accent-secondary: #c93e26;
+    --success: #087244;
+    --danger: #c93e26;
+    --border: #b99c70;
+    --focus: #175fae;
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-soft: 0 8px 0 rgba(91, 58, 25, .10);
+    --display-font: "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { background: var(--page-bg); }
+
+  body {
+    margin: 0;
+    min-width: 0;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family: var(--body-font);
+    transition: background-color .22s ease, color .22s ease;
+  }
+
+  button, input { font: inherit; }
+
+  button { -webkit-tap-highlight-color: transparent; }
+
+  button:focus-visible,
+  input:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .app-shell {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: 22px 20px 42px;
+  }
+
+  .responsive-workspace { min-width: 0; }
+
+  .points-panel,
+  .rewards-panel { min-width: 0; }
+
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  [data-theme="shop"] .topbar { border-bottom: 4px solid var(--accent-primary); }
+  [data-theme="sticker"] .topbar { border-bottom-style: dashed; }
+
+  .product-no {
+    margin: 0 0 5px;
+    color: var(--accent-secondary);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+  }
+
+  h1, h2, p { margin-top: 0; }
+
+  h1 {
+    margin-bottom: 2px;
+    font-family: var(--display-font);
+    font-size: clamp(27px, 8vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -.03em;
+  }
+
+  .theme-kicker {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .quiet-button,
+  .text-button {
+    min-height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 750;
+    cursor: pointer;
+  }
+
+  .quiet-button { padding: 0 14px; white-space: nowrap; }
+
+  .quiet-button:hover,
+  .text-button:hover { background: var(--surface-subtle); }
+
+  .name-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 9px;
+    margin: 15px 0 4px;
+  }
+
+  .name-form label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .name-form input {
+    width: 100%;
+    min-height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, .62);
+    color: var(--text-primary);
+    padding: 10px 13px;
+    font-weight: 700;
+  }
+
+  .name-form button { padding: 0 15px; }
+
+  .hero {
+    padding: 24px 0 18px;
+    text-align: center;
+  }
+
+  .balance-label {
+    margin: 0 0 2px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .points-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1;
+  }
+
+  .balance {
+    color: var(--accent-secondary);
+    font-family: var(--display-font);
+    font-size: clamp(76px, 24vw, 108px);
+    font-weight: 900;
+    letter-spacing: -.08em;
+  }
+
+  .balance-unit {
+    max-width: 118px;
+    text-align: left;
+    font-family: var(--display-font);
+    font-size: 25px;
+    font-weight: 850;
+    line-height: 1.15;
+  }
+
+  .hero-art-wrap {
+    height: 175px;
+    margin: -3px -8px 10px;
+    overflow: hidden;
+  }
+
+  .hero-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .hero.bump .hero-art { animation: celebrate .38s ease-out; }
+
+  @keyframes celebrate {
+    0% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-6px) scale(1.025); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  .point-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .primary-action,
+  .secondary-action {
+    min-height: 58px;
+    border-radius: var(--radius-md);
+    font-weight: 850;
+    cursor: pointer;
+  }
+
+  .primary-action {
+    border: 0;
+    background: var(--accent-primary);
+    color: var(--accent-contrast);
+    padding: 12px 18px;
+    box-shadow: var(--shadow-soft);
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .primary-action:hover { filter: brightness(1.04); }
+  .primary-action:active { transform: translateY(1px); }
+
+  .secondary-action {
+    min-width: 104px;
+    border: 1.5px solid var(--danger);
+    background: transparent;
+    color: var(--danger);
+    padding: 10px 14px;
+  }
+
+  .secondary-action:disabled {
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: .55;
+  }
+
+  .goal-section {
+    margin: 16px 0 8px;
+    padding: 19px 0;
+    border-top: 2px solid var(--border);
+    border-bottom: 2px solid var(--border);
+  }
+
+  [data-theme="sticker"] .goal-section { border-top-style: dashed; border-bottom-style: dashed; }
+  [data-theme="shop"] .goal-section { border-top: 4px solid var(--accent-primary); border-bottom: 4px solid var(--accent-primary); }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-family: var(--display-font);
+    font-size: 21px;
+    letter-spacing: -.02em;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .goal-name {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 850;
+    letter-spacing: -.02em;
+  }
+
+  .goal-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .progress-track {
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--surface-subtle);
+  }
+
+  .progress-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent-secondary);
+    transition: width .28s ease;
+  }
+
+  .goal-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .goal-status {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .redeem-btn {
+    min-height: 44px;
+    border: 1.5px solid var(--success);
+    border-radius: var(--radius-sm);
+    background: var(--success);
+    color: #ffffff;
+    padding: 8px 16px;
+    font-weight: 850;
+    cursor: pointer;
+  }
+
+  .redeem-btn:disabled {
+    border-color: var(--border);
+    background: var(--surface-subtle);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .rewards-section { padding: 16px 0 8px; }
+
+  .text-button {
+    padding: 0 13px;
+    font-size: 13px;
+  }
+
+  .reward-list { border-top: 1.5px solid var(--border); }
+
+  .reward-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  .reward-item.is-target .reward-name::after {
+    content: "目前目標";
+    display: inline-block;
+    margin-left: 8px;
+    border-radius: 999px;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    padding: 3px 7px;
+    vertical-align: 2px;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .reward-select {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .reward-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.35;
+  }
+
+  .reward-cost {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .reward-side {
+    display: grid;
+    justify-items: end;
+    gap: 5px;
+  }
+
+  .reward-status {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .footer-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+  }
+
+  .reset-button {
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--danger);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+
+  dialog {
+    width: min(calc(100% - 28px), 440px);
+    max-height: min(82vh, 720px);
+    margin: auto;
+    overflow: auto;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--text-primary);
+    padding: 0;
+    box-shadow: 0 26px 80px rgba(18, 27, 31, .28);
+  }
+
+  dialog::backdrop { background: rgba(17, 25, 29, .52); }
+
+  .dialog-inner { padding: 22px; }
+
+  .dialog-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .dialog-head h2 { margin: 0 0 4px; font-family: var(--display-font); font-size: 24px; }
+  .dialog-head p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+
+  .close-button {
+    min-width: 58px;
+    min-height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-primary);
+    padding: 0 11px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .theme-options { display: grid; gap: 11px; }
+
+  .theme-option {
+    display: grid;
+    grid-template-columns: 94px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    min-height: 98px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-primary);
+    padding: 9px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .theme-option[aria-checked="true"] {
+    border-color: var(--accent-primary);
+    background: var(--surface-subtle);
+  }
+
+  .theme-option img {
+    width: 94px;
+    height: 72px;
+    object-fit: contain;
+  }
+
+  .theme-option strong { display: block; margin-bottom: 4px; font-size: 16px; }
+  .theme-option span { display: block; color: var(--text-muted); font-size: 12px; line-height: 1.45; }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .dialog-primary,
+  .dialog-secondary,
+  .dialog-danger {
+    min-height: 46px;
+    border-radius: var(--radius-sm);
+    padding: 0 17px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .dialog-primary { border: 0; background: var(--accent-primary); color: var(--accent-contrast); }
+  .dialog-secondary { border: 1.5px solid var(--border); background: transparent; color: var(--text-primary); }
+  .dialog-danger { border: 1.5px solid var(--danger); background: var(--danger); color: #ffffff; }
+
+  .reward-editor-list { display: grid; gap: 10px; }
+
+  .reward-editor-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 76px auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .reward-editor-row input,
+  .new-reward-row input {
+    width: 100%;
+    min-height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    color: #1d2a2a;
+    padding: 9px 10px;
+  }
+
+  .delete-reward {
+    min-width: 44px;
+    min-height: 44px;
+    border: 1.5px solid var(--danger);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--danger);
+    cursor: pointer;
+  }
+
+  .new-reward {
+    margin-top: 18px;
+    padding-top: 17px;
+    border-top: 1.5px solid var(--border);
+  }
+
+  .new-reward h3 { margin: 0 0 10px; font-size: 15px; }
+
+  .new-reward-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 82px auto;
+    gap: 8px;
+  }
+
+  .dialog-message {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    z-index: 20;
+    max-width: calc(100% - 32px);
+    transform: translate(-50%, 18px);
+    border-radius: 999px;
+    background: #17201d;
+    color: #ffffff;
+    padding: 11px 17px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 759px) {
+    body { min-height: 100dvh; }
+
+    .app-shell {
+      min-height: 100dvh;
+      padding: 0 18px calc(116px + env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      margin: 0 -18px;
+      padding: calc(16px + env(safe-area-inset-top)) 18px 14px;
+      background: color-mix(in srgb, var(--page-bg) 94%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .name-form { margin-top: 16px; }
+
+    .hero { padding-top: 21px; }
+
+    .hero-art-wrap { height: 164px; }
+
+    .point-actions {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+      width: 100%;
+      padding: 12px max(18px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      border-top: 1.5px solid var(--border);
+      background: color-mix(in srgb, var(--page-bg) 94%, transparent);
+      box-shadow: 0 -10px 28px rgba(44, 35, 23, .10);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .point-actions .primary-action,
+    .point-actions .secondary-action { min-height: 56px; }
+
+    .goal-section { margin-top: 8px; }
+
+    dialog {
+      width: 100%;
+      max-width: none;
+      max-height: min(88dvh, 760px);
+      margin: auto 0 0;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .dialog-inner {
+      padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+    }
+
+    .dialog-inner::before {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 5px;
+      margin: -10px auto 16px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+
+    .toast { bottom: calc(92px + env(safe-area-inset-bottom)); }
+  }
+
+  @media (min-width: 760px) and (max-width: 959px) {
+    body { padding: 28px 0 56px; }
+
+    .app-shell {
+      width: min(100% - 48px, 720px);
+      min-height: calc(100vh - 56px);
+      padding: 30px 34px 48px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 84%, transparent);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-art-wrap { height: 220px; }
+  }
+
+  @media (min-width: 960px) {
+    body { padding: 32px; }
+
+    .app-shell {
+      width: min(100%, 1180px);
+      min-height: calc(100vh - 64px);
+      padding: 0;
+    }
+
+    .topbar {
+      align-items: center;
+      padding: 8px 0 22px;
+    }
+
+    h1 { font-size: 38px; }
+
+    .responsive-workspace {
+      display: grid;
+      grid-template-columns: minmax(360px, 430px) minmax(0, 1fr);
+      gap: clamp(36px, 5vw, 72px);
+      align-items: start;
+      padding-top: 28px;
+    }
+
+    .points-panel {
+      position: sticky;
+      top: 28px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      padding: 24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .name-form { margin: 0 0 8px; }
+
+    .hero { padding: 26px 0 4px; }
+
+    .balance { font-size: 112px; }
+
+    .hero-art-wrap {
+      height: 250px;
+      margin: 0 -6px 16px;
+    }
+
+    .point-actions { grid-template-columns: minmax(0, 1fr) 118px; }
+
+    .goal-section,
+    .rewards-section {
+      margin: 0;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      padding: 28px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    [data-theme="sticker"] .goal-section { border: 2px dashed var(--border); }
+    [data-theme="shop"] .goal-section { border: 4px solid var(--accent-primary); }
+
+    .rewards-section { margin-top: 24px; }
+
+    .goal-name { font-size: 28px; }
+
+    .goal-meta { font-size: 14px; }
+
+    .progress-track { height: 13px; }
+
+    .reward-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 24px;
+    }
+
+    .reward-item { min-height: 86px; }
+
+    .footer-actions { justify-content: flex-end; }
+  }
+
+  @media (max-width: 360px) {
+    .app-shell {
+      padding-right: 15px;
+      padding-bottom: calc(176px + env(safe-area-inset-bottom));
+      padding-left: 15px;
+    }
+    .topbar {
+      margin-right: -15px;
+      margin-left: -15px;
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+    .point-actions { grid-template-columns: 1fr; }
+    .secondary-action { min-height: 48px; }
+    .reward-item { grid-template-columns: 1fr; }
+    .reward-side { grid-template-columns: 1fr auto; align-items: center; justify-items: start; }
+    .reward-editor-row, .new-reward-row { grid-template-columns: 1fr 74px; }
+    .delete-reward, .new-reward-row button { grid-column: 1 / -1; }
+    .toast { bottom: calc(152px + env(safe-area-inset-bottom)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <h1>孩子積分板</h1>
-  <div class="field">
-    <input id="child-name-input" placeholder="孩子名字" value="小安">
-    <button id="btn-save-name" type="button">儲存名字</button>
-  </div>
-  <div class="balance-card">
+<main class="app-shell" id="app">
+  <header class="topbar">
     <div>
-      <div class="balance-label">當前積分</div>
-      <div class="balance" id="balance">0</div>
+      <p class="product-no">008 / REWARD</p>
+      <h1 id="app-title">小安的冒險</h1>
+      <p class="theme-kicker" id="theme-kicker">星星冒險地圖</p>
     </div>
-    <div class="spend-row">
-      <button id="btn-add-points" class="spend-btn btn-positive" type="button">＋1</button>
-      <button id="btn-subtract-points" class="spend-btn btn-negative" type="button">−1</button>
+    <button class="quiet-button" id="btn-open-theme" type="button">換風格</button>
+  </header>
+
+  <div class="responsive-workspace">
+    <div class="points-panel">
+      <form class="name-form" id="name-form">
+        <label for="child-name-input">孩子名稱</label>
+        <input id="child-name-input" name="child-name" value="小安" maxlength="16" autocomplete="off" aria-describedby="name-help">
+        <button class="quiet-button" id="btn-save-name" type="submit">儲存名字</button>
+        <span class="sr-only" id="name-help">最多十六個字</span>
+      </form>
+
+      <section class="hero" id="hero" aria-labelledby="balance-heading">
+        <p class="balance-label" id="balance-heading">目前累積</p>
+        <div class="points-display" id="points-display">
+          <strong class="balance" id="balance">0</strong>
+          <span class="balance-unit" id="balance-unit">顆星星</span>
+        </div>
+        <span class="sr-only" id="points-equivalent">等同 0 點</span>
+        <div class="hero-art-wrap" aria-hidden="true">
+          <img class="hero-art" id="theme-hero-img" src="assets/theme-adventure-journey.png" alt="">
+        </div>
+        <div class="point-actions">
+          <button class="primary-action" id="btn-add-points" type="button">完成一件事 ＋1 顆星星</button>
+          <button class="secondary-action" id="btn-subtract-points" type="button">收回 1 顆星星</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="rewards-panel">
+      <section class="goal-section" aria-labelledby="goal-heading">
+        <div class="section-heading">
+          <h2 id="goal-heading">下一個獎勵</h2>
+          <p>點選清單可更換目標</p>
+        </div>
+        <p class="goal-name" id="goal-name">故事時間 10 分鐘</p>
+        <div class="goal-meta">
+          <span id="goal-progress-copy">0 / 10 點</span>
+          <span id="goal-remaining">還差 10 點</span>
+        </div>
+        <div class="progress-track" role="progressbar" id="goal-progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" aria-label="下一個獎勵進度">
+          <span class="progress-fill" id="goal-progress-fill"></span>
+        </div>
+        <div class="goal-action-row">
+          <p class="goal-status" id="goal-status">再累積一些就能兌換</p>
+          <button class="redeem-btn" id="btn-redeem-target" type="button" disabled aria-disabled="true">兌換</button>
+        </div>
+      </section>
+
+      <section class="rewards-section" aria-labelledby="rewards-heading">
+        <div class="section-heading">
+          <h2 id="rewards-heading">獎勵清單</h2>
+          <button class="text-button" id="btn-edit-rewards" type="button">編輯獎勵</button>
+        </div>
+        <div class="reward-list" id="reward-list"></div>
+      </section>
     </div>
   </div>
-  <div class="rewards">
-    <div style="font-size:13px;margin-bottom:8px;color:#6b5d4f">獎項清單</div>
-    <div id="reward-list"></div>
-  </div>
-  <div class="reset-row">
-    <button id="btn-reset" type="button">重置所有積分與獎項</button>
-  </div>
+
+  <footer class="footer-actions">
+    <button class="reset-button" id="btn-reset" type="button">重設集點板</button>
+  </footer>
 </main>
+
+<dialog id="theme-dialog" aria-labelledby="theme-dialog-title">
+  <div class="dialog-inner">
+    <div class="dialog-head">
+      <div>
+        <h2 id="theme-dialog-title">選擇你的集點風格</h2>
+        <p>外觀會立即改變，點數和獎勵都會保留。</p>
+      </div>
+      <button class="close-button" type="button" data-close-dialog="theme-dialog" aria-label="關閉風格選擇">關閉</button>
+    </div>
+    <div class="theme-options" role="radiogroup" aria-label="集點風格">
+      <button class="theme-option" type="button" role="radio" aria-checked="true" data-theme-option="adventure">
+        <img src="assets/theme-adventure-journey.png" alt="冒險地圖風格預覽">
+        <span><strong>冒險地圖</strong><span>收集星星，沿著旅程前往下一個獎勵。</span></span>
+      </button>
+      <button class="theme-option" type="button" role="radio" aria-checked="false" data-theme-option="sticker">
+        <img src="assets/theme-sticker-sheet.png" alt="今日貼紙簿風格預覽">
+        <span><strong>今日貼紙簿</strong><span>把每一次完成都收進自己的貼紙簿。</span></span>
+      </button>
+      <button class="theme-option" type="button" role="radio" aria-checked="false" data-theme-option="shop">
+        <img src="assets/theme-shop-token-jar.png" alt="家庭小商店風格預覽">
+        <span><strong>家庭小商店</strong><span>存下家庭代幣，再選擇想兌換的獎勵。</span></span>
+      </button>
+    </div>
+    <div class="dialog-actions">
+      <button class="dialog-primary" type="button" data-close-dialog="theme-dialog">完成</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="rewards-dialog" aria-labelledby="rewards-dialog-title">
+  <div class="dialog-inner">
+    <div class="dialog-head">
+      <div>
+        <h2 id="rewards-dialog-title">編輯獎勵</h2>
+        <p>名稱和點數都可以改，至少保留一項獎勵。</p>
+      </div>
+      <button class="close-button" type="button" data-close-dialog="rewards-dialog" aria-label="關閉獎勵編輯">關閉</button>
+    </div>
+    <div class="reward-editor-list" id="reward-editor-list"></div>
+    <section class="new-reward" aria-labelledby="new-reward-title">
+      <h3 id="new-reward-title">新增獎勵</h3>
+      <div class="new-reward-row">
+        <input id="new-reward-name" maxlength="30" placeholder="獎勵名稱" aria-label="新獎勵名稱">
+        <input id="new-reward-cost" type="number" min="1" max="999" inputmode="numeric" placeholder="點數" aria-label="新獎勵點數">
+        <button class="dialog-secondary" id="btn-add-reward" type="button">加入</button>
+      </div>
+    </section>
+    <p class="dialog-message" id="reward-editor-status" aria-live="polite"></p>
+    <div class="dialog-actions">
+      <button class="dialog-secondary" type="button" data-close-dialog="rewards-dialog">取消</button>
+      <button class="dialog-primary" id="btn-save-rewards" type="button">儲存獎勵</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="redeem-dialog" aria-labelledby="redeem-dialog-title">
+  <div class="dialog-inner">
+    <div class="dialog-head">
+      <div>
+        <h2 id="redeem-dialog-title">確認兌換</h2>
+        <p>兌換後會從目前點數扣除。</p>
+      </div>
+      <button class="close-button" type="button" data-close-dialog="redeem-dialog" aria-label="關閉兌換確認">關閉</button>
+    </div>
+    <p class="dialog-message" id="redeem-message"></p>
+    <div class="dialog-actions">
+      <button class="dialog-secondary" type="button" data-close-dialog="redeem-dialog">再想一下</button>
+      <button class="dialog-primary" id="btn-confirm-redeem" type="button">確認兌換</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="reset-dialog" aria-labelledby="reset-dialog-title">
+  <div class="dialog-inner">
+    <div class="dialog-head">
+      <div>
+        <h2 id="reset-dialog-title">重設集點板</h2>
+        <p>你可以只清空點數，或把所有內容恢復預設。</p>
+      </div>
+      <button class="close-button" type="button" data-close-dialog="reset-dialog" aria-label="關閉重設選單">關閉</button>
+    </div>
+    <p class="dialog-message">只清空點數會保留孩子名稱、獎勵與目前風格。</p>
+    <div class="dialog-actions">
+      <button class="dialog-secondary" type="button" data-close-dialog="reset-dialog">取消</button>
+      <button class="dialog-danger" id="btn-reset-all" type="button">全部恢復預設</button>
+      <button class="dialog-primary" id="btn-reset-points" type="button">只清空點數</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="live-region" aria-live="polite" aria-atomic="true"></div>
+
 <script>
-(function(){
-  const NS = 'rewards-v1';
+(function () {
+  'use strict';
+
+  const DATA_KEY = 'kids-reward-board-v2:data';
+  const THEME_KEY = 'kids-reward-board-v2:theme';
+  const LEGACY_KEY = 'rewards-v1:data';
+
+  const THEMES = {
+    adventure: {
+      title: name => `${name}的冒險`,
+      kicker: '星星冒險地圖',
+      unit: '顆星星',
+      shortUnit: '顆',
+      add: '完成一件事 ＋1 星',
+      subtract: '收回 1 星',
+      hero: 'assets/theme-adventure-journey.png',
+      heroAlt: '小熊沿著星星路徑走向故事帳篷'
+    },
+    sticker: {
+      title: name => `${name}的貼紙簿`,
+      kicker: '今日貼紙簿',
+      unit: '張貼紙',
+      shortUnit: '張',
+      add: '完成一件事 ＋1 貼紙',
+      subtract: '收回 1 貼紙',
+      hero: 'assets/theme-sticker-sheet.png',
+      heroAlt: '四張代表日常完成事項的彩色貼紙'
+    },
+    shop: {
+      title: name => `${name}的小商店`,
+      kicker: '家庭獎勵小商店',
+      unit: '枚代幣',
+      shortUnit: '枚',
+      add: '今天加一枚 ＋1',
+      subtract: '減少一枚 −1',
+      hero: 'assets/theme-shop-token-jar.png',
+      heroAlt: '裝著星星代幣的玻璃罐與家庭小店展示架'
+    }
+  };
+
   const DEFAULT_REWARDS = [
-    {name:'貼紙一張', cost:2},
-    {name:'額外故事時間 10 分鐘', cost:5},
-    {name:'一起畫圖 15 分鐘', cost:8},
-    {name:'挑選晚餐 dessert', cost:12},
-    {name:'三張貼紙', cost:20}
+    { id: 'sticker', name: '貼紙一張', cost: 2 },
+    { id: 'story', name: '故事時間 10 分鐘', cost: 10 },
+    { id: 'drawing', name: '一起畫圖 15 分鐘', cost: 15 },
+    { id: 'dessert', name: '挑今天的甜點', cost: 20 }
   ];
-  function save(data){
-    try{ localStorage.setItem(NS+':data', JSON.stringify(data)); }catch(e){}
+
+  const defaultState = () => ({
+    name: '小安',
+    balance: 0,
+    rewards: DEFAULT_REWARDS.map(reward => ({ ...reward })),
+    targetRewardId: 'story'
+  });
+
+  function safeParse(value) {
+    try { return JSON.parse(value); } catch (_) { return null; }
   }
-  function load(){
-    try{
-      const raw = localStorage.getItem(NS+':data');
-      if(raw){
-        const p = JSON.parse(raw);
-        if(p && typeof p.balance==='number' && Array.isArray(p.rewards)){
-          return p;
-        }
-      }
-    }catch(e){}
-    return null;
+
+  function storageGet(key) {
+    try { return localStorage.getItem(key); } catch (_) { return null; }
   }
-  let state = load() || { balance:0, rewards: DEFAULT_REWARDS.slice(), name:'小安' };
-  function renderRewards(){
-    const host = document.getElementById('reward-list');
-    host.innerHTML = '';
-    state.rewards.forEach(r=>{
-      const most = document.createElement('div');
-      most.className = 'reward-item';
-      const info = document.createElement('div');
-      info.className = 'reward-info';
-      info.innerHTML = `<div class="reward-name">${r.name}</div><div class="reward-cost">Need ${r.cost} pts</div><div class="reward-bar"><i id="bar-${r.name}" style="width:0%"></i></div>`;
-      most.appendChild(info);
-      const btn = document.createElement('button');
-      btn.className = 'redeem-btn';
-      btn.textContent = '兌換';
-      btn.disabled = state.balance < r.cost;
-      btn.setAttribute('aria-disabled', btn.disabled ? 'true':'false');
-      btn.addEventListener('click', ()=>{
-        if(state.balance < r.cost) return;
-        state.balance -= r.cost;
-        save(state);
-        renderAll();
-      });
-      most.appendChild(btn);
-      host.appendChild(most);
+
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (_) { /* File origins may disable storage. */ }
+  }
+
+  function normalizeRewards(rewards) {
+    if (!Array.isArray(rewards)) return DEFAULT_REWARDS.map(reward => ({ ...reward }));
+    const normalized = rewards.map((reward, index) => ({
+      id: String(reward && reward.id ? reward.id : `reward-${Date.now()}-${index}`),
+      name: String(reward && reward.name ? reward.name : '').trim().slice(0, 30),
+      cost: Math.max(1, Math.min(999, Math.round(Number(reward && reward.cost) || 1)))
+    })).filter(reward => reward.name);
+    return normalized.length ? normalized : DEFAULT_REWARDS.map(reward => ({ ...reward }));
+  }
+
+  function loadState() {
+    const current = safeParse(storageGet(DATA_KEY));
+    if (current && typeof current === 'object') {
+      const rewards = normalizeRewards(current.rewards);
+      const targetExists = rewards.some(reward => reward.id === current.targetRewardId);
+      return {
+        name: String(current.name || '小安').trim().slice(0, 16) || '小安',
+        balance: Math.max(0, Math.round(Number(current.balance) || 0)),
+        rewards,
+        targetRewardId: targetExists ? current.targetRewardId : rewards[0].id
+      };
+    }
+
+    const legacy = safeParse(storageGet(LEGACY_KEY));
+    if (legacy && typeof legacy === 'object') {
+      const rewards = normalizeRewards(legacy.rewards);
+      return {
+        name: String(legacy.name || '小安').trim().slice(0, 16) || '小安',
+        balance: Math.max(0, Math.round(Number(legacy.balance) || 0)),
+        rewards,
+        targetRewardId: rewards[0].id
+      };
+    }
+
+    return defaultState();
+  }
+
+  function loadTheme() {
+    const value = storageGet(THEME_KEY);
+    return Object.prototype.hasOwnProperty.call(THEMES, value) ? value : 'adventure';
+  }
+
+  let state = loadState();
+  let themeName = loadTheme();
+  let pendingRewardId = null;
+  let rewardDraft = [];
+  let toastTimer = null;
+
+  const $ = id => document.getElementById(id);
+
+  function saveState() {
+    storageSet(DATA_KEY, JSON.stringify(state));
+  }
+
+  function saveTheme() {
+    storageSet(THEME_KEY, themeName);
+  }
+
+  function getTheme() { return THEMES[themeName]; }
+
+  function getTargetReward() {
+    return state.rewards.find(reward => reward.id === state.targetRewardId) || state.rewards[0];
+  }
+
+  function announce(message) {
+    $('live-region').textContent = '';
+    window.setTimeout(() => { $('live-region').textContent = message; }, 20);
+  }
+
+  function showToast(message) {
+    window.clearTimeout(toastTimer);
+    $('toast').textContent = message;
+    $('toast').classList.add('show');
+    toastTimer = window.setTimeout(() => $('toast').classList.remove('show'), 1900);
+  }
+
+  function applyTheme() {
+    const theme = getTheme();
+    document.documentElement.dataset.theme = themeName;
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--page-bg').trim());
+    $('app-title').textContent = theme.title(state.name);
+    $('theme-kicker').textContent = theme.kicker;
+    $('balance-unit').textContent = theme.unit;
+    $('btn-add-points').textContent = theme.add;
+    $('btn-subtract-points').textContent = theme.subtract;
+    $('theme-hero-img').src = theme.hero;
+    $('theme-hero-img').alt = theme.heroAlt;
+    document.querySelectorAll('[data-theme-option]').forEach(option => {
+      option.setAttribute('aria-checked', option.dataset.themeOption === themeName ? 'true' : 'false');
     });
   }
-  function renderBalance(){
-    document.getElementById('balance').textContent = state.balance;
+
+  function renderBalance() {
+    $('balance').textContent = String(state.balance);
+    $('points-equivalent').textContent = `等同 ${state.balance} 點`;
+    $('btn-subtract-points').disabled = state.balance === 0;
+    $('btn-subtract-points').setAttribute('aria-disabled', state.balance === 0 ? 'true' : 'false');
   }
-  function renderAll(){
-    document.getElementById('child-name-input').value = state.name || '';
+
+  function renderGoal() {
+    const reward = getTargetReward();
+    if (!reward) return;
+    const remaining = Math.max(0, reward.cost - state.balance);
+    const percent = Math.min(100, Math.round((state.balance / reward.cost) * 100));
+    const affordable = state.balance >= reward.cost;
+
+    $('goal-name').textContent = reward.name;
+    $('goal-progress-copy').textContent = `${Math.min(state.balance, reward.cost)} / ${reward.cost} 點`;
+    $('goal-remaining').textContent = affordable ? '現在可以兌換' : `還差 ${remaining} 點`;
+    $('goal-status').textContent = affordable ? '目標達成，可以兌換了' : '每一次累積都更接近目標';
+    $('goal-progress-fill').style.width = `${percent}%`;
+    $('goal-progress').setAttribute('aria-valuemax', String(reward.cost));
+    $('goal-progress').setAttribute('aria-valuenow', String(Math.min(state.balance, reward.cost)));
+    $('btn-redeem-target').disabled = !affordable;
+    $('btn-redeem-target').setAttribute('aria-disabled', affordable ? 'false' : 'true');
+    $('btn-redeem-target').dataset.rewardId = reward.id;
+  }
+
+  function createRewardItem(reward) {
+    const theme = getTheme();
+    const remaining = Math.max(0, reward.cost - state.balance);
+    const affordable = state.balance >= reward.cost;
+    const item = document.createElement('article');
+    item.className = `reward-item${reward.id === state.targetRewardId ? ' is-target' : ''}`;
+
+    const select = document.createElement('button');
+    select.type = 'button';
+    select.className = 'reward-select';
+    select.dataset.setTarget = reward.id;
+    select.setAttribute('aria-label', `將${reward.name}設為下一個獎勵`);
+
+    const name = document.createElement('span');
+    name.className = 'reward-name';
+    name.textContent = reward.name;
+    const cost = document.createElement('span');
+    cost.className = 'reward-cost';
+    cost.textContent = `需要 ${reward.cost} ${theme.shortUnit}`;
+    select.append(name, cost);
+
+    const side = document.createElement('div');
+    side.className = 'reward-side';
+    const status = document.createElement('span');
+    status.className = 'reward-status';
+    status.textContent = affordable ? '可以兌換' : `還差 ${remaining} 點`;
+    const redeem = document.createElement('button');
+    redeem.type = 'button';
+    redeem.className = 'redeem-btn';
+    redeem.dataset.redeemReward = reward.id;
+    redeem.textContent = '兌換';
+    redeem.disabled = !affordable;
+    redeem.setAttribute('aria-disabled', affordable ? 'false' : 'true');
+    if (!affordable) redeem.setAttribute('aria-label', `${reward.name}尚差${remaining}點，無法兌換`);
+    side.append(status, redeem);
+    item.append(select, side);
+    return item;
+  }
+
+  function renderRewards() {
+    const host = $('reward-list');
+    host.replaceChildren(...state.rewards.map(createRewardItem));
+  }
+
+  function renderAll() {
+    $('child-name-input').value = state.name;
+    applyTheme();
     renderBalance();
+    renderGoal();
     renderRewards();
   }
-  document.getElementById('btn-add-points').addEventListener('click', ()=>{
+
+  function animatePointChange() {
+    const hero = $('hero');
+    hero.classList.remove('bump');
+    void hero.offsetWidth;
+    hero.classList.add('bump');
+  }
+
+  function addPoint() {
     state.balance += 1;
-    save(state);
+    saveState();
     renderAll();
-  });
-  document.getElementById('btn-subtract-points').addEventListener('click', ()=>{
-    if(state.balance <= 0) return;
+    animatePointChange();
+    announce(`目前有 ${state.balance} 點`);
+  }
+
+  function subtractPoint() {
+    if (state.balance <= 0) return;
     state.balance -= 1;
-    save(state);
+    saveState();
     renderAll();
-  });
-  document.getElementById('btn-save-name').addEventListener('click', ()=>{
-    const inp = document.getElementById('child-name-input');
-    const v = inp.value.trim();
-    if(v){ state.name = v; save(state); }
-  });
-  document.getElementById('btn-reset').addEventListener('click', ()=>{
-    if(!confirm('確定要重置所有積分與獎項嗎？')) return;
-    state = { balance:0, rewards: DEFAULT_REWARDS.slice(), name: state.name };
-    save(state);
+    announce(`目前有 ${state.balance} 點`);
+  }
+
+  function setTarget(rewardId) {
+    if (!state.rewards.some(reward => reward.id === rewardId)) return;
+    state.targetRewardId = rewardId;
+    saveState();
     renderAll();
+    showToast('已設為下一個獎勵');
+  }
+
+  function openRedeem(rewardId) {
+    const reward = state.rewards.find(item => item.id === rewardId);
+    if (!reward || state.balance < reward.cost) return;
+    pendingRewardId = reward.id;
+    $('redeem-message').textContent = `要用 ${reward.cost} 點兌換「${reward.name}」嗎？兌換後會剩下 ${state.balance - reward.cost} 點。`;
+    $('redeem-dialog').showModal();
+  }
+
+  function confirmRedeem() {
+    const reward = state.rewards.find(item => item.id === pendingRewardId);
+    if (!reward || state.balance < reward.cost) {
+      $('redeem-dialog').close();
+      announce('目前點數不足，沒有完成兌換');
+      return;
+    }
+    state.balance -= reward.cost;
+    saveState();
+    renderAll();
+    $('redeem-dialog').close();
+    showToast(`已兌換：${reward.name}`);
+    announce(`已兌換${reward.name}，目前剩下${state.balance}點`);
+    pendingRewardId = null;
+  }
+
+  function openRewardEditor() {
+    rewardDraft = state.rewards.map(reward => ({ ...reward }));
+    renderRewardEditor();
+    $('reward-editor-status').textContent = '';
+    $('rewards-dialog').showModal();
+  }
+
+  function renderRewardEditor() {
+    const rows = rewardDraft.map(reward => {
+      const row = document.createElement('div');
+      row.className = 'reward-editor-row';
+      row.dataset.rewardRow = reward.id;
+
+      const name = document.createElement('input');
+      name.value = reward.name;
+      name.maxLength = 30;
+      name.setAttribute('aria-label', `${reward.name}的名稱`);
+      name.dataset.rewardName = reward.id;
+
+      const cost = document.createElement('input');
+      cost.type = 'number';
+      cost.min = '1';
+      cost.max = '999';
+      cost.inputMode = 'numeric';
+      cost.value = String(reward.cost);
+      cost.setAttribute('aria-label', `${reward.name}所需點數`);
+      cost.dataset.rewardCost = reward.id;
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'delete-reward';
+      remove.textContent = '刪除';
+      remove.dataset.deleteReward = reward.id;
+      remove.setAttribute('aria-label', `刪除${reward.name}`);
+      row.append(name, cost, remove);
+      return row;
+    });
+    $('reward-editor-list').replaceChildren(...rows);
+  }
+
+  function syncRewardDraftFromInputs() {
+    rewardDraft = rewardDraft.map(reward => {
+      const nameInput = document.querySelector(`[data-reward-name="${CSS.escape(reward.id)}"]`);
+      const costInput = document.querySelector(`[data-reward-cost="${CSS.escape(reward.id)}"]`);
+      return {
+        ...reward,
+        name: nameInput ? nameInput.value.trim() : reward.name,
+        cost: costInput ? Math.round(Number(costInput.value)) : reward.cost
+      };
+    });
+  }
+
+  function addRewardDraft() {
+    syncRewardDraftFromInputs();
+    const nameInput = $('new-reward-name');
+    const costInput = $('new-reward-cost');
+    const name = nameInput.value.trim();
+    const cost = Math.round(Number(costInput.value));
+    if (!name || !Number.isFinite(cost) || cost < 1 || cost > 999) {
+      $('reward-editor-status').textContent = '請輸入獎勵名稱與 1～999 的點數。';
+      return;
+    }
+    rewardDraft.push({ id: `reward-${Date.now()}`, name: name.slice(0, 30), cost });
+    nameInput.value = '';
+    costInput.value = '';
+    $('reward-editor-status').textContent = '已加入草稿，儲存後生效。';
+    renderRewardEditor();
+  }
+
+  function deleteRewardDraft(rewardId) {
+    syncRewardDraftFromInputs();
+    if (rewardDraft.length <= 1) {
+      $('reward-editor-status').textContent = '至少要保留一項獎勵。';
+      return;
+    }
+    rewardDraft = rewardDraft.filter(reward => reward.id !== rewardId);
+    renderRewardEditor();
+  }
+
+  function saveRewards() {
+    syncRewardDraftFromInputs();
+    const invalid = rewardDraft.some(reward => !reward.name || !Number.isFinite(reward.cost) || reward.cost < 1 || reward.cost > 999);
+    if (invalid || rewardDraft.length === 0) {
+      $('reward-editor-status').textContent = '每項獎勵都需要名稱與 1～999 的點數。';
+      return;
+    }
+    state.rewards = rewardDraft.map(reward => ({ ...reward, name: reward.name.slice(0, 30), cost: Math.round(reward.cost) }));
+    if (!state.rewards.some(reward => reward.id === state.targetRewardId)) state.targetRewardId = state.rewards[0].id;
+    saveState();
+    renderAll();
+    $('rewards-dialog').close();
+    showToast('獎勵已更新');
+  }
+
+  function resetPoints() {
+    state.balance = 0;
+    saveState();
+    renderAll();
+    $('reset-dialog').close();
+    showToast('點數已清空');
+    announce('點數已清空，目前有 0 點');
+  }
+
+  function resetAll() {
+    state = defaultState();
+    themeName = 'adventure';
+    saveState();
+    saveTheme();
+    renderAll();
+    $('reset-dialog').close();
+    showToast('已恢復預設內容');
+    announce('集點板已恢復預設內容');
+  }
+
+  $('name-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const name = $('child-name-input').value.trim();
+    if (!name) {
+      showToast('請先輸入孩子名字');
+      $('child-name-input').focus();
+      return;
+    }
+    state.name = name.slice(0, 16);
+    saveState();
+    renderAll();
+    showToast('名字已儲存');
   });
+
+  $('btn-add-points').addEventListener('click', addPoint);
+  $('btn-subtract-points').addEventListener('click', subtractPoint);
+  $('btn-open-theme').addEventListener('click', () => $('theme-dialog').showModal());
+  $('btn-edit-rewards').addEventListener('click', openRewardEditor);
+  $('btn-reset').addEventListener('click', () => $('reset-dialog').showModal());
+  $('btn-redeem-target').addEventListener('click', event => openRedeem(event.currentTarget.dataset.rewardId));
+  $('btn-confirm-redeem').addEventListener('click', confirmRedeem);
+  $('btn-add-reward').addEventListener('click', addRewardDraft);
+  $('btn-save-rewards').addEventListener('click', saveRewards);
+  $('btn-reset-points').addEventListener('click', resetPoints);
+  $('btn-reset-all').addEventListener('click', resetAll);
+
+  $('reward-list').addEventListener('click', event => {
+    const targetButton = event.target.closest('[data-set-target]');
+    if (targetButton) setTarget(targetButton.dataset.setTarget);
+    const redeemButton = event.target.closest('[data-redeem-reward]');
+    if (redeemButton) openRedeem(redeemButton.dataset.redeemReward);
+  });
+
+  $('reward-editor-list').addEventListener('click', event => {
+    const deleteButton = event.target.closest('[data-delete-reward]');
+    if (deleteButton) deleteRewardDraft(deleteButton.dataset.deleteReward);
+  });
+
+  document.querySelectorAll('[data-theme-option]').forEach(option => {
+    option.addEventListener('click', () => {
+      themeName = option.dataset.themeOption;
+      saveTheme();
+      renderAll();
+      announce(`已切換為${THEMES[themeName].kicker}`);
+    });
+  });
+
+  document.querySelectorAll('[data-close-dialog]').forEach(button => {
+    button.addEventListener('click', () => {
+      const dialog = $(button.dataset.closeDialog);
+      if (dialog && dialog.open) dialog.close();
+    });
+  });
+
+  document.querySelectorAll('dialog').forEach(dialog => {
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+
   renderAll();
 })();
 </script>

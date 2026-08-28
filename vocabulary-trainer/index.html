@@ -1,155 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=390, initial-scale=1">
-<title>單字訓練器</title>
-<style>
-  :root{
-    --bg:#eef2f7; --card:#fff; --primary:#2f6f9f; --learned:#7fb069;
-    --text:#1d2631; --border:#cdd6e0;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--text);padding:16px}
-  h1{font-size:18px;margin:0 0 12px}
-  .wrap{max-width:390px;margin:0 auto}
-  .field{display:flex;gap:8px;margin-bottom:12px}
-  .field input{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px;font-size:14px}
-  button{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:13px;cursor:pointer}
-  button:hover{opacity:.92}
-  button:focus-visible{outline:3px solid #6fb3ff;outline-offset:2px}
-  .card-wrap{position:relative;width:100%;max-width:320px;margin:0 auto 12px;perspective:600px}
-  .card{position:relative;width:100%;height:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;transform-style:preserve-3d;transition:transform .35s;user-select:none}
-  .card.flipped{transform:rotateY(180deg)}
-  .card-face{position:absolute;inset:0;backface-visibility:hidden;padding:14px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-  .card-back{transform:rotateY(180deg)}
-  .learned-btn{margin-top:8px;border:1px solid var(--learned);color:var(--learned);background:transparent;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer}
-  .learned-btn.rec{color:#fff;background:var(--learned)}
-  .controls{display:flex;gap:8px;justify-content:center;margin-top:8px}
-  .controls button{opacity:.95}
-  .meta{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="用連勝快答遊戲，練習 IELTS、TOEFL、TOEIC 與通用高頻英文單字。">
+  <meta name="theme-color" content="#fffdf8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Word Lab">
+  <title>Word Lab｜高頻單字連勝快答</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/app-icon-192.png">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main class="wrap">
-  <h1>單字訓練器</h1>
-  <div class="field">
-    <input id="term-input" placeholder="單字">
-    <input id="meaning-input" placeholder="意思">
-    <button id="btn-add" type="button">新增</button>
-  </div>
-  <div class="card-wrap" id="card-wrap">
-    <div class="card" id="card" role="button" tabindex="0" aria-label="點擊翻轉單字卡">
-      <div class="card-face">
-        <div id="card-term" style="font-size:18px;font-weight:600"></div>
-        <div id="card-tip" style="font-size:13px;color:#555;margin-top:6px"></div>
+  <main class="app-frame" id="practice">
+    <header class="app-header" aria-label="Word Lab 狀態列">
+      <a class="wordmark" href="#practice" aria-label="回到單字挑戰">WORD LAB</a>
+      <button id="btn-settings" class="icon-button settings-button" type="button" aria-label="開啟遊戲設定" aria-haspopup="dialog"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
+    </header>
+
+    <section class="score-panel" aria-label="遊戲分數">
+      <div class="score-item"><i class="fa-solid fa-fire score-icon" aria-hidden="true"></i><span>連勝</span><strong id="streak-count">0</strong></div>
+      <div class="score-divider" aria-hidden="true"></div>
+      <div class="score-item"><span class="coin-icon" aria-hidden="true"><i class="fa-solid fa-star"></i></span><strong id="xp-count">0</strong><span>XP</span></div>
+    </section>
+
+    <section class="round-tracker" aria-label="本輪進度">
+      <strong id="round-step">0 / 10</strong>
+      <div class="round-progress" aria-hidden="true"><span id="session-progress"></span></div>
+    </section>
+
+    <section class="word-stage" aria-label="目前單字">
+      <div class="card-wrap" id="card-wrap">
+        <div class="card" id="card" role="button" tabindex="0" aria-label="翻面查看單字解釋" aria-pressed="false">
+          <div class="card-face card-front"><div id="card-term" class="card-term">載入中…</div><div id="card-phonetic" class="card-phonetic"></div></div>
+          <div class="card-face card-back"><div id="card-meaning" class="card-meaning"></div><div id="card-definition" class="card-definition"></div><p id="card-note-preview" class="card-note-preview"></p></div>
+        </div>
       </div>
-      <div class="card-face card-back">
-        <div id="card-meaning" style="font-size:15px"></div>
+      <button id="btn-speak" class="speak-button" type="button" aria-label="播放目前單字發音"><i class="fa-solid fa-volume-high" aria-hidden="true"></i></button>
+      <span id="speech-status" class="speech-status" aria-live="polite"></span>
+    </section>
+
+    <section class="quiz-zone" aria-labelledby="quiz-title">
+      <h1 id="quiz-title"><i class="fa-solid fa-slash" aria-hidden="true"></i><span>這個字是什麼意思？</span><i class="fa-solid fa-slash" aria-hidden="true"></i></h1>
+      <div id="answer-grid" class="answer-grid" role="group" aria-label="答案選項"></div>
+      <div id="answer-feedback" class="answer-feedback" role="status" aria-live="polite" hidden>
+        <i class="fa-solid fa-wand-magic-sparkles feedback-icon" aria-hidden="true"></i><strong id="feedback-title">答對了！</strong><span id="feedback-streak">連勝 x1</span>
       </div>
+      <button id="btn-continue" class="continue-button" type="button" hidden><span>下一題</span><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+    </section>
+
+    <div class="sr-only" aria-hidden="true">
+      <span id="weight-badge">權重 —</span><span id="frequency-label">等待資料</span><span id="source-label">—</span>
+      <span id="card-position">0 / 0</span><span id="card-count">卡片 0 張</span>
+      <span id="run-correct">0</span><span id="run-message"></span><span id="run-progress"></span>
     </div>
-  </div>
-  <div class="controls">
-    <button id="btn-prev" type="button">上一張</button>
-    <button id="btn-shuffle" type="button">洗牌</button>
-    <button id="btn-next" type="button">下一張</button>
-    <button id="btn-learned" class="learned-btn" type="button">標示已學</button>
-    <button id="btn-reset" type="button">重置</button>
-  </div>
-  <div class="meta">
-    <span id="card-count">卡片 0 張</span>
-    <span id="card-position">1 / 1</span>
-  </div>
-</main>
-<script>
-(function(){
-  const NS = 'vocab-v1';
-  const DEFAULT = [
-    {t:'apple', m:'蘋果'},
-    {t:'blue', m:'藍色'},
-    {t:'happy', m:'快樂'},
-    {t:'rain', m:'雨'},
-    {t:'book', m:'書'}
-  ];
-  function save(data){
-    try{ localStorage.setItem(NS+':data', JSON.stringify(data)); }catch(e){}
-  }
-  function load(){
-    try{
-      const raw = localStorage.getItem(NS+':data');
-      if(raw){
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed) && parsed.length) return parsed;
-      }
-    }catch(e){}
-    return null;
-  }
-  let cards = load() || DEFAULT.slice().map(d=>({term:d.t, meaning:d.m, learned:false}));
-  let idx = 0;
-  function render(){
-    const card = document.getElementById('card');
-    const term = cards[idx];
-    document.getElementById('card-term').textContent = term.term;
-    document.getElementById('card-meaning').textContent = term.meaning;
-    document.getElementById('card-tip').textContent = term.learned ? '（已學）' : '';
-    document.getElementById('card-count').textContent = '卡片 ' + cards.length + ' 張';
-    document.getElementById('card-position').textContent = (idx+1) + ' / ' + cards.length;
-    const btn = document.getElementById('btn-learned');
-    btn.textContent = term.learned ? '取消已學' : '標示已學';
-    btn.classList.toggle('rec', term.learned);
-  }
-  function flip(){
-    document.getElementById('card').classList.toggle('flipped');
-  }
-  function renderList(){ /* not needed; cards shown one at a time */ }
-  function persist(){ save(cards.map(c=>({term:c.term, meaning:c.meaning, learned:c.learned}))); }
-  document.getElementById('btn-add').addEventListener('click', ()=>{
-    const termInput = document.getElementById('term-input');
-    const meaningInput = document.getElementById('meaning-input');
-    const t = termInput.value.trim();
-    const m = meaningInput.value.trim();
-    if(!t || !m) return;
-    cards.push({term:t, meaning:m, learned:false});
-    persist();
-    termInput.value=''; meaningInput.value='';
-    render();
-  });
-  document.getElementById('card').addEventListener('click', flip);
-  document.getElementById('btn-next').addEventListener('click', ()=>{
-    if(cards.length===0) return;
-    idx = (idx+1) % cards.length;
-    document.getElementById('card').classList.remove('flipped');
-    render();
-  });
-  document.getElementById('btn-prev').addEventListener('click', ()=>{
-    if(cards.length===0) return;
-    idx = (idx-1+cards.length) % cards.length;
-    document.getElementById('card').classList.remove('flipped');
-    render();
-  });
-  document.getElementById('btn-shuffle').addEventListener('click', ()=>{
-    for(let i=cards.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
-    }
-    idx = 0;
-    document.getElementById('card').classList.remove('flipped');
-    render();
-  });
-  document.getElementById('btn-learned').addEventListener('click', ()=>{
-    cards[idx].learned = !cards[idx].learned;
-    persist();
-    render();
-  });
-  document.getElementById('btn-reset').addEventListener('click', ()=>{
-    cards = DEFAULT.map(d=>({term:d.t, meaning:d.m, learned:false}));
-    idx = 0;
-    persist();
-    document.getElementById('card').classList.remove('flipped');
-    render();
-  });
-  render();
-})();
-</script>
+  </main>
+
+  <dialog id="settings-panel" class="settings-dialog" aria-labelledby="settings-title">
+    <div class="settings-sheet">
+      <header class="settings-head">
+        <div><p class="section-kicker">WORD LAB SETTINGS</p><h2 id="settings-title">遊戲設定</h2></div>
+        <button id="btn-close-settings" class="compact-button" type="button">完成</button>
+      </header>
+
+      <section class="settings-summary" aria-label="題庫摘要">
+        <div><strong id="unique-count">—</strong><span>唯一單字</span></div><div><strong id="source-count">—</strong><span>來源紀錄</span></div><div><strong id="pool-count">0</strong><span>目前題庫</span></div>
+      </section>
+
+      <section class="settings-section" id="library" aria-labelledby="deck-title">
+        <h3 id="deck-title">題庫與難度</h3>
+        <div class="control-group exam-group">
+          <span class="control-label">考試字庫</span>
+          <div class="segmented" id="exam-filter" role="group" aria-label="選擇考試字庫">
+            <button class="segment active" type="button" data-exam="all" aria-pressed="true">全部</button><button class="segment" type="button" data-exam="ielts" aria-pressed="false">IELTS</button><button class="segment" type="button" data-exam="toefl" aria-pressed="false">TOEFL</button><button class="segment" type="button" data-exam="toeic" aria-pressed="false">TOEIC</button><button class="segment" type="button" data-exam="general" aria-pressed="false">通用</button>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <label class="control-group"><span class="control-label">搜尋單字或解釋</span><input id="search-input" type="search" placeholder="例如：deadline／截止期限" autocomplete="off"></label>
+          <label class="control-group"><span class="control-label">學習權重</span><select id="frequency-filter"><option value="all">全部權重</option><option value="high">高權重 80–100</option><option value="medium">中權重 55–79</option><option value="low">基礎權重 0–54</option></select></label>
+        </div>
+        <label class="check-control"><input id="unlearned-only" type="checkbox"><span>只練還沒學會的字</span></label>
+        <div class="current-word-data"><span id="current-weight">學習權重</span><span id="current-source">來源排名</span></div>
+      </section>
+
+      <section class="settings-section" aria-labelledby="audio-title">
+        <h3 id="audio-title">發音</h3>
+        <div class="settings-grid audio-row">
+          <label class="audio-option engine-option"><span>發音引擎</span><select id="speech-engine" aria-label="發音引擎"><option value="kokoro">高品質離線 AI（免費）</option><option value="system">裝置語音（免下載）</option></select></label>
+          <label class="audio-option"><span>口音</span><select id="accent-select" aria-label="發音口音"><option value="en-US">美式發音</option><option value="en-GB">英式發音</option></select></label>
+          <label id="kokoro-voice-option" class="audio-option voice-option"><span>AI 聲音</span><select id="kokoro-voice-select" aria-label="高品質 AI 英文聲音"></select></label>
+          <label id="device-voice-option" class="audio-option voice-option" hidden><span>裝置聲音</span><select id="voice-select" aria-label="裝置英文聲音"><option value="">自動選擇</option></select></label>
+        </div>
+        <label class="check-control"><input id="auto-speak" type="checkbox"><span>換字時自動播放</span></label>
+        <span id="voice-info" class="voice-info">正在讀取裝置語音…</span>
+        <div id="model-panel" class="model-panel">
+          <div class="model-heading"><div><strong id="model-status">高品質模型尚未載入</strong><span id="model-detail">第一次播放會下載約 90 MB</span></div><button id="btn-release-model" class="small-text-button" type="button" hidden>釋放記憶體</button></div>
+          <div id="model-progress" class="model-progress" role="progressbar" aria-label="高品質語音模型下載進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="model-progress-fill"></span></div>
+          <p>發音只會讀取目前卡片的英文單字，不會朗讀音標。首次需連網；模型完成快取後可離線使用。</p>
+        </div>
+      </section>
+
+      <section class="settings-section" aria-labelledby="progress-title">
+        <h3 id="progress-title">學習進度與題目控制</h3>
+        <div class="progress-line"><strong id="learned-percent">0%</strong><span id="learned-summary">已學會 0 個單字</span></div>
+        <div class="mastery-track"><span id="mastery-progress"></span></div>
+        <div class="settings-actions"><button id="btn-prev" class="text-control" type="button">上一題</button><button id="btn-shuffle" class="text-control strong" type="button">依權重抽題</button><button id="btn-next" class="text-control" type="button">下一題</button></div>
+        <button id="btn-learned" class="learned-btn" type="button">標示為已學會</button>
+      </section>
+
+      <section class="settings-section" aria-labelledby="note-title">
+        <h3 id="note-title">這個字的筆記</h3>
+        <label class="control-group" for="note-input"><span class="control-label">我的中文補充或記憶法</span><textarea id="note-input" rows="3" maxlength="240" placeholder="例如：dead + line，最後期限"></textarea></label>
+        <button id="btn-save-note" class="small-text-button" type="button">儲存筆記</button><span id="note-status" class="save-status" aria-live="polite"></span>
+      </section>
+
+      <details class="settings-section advanced-section">
+        <summary>字庫管理與授權</summary>
+        <div class="add-panel">
+          <div class="settings-grid"><label class="control-group"><span class="control-label">英文單字</span><input id="term-input" placeholder="word" autocomplete="off"></label><label class="control-group"><span class="control-label">中文意思</span><input id="meaning-input" placeholder="中文解釋" autocomplete="off"></label></div>
+          <button id="btn-add" class="primary-button" type="button">加入個人字庫</button>
+          <div class="data-actions"><button id="btn-reset" class="danger-link" type="button">清除我的進度與自訂單字</button><span id="data-status" aria-live="polite"></span></div>
+        </div>
+        <div class="licenses" id="licenses">
+          <h3>資料來源、授權與聲明</h3>
+          <p>NGSL 1.2、NAWL 1.2、TSL 1.2：CC BY-SA 4.0；ECDICT：MIT；Kokoro 與相關語音元件：Apache 2.0。</p>
+          <p>Font Awesome Free 7.2.0 圖示：CC BY 4.0；字型：SIL OFL 1.1；程式碼：MIT。</p>
+          <p>本工具未收錄 IELTS、TOEFL 或 TOEIC 官方真題，也未獲 ETS 或 IELTS Partners 背書或核准。</p>
+          <p><a href="data/LICENSES.md">查看完整授權說明</a></p>
+        </div>
+      </details>
+
+      <footer class="settings-footer"><span id="app-status" aria-live="polite">網頁模式</span><button id="btn-install" class="compact-button" type="button" hidden>安裝 App</button></footer>
+    </div>
+  </dialog>
+
+  <noscript>這個單字工具需要 JavaScript 才能載入完整字庫。</noscript>
+  <script src="data/vocabulary-data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
