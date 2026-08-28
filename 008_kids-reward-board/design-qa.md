@@ -21,7 +21,7 @@
   - `design-comparison-adventure.png`.
   - `design-comparison-sticker.png`.
   - `design-comparison-shop.png`.
-- Route: `http://127.0.0.1:4176/kids-reward-board/`.
+- Route: `http://127.0.0.1:4176/008_kids-reward-board/`.
 - State: child `小安`, balance 7, target `故事時間 10 分鐘`, 7 / 10 progress.
 
 ## Normalization

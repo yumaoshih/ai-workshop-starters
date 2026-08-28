@@ -46,11 +46,11 @@
 已產生的前端資料位於 `data/vocabulary-data.js`。如來源清單更新，可重新執行建置腳本：
 
 ```bash
-python3 -m pip install -r vocabulary-trainer/scripts/requirements.txt
-python3 vocabulary-trainer/scripts/build_vocabulary_data.py \
+python3 -m pip install -r 006_vocabulary-trainer/scripts/requirements.txt
+python3 006_vocabulary-trainer/scripts/build_vocabulary_data.py \
   --download \
   --source-dir /private/tmp \
-  --output vocabulary-trainer/data/vocabulary-data.js
+  --output 006_vocabulary-trainer/data/vocabulary-data.js
 ```
 
 建置腳本要求安裝 `opencc-python-reimplemented`，確保 ECDICT 的簡體內容會轉為臺灣繁體；若缺少套件會直接停止，避免誤產生簡體版資料。

@@ -3,7 +3,14 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 
 const root = process.env.WORKSHOP_ROOT || path.resolve(__dirname, '..');
-const url = name => pathToFileURL(path.join(root, name, 'index.html')).href;
+const starterDirectories = {
+  'bingo-generator': '005_bingo-generator',
+  'vocabulary-trainer': '006_vocabulary-trainer',
+  'travel-guide': '007_travel-guide',
+  'kids-reward-board': '008_kids-reward-board',
+  'group-randomizer': '009_group-randomizer',
+};
+const url = name => pathToFileURL(path.join(root, starterDirectories[name] || name, 'index.html')).href;
 
 async function openLocal(page, name) {
   const requests = [];

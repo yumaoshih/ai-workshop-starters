@@ -1,10 +1,10 @@
 # GREEN — fasting-clock
 
 ## 測試命令
-`node /shared-artifacts/ai-workshop-friday/contract-test.js fasting-clock`
+`node /shared-artifacts/ai-workshop-friday/contract-test.js 001_fasting-clock`
 
 ## 測試結果
-- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js fasting-clock`
+- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js 001_fasting-clock`
 - exit code: 0
 - 通過 5/5 項行為檢查
 

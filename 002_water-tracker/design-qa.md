@@ -4,9 +4,9 @@
 - Character source truth: `/Users/simonaep/oxb-call/public/brand/mascot/ason-research.png`
 - Character-picker regression source: `/Users/simonaep/Desktop/截圖 2026-08-28 中午12.22.29.png`
 - Source pixels: 1179 × 2556
-- Implementation route: `http://127.0.0.1:4175/water-tracker/`
-- Final empty-state screenshot: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-mobile-empty-final.png`
-- Final filled-state screenshot: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-mobile-final.png`
+- Implementation route: `http://127.0.0.1:4175/002_water-tracker/`
+- Final empty-state screenshot: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-mobile-empty-final.png`
+- Final filled-state screenshot: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-mobile-final.png`
 - Implementation screenshot pixels: 510 × 1106
 - CSS viewport during normalized empty-state capture: 524 × 1136; device pixel ratio 1.4
 - Density normalization: the 1179 × 2556 source was downsampled to 510 × 1106 so both sides could be judged at identical pixel dimensions.
@@ -14,22 +14,22 @@
 
 ## Comparison evidence
 
-- Full view: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-final.png`
-- Focused drink controls: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-controls-final.png`
-- Filled progress evidence: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-mobile-filled.png`
-- Four-character picker: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-character-picker.png`
-- Character source/implementation comparison: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-character-picker.png`
-- Desktop RWD evidence (1100 × 900 viewport; 480 px app surface): `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-desktop-rwd.png`
-- Stacked hydration evidence: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-stacked-hydration.png`
-- Stacked hydration comparison: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-stacked-hydration.png`
-- Achievement alpaca: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-achievement-alpaca.png`
-- Achievement giraffe: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-achievement-giraffe.png`
-- Achievement comparison: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-achievement.png`
-- Owl/squirrel HD asset comparison: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-owl-squirrel-hd.png`
-- Achievement owl HD: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-achievement-owl-hd.png`
-- Achievement squirrel HD: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-achievement-squirrel-hd.png`
-- Four full-color character picker: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-character-picker-four-full-color.png`
-- Character-picker before/after comparison: `/Users/simonaep/ai-workshop-starters/water-tracker/design-comparison-character-picker-four-full-color.png`
+- Full view: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-final.png`
+- Focused drink controls: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-controls-final.png`
+- Filled progress evidence: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-mobile-filled.png`
+- Four-character picker: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-character-picker.png`
+- Character source/implementation comparison: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-character-picker.png`
+- Desktop RWD evidence (1100 × 900 viewport; 480 px app surface): `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-desktop-rwd.png`
+- Stacked hydration evidence: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-stacked-hydration.png`
+- Stacked hydration comparison: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-stacked-hydration.png`
+- Achievement alpaca: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-achievement-alpaca.png`
+- Achievement giraffe: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-achievement-giraffe.png`
+- Achievement comparison: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-achievement.png`
+- Owl/squirrel HD asset comparison: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-owl-squirrel-hd.png`
+- Achievement owl HD: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-achievement-owl-hd.png`
+- Achievement squirrel HD: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-achievement-squirrel-hd.png`
+- Four full-color character picker: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-character-picker-four-full-color.png`
+- Character-picker before/after comparison: `/Users/simonaep/ai-workshop-starters/002_water-tracker/design-comparison-character-picker-four-full-color.png`
 
 The focused crop was required because the drink artwork, hydration percentages, amount controls, and conversion result are too small to evaluate reliably in the full-screen comparison.
 

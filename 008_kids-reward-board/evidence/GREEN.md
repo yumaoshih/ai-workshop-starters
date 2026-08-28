@@ -15,7 +15,7 @@ npx playwright test tests/pages.spec.js --config=playwright.config.js --grep kid
 結果：1 passed；exit 0。GitHub Pages 形式的子路徑可正常載入，無遠端請求與 page error。
 
 ```bash
-node contract-test.js kids-reward-board
+node contract-test.js 008_kids-reward-board
 ```
 
 結果：12 / 12 通過；exit 0。

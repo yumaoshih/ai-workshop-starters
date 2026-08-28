@@ -19,7 +19,7 @@
 - 舊版的小時預設會在讀取時自動轉換為對應日計畫。
 
 ## 驗證
-- `node contract-test.js fasting-clock`
+- `node contract-test.js 001_fasting-clock`
 - `python3 verify_static.py`
 - 主要互動已在 393×852 手機視窗實測。
 

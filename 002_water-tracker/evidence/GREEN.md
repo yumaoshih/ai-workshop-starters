@@ -1,10 +1,10 @@
 # GREEN — water-tracker
 
 ## 測試命令
-`node /shared-artifacts/ai-workshop-friday/contract-test.js water-tracker`
+`node /shared-artifacts/ai-workshop-friday/contract-test.js 002_water-tracker`
 
 ## 測試結果
-- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js water-tracker`
+- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js 002_water-tracker`
 - exit code: 0
 - 通過 5/5 項行為檢查
 

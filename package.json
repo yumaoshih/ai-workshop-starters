@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test:contracts": "node contract-test.js fasting-clock && node contract-test.js water-tracker && node contract-test.js food-wheel",
+    "test:contracts": "node contract-test.js 001_fasting-clock && node contract-test.js 002_water-tracker && node contract-test.js 003_food-wheel",
     "test:starters": "playwright test tests/starters.spec.js --config=playwright.config.js",
     "test:pages": "playwright test tests/pages.spec.js --config=playwright.config.js",
     "verify:static": "python3 verify_static.py",

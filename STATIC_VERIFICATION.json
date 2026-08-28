@@ -3,7 +3,7 @@
   "repo_count": 9,
   "results": [
     {
-      "repo": "fasting-clock",
+      "repo": "001_fasting-clock",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -22,7 +22,7 @@
       "sha256": "39531e2917a8cf86a5aa2e06dbf291f56613b2aeb0c72ed1103b42cb99e55dfb"
     },
     {
-      "repo": "water-tracker",
+      "repo": "002_water-tracker",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -41,7 +41,7 @@
       "sha256": "6d2dbe03105f69b1376cdb8772cb9b3f6e159b132d183c35f8366994e7380857"
     },
     {
-      "repo": "food-wheel",
+      "repo": "003_food-wheel",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -60,7 +60,7 @@
       "sha256": "0a22cf868ae7cbff66d58dfbc0255738e8a2984d44411f88b3d0004eab2711de"
     },
     {
-      "repo": "image-compressor",
+      "repo": "004_image-compressor",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -79,7 +79,7 @@
       "sha256": "6e9c22b81deebd8e8079829bcc0ede1fb62426b4cb70cae025ab186d3fec6bc0"
     },
     {
-      "repo": "bingo-generator",
+      "repo": "005_bingo-generator",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -98,7 +98,7 @@
       "sha256": "9fad0601fa0367003d506a13c8d70c8136071b21381e788182f8a62db318c90b"
     },
     {
-      "repo": "vocabulary-trainer",
+      "repo": "006_vocabulary-trainer",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -117,7 +117,7 @@
       "sha256": "f50fc8d867877454257c29af51b3655ec81f4a839d0e325dd0d6ef4c8cecb5ed"
     },
     {
-      "repo": "travel-guide",
+      "repo": "007_travel-guide",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -136,7 +136,7 @@
       "sha256": "ef8c442cf7a259509a65f63158da0e9df5d729702f935251e3b41dca8441494c"
     },
     {
-      "repo": "kids-reward-board",
+      "repo": "008_kids-reward-board",
       "files": {
         "index.html": true,
         "README.md": true,
@@ -155,7 +155,7 @@
       "sha256": "2e9b759cfe422a61e1c08441027aa99b34ae1961b36179a97722b192385b520d"
     },
     {
-      "repo": "group-randomizer",
+      "repo": "009_group-randomizer",
       "files": {
         "index.html": true,
         "README.md": true,

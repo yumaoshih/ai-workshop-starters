@@ -7,15 +7,15 @@ const root = path.resolve(__dirname, '..');
 const port = 4175;
 const base = `http://127.0.0.1:${port}`;
 const starters = [
-  'fasting-clock',
-  'water-tracker',
-  'food-wheel',
-  'image-compressor',
-  'bingo-generator',
-  'vocabulary-trainer',
-  'travel-guide',
-  'kids-reward-board',
-  'group-randomizer',
+  '001_fasting-clock',
+  '002_water-tracker',
+  '003_food-wheel',
+  '004_image-compressor',
+  '005_bingo-generator',
+  '006_vocabulary-trainer',
+  '007_travel-guide',
+  '008_kids-reward-board',
+  '009_group-randomizer',
 ];
 
 let server;
@@ -83,7 +83,7 @@ for (const starter of starters) {
 }
 
 test('vocabulary-trainer installs its offline app shell', async ({ page, context }) => {
-  await page.goto(`${base}/vocabulary-trainer/`);
+  await page.goto(`${base}/006_vocabulary-trainer/`);
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.reload();
   await expect(page.locator('#unique-count')).toHaveText('4,787');
@@ -102,7 +102,7 @@ test('image-compressor processes an uploaded image locally', async ({ page }) =>
     const url = new URL(request.url());
     if (url.origin !== base) external.push(request.url());
   });
-  await page.goto(`${base}/image-compressor/`);
+  await page.goto(`${base}/004_image-compressor/`);
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
   await page.locator('#fileInput').setInputFiles({ name: 'fixture.png', mimeType: 'image/png', buffer: png });
   await expect(page.locator('.card')).toHaveCount(1);
@@ -126,7 +126,7 @@ test('food-wheel combines editable groups and completes the spin flow locally', 
     const url = new URL(request.url());
     if (url.origin !== base) external.push(request.url());
   });
-  await page.goto(`${base}/food-wheel/`);
+  await page.goto(`${base}/003_food-wheel/`);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 

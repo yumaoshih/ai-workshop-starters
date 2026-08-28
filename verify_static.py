@@ -3,7 +3,7 @@ from pathlib import Path
 from html.parser import HTMLParser
 import hashlib,json,re,sys
 ROOT=Path(__file__).resolve().parent
-REPOS=['fasting-clock','water-tracker','food-wheel','image-compressor','bingo-generator','vocabulary-trainer','travel-guide','kids-reward-board','group-randomizer']
+REPOS=['001_fasting-clock','002_water-tracker','003_food-wheel','004_image-compressor','005_bingo-generator','006_vocabulary-trainer','007_travel-guide','008_kids-reward-board','009_group-randomizer']
 REQUIRED=['index.html','README.md','DESIGN.md','tests/contract.json','evidence/RED.md','evidence/GREEN.md','evidence/VISUAL_REVIEW.md']
 REMOTE=re.compile(r'''(?:src|href)\s*=\s*["']https?://''',re.I)
 LOCAL_SCRIPT=re.compile(r'''<script[^>]+src\s*=\s*["']([^"']+)["']''',re.I)

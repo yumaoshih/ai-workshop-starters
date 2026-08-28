@@ -26,6 +26,6 @@
 ## 測試
 
 ```bash
-node contract-test.js bingo-generator
+node contract-test.js 005_bingo-generator
 npx playwright test tests/starters.spec.js --config=playwright.config.js --grep bingo-generator
 ```

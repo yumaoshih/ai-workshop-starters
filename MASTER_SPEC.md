@@ -10,15 +10,15 @@ A Mac-openable local hub linking nine independent, forkable, static web products
 
 ## Locked lineup
 
-1. `fasting-clock` — fasting timer
-2. `water-tracker` — daily water tracker
-3. `food-wheel` — editable food roulette
-4. `image-compressor` — browser-local batch image compression
-5. `bingo-generator` — editable 5×5 bingo card
-6. `vocabulary-trainer` — flashcard vocabulary trainer
-7. `travel-guide` — page-turning travel guide with checklist
-8. `kids-reward-board` — local points and reward redemption
-9. `group-randomizer` — fair random grouping from pasted names
+1. `001_fasting-clock` — fasting timer
+2. `002_water-tracker` — daily water tracker
+3. `003_food-wheel` — editable food roulette
+4. `004_image-compressor` — browser-local batch image compression
+5. `005_bingo-generator` — editable 5×5 bingo card
+6. `006_vocabulary-trainer` — flashcard vocabulary trainer
+7. `007_travel-guide` — page-turning travel guide with checklist
+8. `008_kids-reward-board` — local points and reward redemption
+9. `009_group-randomizer` — fair random grouping from pasted names
 
 ## Common contract
 
@@ -45,15 +45,15 @@ All products:
 
 ## Product-specific core behavior
 
-- fasting-clock: presets, start/pause/reset, elapsed/remaining calculation; timer is a convenience tool, not medical advice.
-- water-tracker: configurable goal, add/remove intake, same-day persistence, explicit new-day reset.
-- food-wheel: edit options, animate spin, select one valid option, prevent empty spin.
-- image-compressor: multi-file input, quality control, original/output size, individual downloads; all processing local.
-- bingo-generator: 24 editable items + free center, randomized 5×5 board, regenerate, print.
-- vocabulary-trainer: add term/meaning, flip card, next/shuffle, learned status, persistence.
-- travel-guide: seven pages, next/previous, keyboard and touch, progress, persistent checklist, no remote map dependency.
-- kids-reward-board: configurable child/rewards, add/subtract points, block negative balance and unaffordable redemption, persistence.
-- group-randomizer: parse/dedupe names, choose group count, assign every name exactly once, group-size difference ≤1, copy output.
+- 001_fasting-clock: presets, start/pause/reset, elapsed/remaining calculation; timer is a convenience tool, not medical advice.
+- 002_water-tracker: configurable goal, add/remove intake, same-day persistence, explicit new-day reset.
+- 003_food-wheel: edit options, animate spin, select one valid option, prevent empty spin.
+- 004_image-compressor: multi-file input, quality control, original/output size, individual downloads; all processing local.
+- 005_bingo-generator: 24 editable items + free center, randomized 5×5 board, regenerate, print.
+- 006_vocabulary-trainer: add term/meaning, flip card, next/shuffle, learned status, persistence.
+- 007_travel-guide: seven pages, next/previous, keyboard and touch, progress, persistent checklist, no remote map dependency.
+- 008_kids-reward-board: configurable child/rewards, add/subtract points, block negative balance and unaffordable redemption, persistence.
+- 009_group-randomizer: parse/dedupe names, choose group count, assign every name exactly once, group-size difference ≤1, copy output.
 
 ## Closure boundary
 

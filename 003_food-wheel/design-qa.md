@@ -2,17 +2,17 @@
 
 ## Comparison target
 
-- Usability baseline: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/usability-audit-01-start.png`
-- 001 visual-system reference: `/Users/simonaep/ai-workshop-starters/water-tracker/implementation-mobile-empty-final.png`
-- Implemented initial state: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-mobile.png`
-- Implemented result state: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-mobile-result.png`
-- Implemented notebook state: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-mobile-notebook.png`
-- Implemented desktop state: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-desktop.png`
-- Full-view comparison: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/design-comparison-mobile.png`
-- Iteration comparison: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/design-qa-iteration-1.png`
-- Scroll fix, initial position: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-mobile-scroll-start.png`
-- Scroll fix, rightmost position: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/implementation-mobile-scroll-end.png`
-- Scroll-fix comparison: `/Users/simonaep/ai-workshop-starters/food-wheel/evidence/design-qa-scroll-fix.png`
+- Usability baseline: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/usability-audit-01-start.png`
+- 001 visual-system reference: `/Users/simonaep/ai-workshop-starters/002_water-tracker/implementation-mobile-empty-final.png`
+- Implemented initial state: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-mobile.png`
+- Implemented result state: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-mobile-result.png`
+- Implemented notebook state: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-mobile-notebook.png`
+- Implemented desktop state: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-desktop.png`
+- Full-view comparison: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/design-comparison-mobile.png`
+- Iteration comparison: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/design-qa-iteration-1.png`
+- Scroll fix, initial position: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-mobile-scroll-start.png`
+- Scroll fix, rightmost position: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/implementation-mobile-scroll-end.png`
+- Scroll-fix comparison: `/Users/simonaep/ai-workshop-starters/003_food-wheel/evidence/design-qa-scroll-fix.png`
 
 The intended change is an information-hierarchy redesign, not a pixel-identical clone of the baseline: the 001 aqua visual language and all existing 003 functionality stay intact, while the primary path becomes “select categories → spin.”
 

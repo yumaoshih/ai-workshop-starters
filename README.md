@@ -8,15 +8,15 @@
 
 | Starter | 展示路徑 |
 |---|---|
-| 斷食計時器 | `./fasting-clock/` |
-| 喝水記錄器 | `./water-tracker/` |
-| 食物輪盤 | `./food-wheel/` |
-| 圖片瘦身站（轉檔＋壓縮） | `./image-compressor/` |
-| 賓果產生器 | `./bingo-generator/` |
-| 單字訓練器 | `./vocabulary-trainer/` |
-| 翻頁旅行手冊 | `./travel-guide/` |
-| 孩子積分板 | `./kids-reward-board/` |
-| 隨機分組器 | `./group-randomizer/` |
+| 001 斷食計時器 | `./001_fasting-clock/` |
+| 002 喝水記錄器 | `./002_water-tracker/` |
+| 003 食物輪盤 | `./003_food-wheel/` |
+| 004 圖片瘦身站（轉檔＋壓縮） | `./004_image-compressor/` |
+| 005 賓果產生器 | `./005_bingo-generator/` |
+| 006 單字訓練器 | `./006_vocabulary-trainer/` |
+| 007 翻頁旅行手冊 | `./007_travel-guide/` |
+| 008 孩子積分板 | `./008_kids-reward-board/` |
+| 009 隨機分組器 | `./009_group-randomizer/` |
 
 首頁 `index.html` 是九個作品的統一入口。每個子目錄都有獨立 `index.html`，因此 GitHub Pages 可直接以子路徑展示，不需要九個不同 Repository。
 

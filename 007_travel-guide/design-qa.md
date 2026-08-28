@@ -1,8 +1,8 @@
 # Design QA — 翻頁旅行手冊
 
 - Source visual truth: `/Users/simonaep/Downloads/IMG_4865.jpg` and `/Users/simonaep/Downloads/IMG_4864.jpg`
-- Implementation screenshots: `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-desktop-final.png`, `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-desktop-page2-final-viewport.png`, `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-mobile-final.png`, `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-packing-manager.png`, `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-packing-manager-mobile.png`, `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-drag-page.png`
-- Final combined comparison: `/Users/simonaep/ai-workshop-starters/travel-guide/design-comparison-page2-final.png`
+- Implementation screenshots: `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-desktop-final.png`, `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-desktop-page2-final-viewport.png`, `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-mobile-final.png`, `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-packing-manager.png`, `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-packing-manager-mobile.png`, `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-drag-page.png`
+- Final combined comparison: `/Users/simonaep/ai-workshop-starters/007_travel-guide/design-comparison-page2-final.png`
 - Browser viewport: 1280 × 720 CSS px for final desktop comparison; 390 × 844 CSS px for mobile responsive check
 - Pixel dimensions: source 1179 × 1703 px; final desktop viewport capture 1265 × 712 px; final narrow mobile viewport capture 305 × 804 px (browser scrollbar/chrome excluded)
 - Density normalization: device pixel ratio 1. The final comparison scales both source and implementation proportionally to 720 px high and places them side by side; no content crop or synthetic frame was added.
@@ -45,7 +45,7 @@ Fixes made:
 
 ### Pass 2
 
-Post-fix evidence: `/Users/simonaep/ai-workshop-starters/travel-guide/implementation-desktop-page2-final-viewport.png` and `/Users/simonaep/ai-workshop-starters/travel-guide/design-comparison-page2-final.png`.
+Post-fix evidence: `/Users/simonaep/ai-workshop-starters/007_travel-guide/implementation-desktop-page2-final-viewport.png` and `/Users/simonaep/ai-workshop-starters/007_travel-guide/design-comparison-page2-final.png`.
 
 Interaction and responsive review then found:
 

@@ -2,7 +2,7 @@
 
 ## Evidence
 
-- Source visual truth: `../fasting-clock/implementation-mobile-home.png` (001, 393 × 852 px) and `../water-tracker/implementation-mobile-final.png` (002, 535 × 1160 px).
+- Source visual truth: `../001_fasting-clock/implementation-mobile-home.png` (001, 393 × 852 px) and `../002_water-tracker/implementation-mobile-final.png` (002, 535 × 1160 px).
 - Combined comparison: `design-comparison.png` (1660 × 910 px).
 - Browser-rendered implementation: `implementation-desktop.jpg` (1440 × 1000 px), `implementation-mobile-final.jpg` and `implementation-mobile-result-final.jpg` (375 × 812 px each).
 - Desktop viewport: 1440 × 1000 CSS px, device pixel ratio 1.
@@ -35,7 +35,7 @@ The right side of `design-comparison.png` compares the settings and processed-re
 - Converted to PNG and WebP, then verified format-specific download labels.
 - Verified original size, output size, percentage saved, individual download, batch download, remove, and clear controls.
 - Checked browser console warnings and errors: none.
-- Targeted static checks and inline JavaScript syntax checks: passed. A later repository-wide verification rerun could not complete because the unrelated shared-worktree file `../group-randomizer/index.html` was concurrently deleted.
+- Targeted static checks and inline JavaScript syntax checks: passed. A later repository-wide verification rerun could not complete because the unrelated shared-worktree file `../009_group-randomizer/index.html` was concurrently deleted.
 
 ## Findings
 

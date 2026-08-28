@@ -5,7 +5,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const ROOT = path.resolve('/shared-artifacts/ai-workshop-friday');
-const REPO = 'image-compressor';
+const REPO = '004_image-compressor';
 const CONTRACT_PATH = path.join(ROOT, REPO, 'tests', 'contract.json');
 const HTML_PATH = path.join(ROOT, REPO, 'index.html');
 const TEST_SCRIPT_PATH = __filename;

@@ -1,10 +1,10 @@
 # GREEN — food-wheel
 
 ## 測試命令
-`node /shared-artifacts/ai-workshop-friday/contract-test.js food-wheel`
+`node /shared-artifacts/ai-workshop-friday/contract-test.js 003_food-wheel`
 
 ## 測試結果
-- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js food-wheel`
+- 命令：`node /shared-artifacts/ai-workshop-friday/contract-test.js 003_food-wheel`
 - exit code: 0
 - 通過 4/4 項行為檢查
 

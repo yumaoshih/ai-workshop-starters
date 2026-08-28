@@ -2,11 +2,11 @@
 
 ## 比對基準
 
-- 參考圖：`/Users/simonaep/ai-workshop-starters/vocabulary-trainer/reference-option-1.png`，原始 853 × 1844 px。
-- 實作圖：`/Users/simonaep/ai-workshop-starters/vocabulary-trainer/implementation-mobile-faithful-full.png`，CSS viewport 與輸出皆為 390 × 844 px，device scale factor 1。
+- 參考圖：`/Users/simonaep/ai-workshop-starters/006_vocabulary-trainer/reference-option-1.png`，原始 853 × 1844 px。
+- 實作圖：`/Users/simonaep/ai-workshop-starters/006_vocabulary-trainer/implementation-mobile-faithful-full.png`，CSS viewport 與輸出皆為 390 × 844 px，device scale factor 1。
 - 正規化：參考圖等比例縮放並裁切為 390 × 844；實作以相同尺寸直接擷取。
 - 比對狀態：`client` 答對後，包含正確選項、連勝回饋與下一題按鈕。
-- 全畫面證據：`/Users/simonaep/ai-workshop-starters/vocabulary-trainer/design-comparison.png`。文字與圖示在全畫面 1:1 檢視已可辨識，因此不另製局部放大圖。
+- 全畫面證據：`/Users/simonaep/ai-workshop-starters/006_vocabulary-trainer/design-comparison.png`。文字與圖示在全畫面 1:1 檢視已可辨識，因此不另製局部放大圖。
 
 ## 比對歷程
 

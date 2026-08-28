@@ -8,7 +8,7 @@
 - 缺少 SELECT 元素 `#preset`、按鈕 `data-action`、Elapsed/Remaining 顯示 `.elapsed` `.remaining`。
 
 ## 實測結果
-- 命令：`test -f /shared-artifacts/ai-workshop-friday/fasting-clock/index.html`
+- 命令：`test -f /shared-artifacts/ai-workshop-friday/001_fasting-clock/index.html`
 - exit code: 1
 - 四項行為檢查皆因檔案缺失無法執行，歸類為 RED。
 
