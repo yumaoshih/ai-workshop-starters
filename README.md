@@ -1,4 +1,4 @@
-# AI Workshop Friday1
+# AI Workshop Friday123
 
 九個可直接在瀏覽器執行、Fork 與改作的純前端 Starter。所有工具都不需要 AI API、帳號、金鑰或後端服務。
 
