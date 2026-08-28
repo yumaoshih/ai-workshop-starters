@@ -64,6 +64,14 @@ test('hub exposes exactly nine working Starter links', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('hub links learners to the source GitHub repository', async ({ page }) => {
+  await page.goto(`${base}/`);
+  const link = page.getByRole('link', { name: /前往 GitHub Repository/ });
+  await expect(link).toHaveAttribute('href', 'https://github.com/yumaoshih/ai-workshop-starters');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+});
+
 test('hub separates three optional open-source exploration resources from the Starter task', async ({ page }) => {
   await page.goto(`${base}/`);
   const section = page.locator('.explore-section');

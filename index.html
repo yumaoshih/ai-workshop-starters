@@ -67,6 +67,42 @@
       }
 
       .hero-copy strong { color: var(--ink); }
+
+      .hero-side {
+        display: grid;
+        gap: 18px;
+      }
+
+      .repo-button {
+        display: grid;
+        gap: 4px;
+        width: fit-content;
+        min-width: min(100%, 320px);
+        padding: 14px 16px;
+        color: #fff;
+        background: var(--ink);
+        border: 1px solid var(--ink);
+        text-decoration: none;
+      }
+
+      .repo-button strong {
+        font-size: 16px;
+        letter-spacing: -.01em;
+      }
+
+      .repo-button small {
+        color: #c8cbc4;
+        font: 650 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      .repo-button:hover,
+      .repo-button:focus-visible {
+        background: var(--blue);
+        border-color: var(--blue);
+        outline: 3px solid rgba(22, 93, 255, .2);
+        outline-offset: 2px;
+      }
+
       .course-flow { padding: 32px 0 44px; }
 
       .section-heading {
@@ -828,6 +864,7 @@
         .hero { gap: 24px; padding-bottom: 28px; }
         h1 { font-size: clamp(46px, 15vw, 64px); }
         .hero-copy { font-size: 17px; }
+        .repo-button { width: 100%; }
         .section-heading { display: block; }
         .section-heading p { margin-top: 8px; }
         .steps { grid-template-columns: 1fr; }
@@ -871,9 +908,15 @@
           <div class="eyebrow">AI WORKSHOP / FORK TO CONTRIBUTE</div>
           <h1>選一個起點，<br>做成你的作品。</h1>
         </div>
-        <p class="hero-copy">
-          從一個已經能運作的小工具開始。<strong>Fork 專案、選擇 Starter、完成改作，再用 Pull Request 投稿。</strong>
-        </p>
+        <div class="hero-side">
+          <p class="hero-copy">
+            從一個已經能運作的小工具開始。<strong>Fork 專案、選擇 Starter、完成改作，再用 Pull Request 投稿。</strong>
+          </p>
+          <a class="repo-button" href="https://github.com/yumaoshih/ai-workshop-starters" target="_blank" rel="noopener noreferrer">
+            <strong>前往 GitHub Repository</strong>
+            <small>yumaoshih/ai-workshop-starters</small>
+          </a>
+        </div>
       </header>
 
       <section class="course-flow" aria-labelledby="flow-title">
