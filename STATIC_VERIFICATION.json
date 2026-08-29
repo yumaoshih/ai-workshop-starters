@@ -38,7 +38,7 @@
         "has_reset": true,
         "has_local_storage": true
       },
-      "sha256": "6d2dbe03105f69b1376cdb8772cb9b3f6e159b132d183c35f8366994e7380857"
+      "sha256": "5780d5ef046117a21a066361de2fa88ed5dfa24907093c5a7bcf369afce58a24"
     },
     {
       "repo": "003_food-wheel",

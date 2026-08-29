@@ -85,6 +85,16 @@ test('hub separates three optional open-source exploration resources from the St
   await expect(section).toContainText('CONTRIBUTING');
 });
 
+test('water tracker lets learners select every drink option', async ({ page }) => {
+  await page.goto(`${base}/002_water-tracker/`);
+  const cards = page.locator('.drink-card');
+  await expect(cards).toHaveCount(7);
+  for (let index = 0; index < 7; index += 1) {
+    await cards.nth(index).click();
+    await expect(cards.nth(index)).toHaveAttribute('aria-pressed', 'true');
+  }
+});
+
 test('fork guide explains how students sync later upstream updates', async ({ page }) => {
   await page.goto(`${base}/`);
   await page.locator('.fork-guide > summary').click();

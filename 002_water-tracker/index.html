@@ -767,13 +767,13 @@
         startScrollLeft:drinkList.scrollLeft
       };
       suppressClick = false;
-      drinkList.setPointerCapture(event.pointerId);
     });
     drinkList.addEventListener('pointermove',(event) => {
       if(!drag || event.pointerId !== drag.pointerId) return;
       const distance = event.clientX - drag.startX;
       if(Math.abs(distance) < 4) return;
       suppressClick = true;
+      if(!drinkList.hasPointerCapture(event.pointerId)) drinkList.setPointerCapture(event.pointerId);
       drinkList.classList.add('is-dragging');
       drinkList.scrollLeft = drag.startScrollLeft - distance;
       event.preventDefault();
