@@ -43,7 +43,7 @@
     },
     {
       "id": "host-approval",
-      "selector": "#host-offer-input",
+      "selector": "#pending-player-list",
       "expect": "Host can review a friend's join request before allowing entry"
     },
     {

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ai-workshop-bingo
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: NODE_VERSION
+        value: 20.20.2
+      - key: NODE_ENV
+        value: production
+      - key: REQUIRE_TURN
+        value: "true"
+      - key: TURN_KEY_ID
+        sync: false
+      - key: TURN_KEY_API_TOKEN
+        sync: false

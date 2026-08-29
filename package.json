@@ -2,8 +2,14 @@
   "name": "ai-workshop-friday",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "test:contracts": "node contract-test.js 001_fasting-clock && node contract-test.js 002_water-tracker && node contract-test.js 003_food-wheel",
+    "start": "node 005_bingo-generator/server.js",
+    "bingo:dev": "node 005_bingo-generator/server.js",
+    "bingo:test": "playwright test tests/starters.spec.js --config=playwright.config.js --grep bingo-generator",
+    "test:contracts": "node contract-test.js 001_fasting-clock && node contract-test.js 002_water-tracker && node contract-test.js 003_food-wheel && node contract-test.js 005_bingo-generator",
     "test:starters": "playwright test tests/starters.spec.js --config=playwright.config.js",
     "test:pages": "playwright test tests/pages.spec.js --config=playwright.config.js",
     "verify:static": "python3 verify_static.py",
@@ -15,6 +21,7 @@
   },
   "dependencies": {
     "canvas": "^3.2.3",
-    "jsdom": "^29.1.1"
+    "jsdom": "^29.1.1",
+    "ws": "^8.21.3"
   }
 }

@@ -1,6 +1,6 @@
 # AI Workshop Friday123
 
-九個可直接在瀏覽器執行、Fork 與改作的純前端 Starter。所有工具都不需要 AI API、帳號、金鑰或後端服務。
+九個可在瀏覽器執行、Fork 與改作的 Starter。所有工具都不需要 AI API、帳號或金鑰；005 一起賓果的多人房間需要啟動隨附的即時房間服務。
 
 ## GitHub Pages 展示結構
 
@@ -27,6 +27,17 @@ python3 -m http.server 4175
 ```
 
 再開啟 `http://127.0.0.1:4175/`。單一 Starter 也可直接以 `file://` 開啟其 `index.html`。
+
+005 一起賓果若要讓主持人與玩家真正加入同一房間，請改用：
+
+```bash
+npm install
+npm run bingo:dev
+```
+
+並開啟 `http://127.0.0.1:4176/bingo-generator/`。
+
+不同 Wi‑Fi 的公開版本已提供 `render.yaml` 與短效 TURN 憑證流程；部署說明位於 [`005_bingo-generator/DEPLOYMENT.md`](005_bingo-generator/DEPLOYMENT.md)。
 
 ## 課堂流程
 

@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const { spawn } = require('child_process');
+const http = require('http');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
@@ -11,6 +13,46 @@ const starterDirectories = {
   'group-randomizer': '009_group-randomizer',
 };
 const url = name => pathToFileURL(path.join(root, starterDirectories[name] || name, 'index.html')).href;
+const bingoPort = 4186;
+const turnPort = 4187;
+const bingoBase = `http://127.0.0.1:${bingoPort}/bingo-generator/`;
+let bingoServer;
+let turnServer;
+let turnCredentialRequests = 0;
+let turnAuthorization = '';
+
+function waitForBingoServer() {
+  return new Promise((resolve, reject) => {
+    const deadline = Date.now() + 10000;
+    const probe = () => {
+      const request = http.get(bingoBase, response => {
+        response.resume();
+        if (response.statusCode === 200) resolve(); else retry();
+      });
+      request.on('error', retry);
+    };
+    const retry = () => Date.now() > deadline ? reject(new Error('Bingo server did not become ready')) : setTimeout(probe, 100);
+    probe();
+  });
+}
+
+function waitForHealth(port) {
+  return new Promise((resolve, reject) => {
+    const deadline = Date.now() + 10000;
+    const probe = () => {
+      const request = http.get(`http://127.0.0.1:${port}/healthz`, response => {
+        let body = '';
+        response.on('data', chunk => { body += chunk; });
+        response.on('end', () => resolve({ status: response.statusCode, body }));
+      });
+      request.on('error', () => {
+        if (Date.now() > deadline) reject(new Error('Health endpoint did not become ready'));
+        else setTimeout(probe, 100);
+      });
+    };
+    probe();
+  });
+}
 
 async function openLocal(page, name) {
   const requests = [];
@@ -28,6 +70,69 @@ async function clearStorage(page) {
 }
 
 test.describe('bingo-generator', () => {
+  test.beforeAll(async () => {
+    turnServer = http.createServer((request, response) => {
+      turnCredentialRequests += 1;
+      turnAuthorization = request.headers.authorization || '';
+      const payload = JSON.stringify({
+        iceServers: [
+          { urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.cloudflare.com:53'] },
+          {
+            urls: ['turn:127.0.0.1:9?transport=udp', 'turns:127.0.0.1:9?transport=tcp'],
+            username: 'short-lived-user',
+            credential: 'short-lived-credential',
+          },
+        ],
+      });
+      response.writeHead(201, { 'Content-Type': 'application/json' }).end(payload);
+    });
+    await new Promise((resolve, reject) => {
+      turnServer.once('error', reject);
+      turnServer.listen(turnPort, '127.0.0.1', resolve);
+    });
+    bingoServer = spawn('node', ['005_bingo-generator/server.js'], {
+      cwd: root,
+      env: {
+        ...process.env,
+        PORT: String(bingoPort),
+        HOST: '127.0.0.1',
+        REQUIRE_TURN: 'true',
+        TURN_KEY_ID: 'test-key',
+        TURN_KEY_API_TOKEN: 'test-token',
+        TURN_API_BASE_URL: `http://127.0.0.1:${turnPort}`,
+      },
+      stdio: 'ignore',
+    });
+    await waitForBingoServer();
+  });
+  test.afterAll(async () => {
+    if (bingoServer && !bingoServer.killed) bingoServer.kill('SIGTERM');
+    if (turnServer) await new Promise(resolve => turnServer.close(resolve));
+  });
+
+  test('refuses production readiness when TURN credentials are missing', async () => {
+    const strictPort = 4188;
+    const strictServer = spawn('node', ['005_bingo-generator/server.js'], {
+      cwd: root,
+      env: {
+        ...process.env,
+        PORT: String(strictPort),
+        HOST: '127.0.0.1',
+        REQUIRE_TURN: 'true',
+        TURN_KEY_ID: '',
+        TURN_KEY_API_TOKEN: '',
+      },
+      stdio: 'ignore',
+    });
+    try {
+      const health = await waitForHealth(strictPort);
+      expect(health.status).toBe(503);
+      expect(JSON.parse(health.body)).toMatchObject({ status: 'degraded', turnConfigured: false });
+    } finally {
+      strictServer.kill('SIGTERM');
+    }
+  });
+
   test('renders 24 editable items and a 25-cell board with free center', async ({ page }) => {
     await openLocal(page, 'bingo-generator'); await clearStorage(page);
     await page.locator('#btn-create-room').click();
@@ -75,59 +180,52 @@ test.describe('bingo-generator', () => {
     await expect(page.locator('#role-player')).toHaveAttribute('aria-selected', 'true');
     await expect(page.locator('#player-room-code')).toBeVisible();
     await expect(page.locator('#btn-create-offer')).toBeVisible();
+    await expect(page.locator('#host-offer-input, #player-offer-output, #player-answer-input')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '加入朋友的賓果局' })).toBeVisible();
+
+    await page.goto(`${url('bingo-generator')}?room=ABC234`);
+    await expect(page.locator('#role-player')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#player-room-code')).toHaveValue('ABC234');
+    await expect(page.locator('#player-message')).toContainText('房間碼已填好');
   });
 
   test('connects an approved player over RTCDataChannel and starts a game', async ({ browser }) => {
     const context = await browser.newContext();
+    const health = await context.request.get(`http://127.0.0.1:${bingoPort}/healthz`);
+    expect(health.status()).toBe(200);
+    expect(await health.json()).toMatchObject({ status: 'ok', turnConfigured: true });
     const host = await context.newPage();
     const player = await context.newPage();
-    await openLocal(host, 'bingo-generator');
+    await host.goto(bingoBase);
     await host.evaluate(() => localStorage.clear());
     await host.reload();
     await host.locator('#btn-create-room').click();
+    await expect(host.locator('#room-code')).toHaveText(/[A-Z0-9]{6}/);
     const roomCode = (await host.locator('#room-code').textContent()).trim();
 
-    await openLocal(player, 'bingo-generator');
+    await player.goto(bingoBase);
     await player.locator('#role-player').click();
     await player.locator('#player-room-code').fill(roomCode);
     await player.locator('#player-name').fill('小明');
     await player.locator('#btn-create-offer').click();
-    await expect(player.locator('#player-offer-output')).not.toBeEmpty({ timeout: 15000 });
-    const offer = await player.locator('#player-offer-output').inputValue();
-
-    await host.locator('#host-request-box summary').click();
-    await host.locator('#host-offer-input').fill(offer);
-    await host.locator('#btn-inspect-offer').click();
-    await expect(host.locator('#pending-player')).toContainText('小明');
-    await host.locator('#btn-approve-player').click();
-    await expect(host.locator('#host-answer-output')).not.toBeEmpty({ timeout: 15000 });
-    const answer = await host.locator('#host-answer-output').inputValue();
-
-    await player.locator('#player-answer-input').fill(answer);
-    await player.locator('#btn-apply-answer').click();
+    await expect(player.locator('#player-connection-status')).toContainText('等待主持人允許');
+    const firstRequest = host.locator('#pending-player-list .pending').filter({ hasText: '小明' });
+    await expect(firstRequest).toBeVisible();
+    await firstRequest.getByRole('button', { name: '允許加入' }).click();
     await expect(player.locator('#player-connection-status')).toContainText('已加入', { timeout: 15000 });
     await player.locator('#btn-player-ready').click();
     await expect(host.locator('#host-player-list')).toContainText('準備好了', { timeout: 15000 });
 
     const secondPlayer = await context.newPage();
-    await openLocal(secondPlayer, 'bingo-generator');
+    await secondPlayer.goto(bingoBase);
     await secondPlayer.locator('#role-player').click();
     await secondPlayer.locator('#player-room-code').fill(roomCode);
     await secondPlayer.locator('#player-name').fill('小華');
     await secondPlayer.locator('#btn-create-offer').click();
-    await expect(secondPlayer.locator('#player-offer-output')).not.toBeEmpty({ timeout: 15000 });
-    const secondOffer = await secondPlayer.locator('#player-offer-output').inputValue();
-    await host.locator('#host-request-box summary').click();
-    await host.locator('#host-offer-input').fill(secondOffer);
-    await host.locator('#btn-inspect-offer').click();
-    await expect(host.locator('#pending-player')).toContainText('小華');
-    await host.locator('#btn-approve-player').click();
+    const secondRequest = host.locator('#pending-player-list .pending').filter({ hasText: '小華' });
+    await expect(secondRequest).toBeVisible();
+    await secondRequest.getByRole('button', { name: '允許加入' }).click();
     await expect(host.locator('#btn-start-game')).toBeDisabled();
-    await expect(host.locator('#host-answer-output')).not.toHaveValue(answer, { timeout: 15000 });
-    const secondAnswer = await host.locator('#host-answer-output').inputValue();
-    await secondPlayer.locator('#player-answer-input').fill(secondAnswer);
-    await secondPlayer.locator('#btn-apply-answer').click();
     await expect(secondPlayer.locator('#player-connection-status')).toContainText('已加入', { timeout: 15000 });
     await secondPlayer.locator('#btn-player-ready').click();
     await expect(host.locator('#btn-start-game')).toBeEnabled();
@@ -145,6 +243,8 @@ test.describe('bingo-generator', () => {
     await expect(player.locator('#player-board .cell.marked', { hasText: called })).toHaveCount(1);
     await player.locator('#btn-claim-bingo').click();
     await expect(player.locator('#player-message')).toContainText('還沒有連成一線');
+    expect(turnCredentialRequests).toBe(2);
+    expect(turnAuthorization).toBe('Bearer test-token');
     await context.close();
   });
 });

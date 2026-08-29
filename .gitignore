@@ -5,3 +5,6 @@ playwright-report/
 .pw-shell/
 .DS_Store
 *.log
+.env
+.env.*
+!.env.example

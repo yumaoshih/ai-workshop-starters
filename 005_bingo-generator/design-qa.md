@@ -21,12 +21,12 @@
 
 The landing implementation preserves the selected reference's centered editorial headline, paired purple/pink entry cards, three theme choices, warm ivory surface, near-black type, and generous whitespace. The host lobby preserves the selected reference's room-code emphasis, two-column lobby composition, pending/approved player grouping, theme control, and large start action.
 
-The implementation adds a compact top navigation and a collapsed request handoff area. These are intentional product-flow additions required to move between host and player paths while keeping the normal lobby visually clean.
+The implementation adds a compact top navigation and a live approval queue. These are intentional product-flow additions required to move between host and player paths while keeping the normal lobby visually clean.
 
 ## Focused Region Comparison Evidence
 
 - Landing action cards: checked icon scale, card proportions, title hierarchy, border color, button placement, and purple/pink role distinction.
-- Host room card: checked room-code scale, centered invite action, helper copy, and collapsed secondary controls.
+- Host room card: checked room-code scale, centered invite action, helper copy, and automatic-entry explanation.
 - Player groups and start action: checked section separation, row affordances, status treatment, disabled/enabled start state, and ready-count copy.
 - Mobile join form: checked headline wrapping, field stacking, button width, card padding, and absence of horizontal overflow.
 
@@ -36,7 +36,7 @@ The implementation adds a compact top navigation and a collapsed request handoff
 - Spacing and layout rhythm: desktop uses the same broad two-column composition and generous margins. Cards, gaps, radii, and lower action band are consistent. Mobile collapses to one column with 18 px page gutters and no horizontal overflow.
 - Colors and visual tokens: warm ivory background, near-black foreground, purple primary actions, pink join/approval actions, beige borders, green ready state, and muted helper copy match the selected direction.
 - Image quality and asset fidelity: the two entry icons are dedicated raster assets generated for this art direction and remain sharp at their rendered size. No placeholder or improvised CSS illustration is used.
-- Copy and content: all visible product copy uses「開一局、加入遊戲、加入申請、入場確認、允許加入、準備好了、開始遊戲」. No networking or implementation terminology is shown in the interface.
+- Copy and content: all visible product copy uses「開一局、加入遊戲、加入申請、允許加入、準備好了、開始遊戲」. No networking or implementation terminology is shown in the interface.
 
 ## Comparison History
 
@@ -53,6 +53,12 @@ The implementation adds a compact top navigation and a collapsed request handoff
 
 - Post-fix evidence: `evidence/design-qa-comparison.png`, `evidence/product-mobile-join.png`.
 - No actionable P0, P1, or P2 fidelity issues remain.
+
+### Iteration 3 — automatic room entry
+
+- Removed the remaining copy-and-paste handoff from both host and player screens.
+- Player requests now appear directly in the host lobby; approval completes entry automatically.
+- Reverified the primary flow with one host and two independent player pages.
 
 ## Findings
 
