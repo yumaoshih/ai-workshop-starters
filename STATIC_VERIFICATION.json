@@ -95,7 +95,7 @@
         "has_reset": true,
         "has_local_storage": true
       },
-      "sha256": "d8c4163a68a7368c1c994248a2c73a0657061550de265d24079f22ab476a9305"
+      "sha256": "539fa6a2a41eb8879387d8cb5a2fd65d89830580469334c252eda2c7d11e8423"
     },
     {
       "repo": "006_vocabulary-trainer",

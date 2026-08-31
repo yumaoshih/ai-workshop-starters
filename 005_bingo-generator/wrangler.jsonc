@@ -1,0 +1,32 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "ai-workshop-bingo-rooms",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-08-31",
+  "send_metrics": false,
+  "dependencies_instrumentation": {
+    "enabled": false
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "REQUIRE_TURN": "true",
+    "ALLOWED_ORIGINS": "https://yumaoshih.github.io,http://localhost:4176,http://127.0.0.1:4176",
+    "ALLOW_PRIVATE_ORIGINS": "true"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BINGO_ROOMS",
+        "class_name": "BingoRooms"
+      }
+    ]
+  },
+  "exports": {
+    "BingoRooms": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}

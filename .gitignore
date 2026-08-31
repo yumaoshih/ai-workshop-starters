@@ -5,6 +5,7 @@ playwright-report/
 .pw-shell/
 .DS_Store
 *.log
+.wrangler/
 .env
 .env.*
 !.env.example

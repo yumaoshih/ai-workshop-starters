@@ -268,6 +268,7 @@
   </section>
 </main>
 
+<script src="./config.js"></script>
 <script>
 (function(){
   'use strict';
@@ -355,13 +356,19 @@
   function signal(message){ const socket=state.signalSocket; if(socket&&socket.readyState===WebSocket.OPEN) socket.send(JSON.stringify(message)); }
   function signalUrl(){
     if(!['http:','https:'].includes(location.protocol)) return '';
+    const configured=window.BINGO_CONFIG&&typeof window.BINGO_CONFIG.signalUrl==='string'?window.BINGO_CONFIG.signalUrl.trim():'';
+    if(configured){
+      try{ const parsed=new URL(configured); return ['ws:','wss:'].includes(parsed.protocol)?parsed.toString():''; }
+      catch(error){ return ''; }
+    }
+    if(location.hostname.endsWith('.github.io')) return '';
     return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws';
   }
   function openSignal(){
     if(state.signalSocket&&state.signalSocket.readyState===WebSocket.OPEN) return Promise.resolve(state.signalSocket);
     if(state.signalPromise) return state.signalPromise;
     const url=signalUrl();
-    if(!url) return Promise.reject(new Error('請從多人遊戲網址開啟，才能邀請朋友加入'));
+    if(!url) return Promise.reject(new Error(location.hostname.endsWith('.github.io')?'公開房間正在準備中，請稍後再試':'請從多人遊戲網址開啟，才能邀請朋友加入'));
     state.signalPromise=new Promise((resolve,reject)=>{
       const socket=new WebSocket(url); let settled=false;
       socket.addEventListener('open',()=>{ settled=true; state.signalSocket=socket; resolve(socket); });

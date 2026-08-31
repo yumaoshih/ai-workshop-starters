@@ -1,6 +1,6 @@
 # AI Workshop Friday123
 
-九個可在瀏覽器執行、Fork 與改作的 Starter。所有工具都不需要 AI API、帳號或金鑰；005 一起賓果的多人房間需要啟動隨附的即時房間服務。
+九個可在瀏覽器執行、Fork 與改作的 Starter。本機模式都不需要 AI API、帳號或金鑰；005 一起賓果的多人房間需要啟動隨附的本機服務，公開跨網路版本則使用 Cloudflare 免費額度。
 
 ## GitHub Pages 展示結構
 
@@ -37,7 +37,7 @@ npm run bingo:dev
 
 並開啟 `http://127.0.0.1:4176/bingo-generator/`。
 
-不同 Wi‑Fi 的公開版本已提供 `render.yaml` 與短效 TURN 憑證流程；部署說明位於 [`005_bingo-generator/DEPLOYMENT.md`](005_bingo-generator/DEPLOYMENT.md)。
+不同 Wi‑Fi 的公開版本使用 GitHub Pages＋Cloudflare Workers／Durable Objects，並提供短效 TURN 憑證流程；部署說明位於 [`005_bingo-generator/DEPLOYMENT.md`](005_bingo-generator/DEPLOYMENT.md)。
 
 ## 課堂流程
 
@@ -54,6 +54,7 @@ npm run bingo:dev
 ## 驗證
 
 ```bash
+nvm use
 npm ci
 npm run verify
 ```

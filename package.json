@@ -3,21 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "start": "node 005_bingo-generator/server.js",
     "bingo:dev": "node 005_bingo-generator/server.js",
-    "bingo:test": "playwright test tests/starters.spec.js --config=playwright.config.js --grep bingo-generator",
+    "bingo:worker:test": "node --test 005_bingo-generator/tests/worker.test.mjs",
+    "bingo:worker:check": "wrangler deploy --dry-run --config 005_bingo-generator/wrangler.jsonc",
+    "bingo:test": "npm run bingo:worker:test && playwright test tests/starters.spec.js --config=playwright.config.js --grep bingo-generator",
     "test:contracts": "node contract-test.js 001_fasting-clock && node contract-test.js 002_water-tracker && node contract-test.js 003_food-wheel && node contract-test.js 005_bingo-generator",
     "test:starters": "playwright test tests/starters.spec.js --config=playwright.config.js",
     "test:pages": "playwright test tests/pages.spec.js --config=playwright.config.js",
     "verify:static": "python3 verify_static.py",
-    "verify": "npm run verify:static && npm run test:contracts && npm run test:starters && npm run test:pages"
+    "verify": "npm run verify:static && npm run test:contracts && npm run bingo:worker:test && npm run test:starters && npm run test:pages"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "playwright": "^1.62.1"
+    "playwright": "^1.62.1",
+    "wrangler": "4.127.1"
   },
   "dependencies": {
     "canvas": "^3.2.3",

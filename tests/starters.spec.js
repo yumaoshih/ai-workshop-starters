@@ -15,8 +15,11 @@ const starterDirectories = {
 const url = name => pathToFileURL(path.join(root, starterDirectories[name] || name, 'index.html')).href;
 const bingoPort = 4186;
 const turnPort = 4187;
+const workerPort = 4189;
 const bingoBase = `http://127.0.0.1:${bingoPort}/bingo-generator/`;
+const workerBase = `http://127.0.0.1:${workerPort}`;
 let bingoServer;
+let workerServer;
 let turnServer;
 let turnCredentialRequests = 0;
 let turnAuthorization = '';
@@ -104,9 +107,28 @@ test.describe('bingo-generator', () => {
       stdio: 'ignore',
     });
     await waitForBingoServer();
+    workerServer = spawn(process.execPath, [
+      path.join(root, 'node_modules/wrangler/bin/wrangler.js'),
+      'dev',
+      '--local',
+      '--ip', '127.0.0.1',
+      '--port', String(workerPort),
+      '--config', path.join(root, '005_bingo-generator/wrangler.jsonc'),
+      '--var', 'REQUIRE_TURN:false',
+      '--var', `ALLOWED_ORIGINS:http://127.0.0.1:${bingoPort}`,
+      '--log-level', 'error',
+      '--show-interactive-dev-session=false',
+    ], {
+      cwd: root,
+      env: { ...process.env, WRANGLER_LOG_PATH: path.join(root, 'test-results/wrangler.log') },
+      stdio: 'ignore',
+    });
+    const workerHealth = await waitForHealth(workerPort);
+    if (workerHealth.status !== 200) throw new Error(`Worker health failed: ${workerHealth.body}`);
   });
   test.afterAll(async () => {
     if (bingoServer && !bingoServer.killed) bingoServer.kill('SIGTERM');
+    if (workerServer && !workerServer.killed) workerServer.kill('SIGTERM');
     if (turnServer) await new Promise(resolve => turnServer.close(resolve));
   });
 
@@ -245,6 +267,34 @@ test.describe('bingo-generator', () => {
     await expect(player.locator('#player-message')).toContainText('還沒有連成一線');
     expect(turnCredentialRequests).toBe(2);
     expect(turnAuthorization).toBe('Bearer test-token');
+    await context.close();
+  });
+
+  test('uses the configured Cloudflare Worker room service from the static frontend', async ({ browser }) => {
+    const context = await browser.newContext();
+    await context.route('**/config.js', route => route.fulfill({
+      status: 200,
+      contentType: 'text/javascript',
+      body: `window.BINGO_CONFIG=Object.freeze({signalUrl:'ws://127.0.0.1:${workerPort}/ws'});`,
+    }));
+    const health = await context.request.get(`${workerBase}/healthz`);
+    expect(health.status()).toBe(200);
+    expect(await health.json()).toMatchObject({ status: 'ok', service: 'cloudflare-workers' });
+
+    const host = await context.newPage();
+    const player = await context.newPage();
+    await host.goto(bingoBase);
+    await host.locator('#btn-create-room').click();
+    await expect(host.locator('#room-code')).toHaveText(/[A-HJ-NP-Z2-9]{6}/);
+    const roomCode = (await host.locator('#room-code').textContent()).trim();
+
+    await player.goto(`${bingoBase}?room=${roomCode}`);
+    await player.locator('#player-name').fill('跨站玩家');
+    await player.locator('#btn-create-offer').click();
+    const request = host.locator('#pending-player-list .pending').filter({ hasText: '跨站玩家' });
+    await expect(request).toBeVisible();
+    await request.getByRole('button', { name: '允許加入' }).click();
+    await expect(player.locator('#player-connection-status')).toContainText('已加入', { timeout: 15000 });
     await context.close();
   });
 });

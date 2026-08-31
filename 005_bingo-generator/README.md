@@ -32,12 +32,12 @@ npm run bingo:dev
 
 ## 不同網路的公開部署
 
-根目錄的 `render.yaml` 已定義單一 Render Web Service，同時提供 HTTPS 頁面與 WSS 房間配對。公開環境還需要兩個 Cloudflare Realtime TURN 祕密值：
+公開畫面繼續使用 GitHub Pages；`worker.mjs` 與 `wrangler.jsonc` 會把房間建立、主持人批准與入場配對部署到 Cloudflare Workers＋Durable Objects。公開環境另需兩個 Cloudflare Realtime TURN 祕密值：
 
 - `TURN_KEY_ID`
 - `TURN_KEY_API_TOKEN`
 
-服務只會在主持人批准玩家時產生四小時短效憑證，永久金鑰不會傳到瀏覽器。`REQUIRE_TURN=true` 時，缺少金鑰會讓 `/healthz` 回傳 503，避免沒有跨網路備援的版本被誤判為部署成功。
+服務只會在主持人批准玩家時產生四小時短效憑證，永久金鑰不會傳到瀏覽器。`REQUIRE_TURN=true` 時，缺少金鑰會讓 `/healthz` 回傳 503，避免沒有跨網路備援的版本被誤判為部署成功。部署後再把 Worker 的 WSS 網址填入 `config.js`，GitHub Pages 就會使用公開房間服務。
 
 完整操作與驗收方式請見 [`DEPLOYMENT.md`](DEPLOYMENT.md)。
 
@@ -45,5 +45,7 @@ npm run bingo:dev
 
 ```bash
 node contract-test.js 005_bingo-generator
+npm run bingo:worker:test
+npm run bingo:worker:check
 npm run bingo:test
 ```
